@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, {useState} from 'react';
+import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import GoogleSignInButton from './Signup/GoogleButton/GoogleSignInButton';
 
 type AuthStackParamList = {
   Login: undefined;
@@ -15,7 +16,7 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 export default function AuthStack() {
   // Login Screen
-  const Login = ({ navigation }: LoginProps) => {
+  const Login = ({navigation}: LoginProps) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -41,18 +42,17 @@ export default function AuthStack() {
           onChangeText={setPassword}
         />
         <Button title="Login" onPress={handleLogin} />
-        <Text
-          style={styles.link}
-          onPress={() => navigation.navigate('SignUp')}
-        >
+        <Text style={styles.link} onPress={() => navigation.navigate('SignUp')}>
           Don't have an account? Sign Up
         </Text>
+
+        <GoogleSignInButton />
       </View>
     );
   };
 
   // SignUp Screen
-  const SignUp = ({ navigation }: SignUpProps) => {
+  const SignUp = ({navigation}: SignUpProps) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -85,10 +85,7 @@ export default function AuthStack() {
           onChangeText={setPassword}
         />
         <Button title="Sign Up" onPress={handleSignUp} />
-        <Text
-          style={styles.link}
-          onPress={() => navigation.navigate('Login')}
-        >
+        <Text style={styles.link} onPress={() => navigation.navigate('Login')}>
           Already have an account? Login
         </Text>
       </View>
@@ -96,7 +93,7 @@ export default function AuthStack() {
   };
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SignUp" component={SignUp} />
     </Stack.Navigator>

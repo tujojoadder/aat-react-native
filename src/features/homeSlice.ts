@@ -9,7 +9,7 @@ interface HomeState {
 const initialState:HomeState = {
   count: 0,
   value: 0,
-
+  
 /*   Signup/in  */
   isLogin:false
 }

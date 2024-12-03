@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "212461889410",
+    "project_id": "aat-react-native-a67eb",
+    "storage_bucket": "aat-react-native-a67eb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212461889410:android:56f6152594b0f19ff2519b",
+        "android_client_info": {
+          "package_name": "com.aat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "212461889410-1ojqto7iqgqufa9m8l48dhcgev1kun67.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aat",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0NELvk_duZd9P0vVWOOUFzWRLvVOSndw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
