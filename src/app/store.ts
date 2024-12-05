@@ -6,7 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { profileApi } from '../services/profileApi';
 import { groupsApi } from './../services/groupsApi';
-import { homeSlice } from './../features/homeSlice';
+import { homeSlice } from '../features/Home/HomeSlice';
+import { userLoginApi } from '../services/userLogin';
 
 // Persist configuration
 const persistConfig = {
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   home: homeSlice.reducer,
   [groupsApi.reducerPath]: groupsApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
+  [userLoginApi.reducerPath]: userLoginApi.reducer,
   // Add more reducers as needed
 });
 
@@ -35,6 +37,7 @@ export const store = configureStore({
     }).concat(
       profileApi.middleware,
       groupsApi.middleware,
+      userLoginApi.middleware,
       // Add other middlewares as needed
     ),
 });

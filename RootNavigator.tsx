@@ -1,25 +1,30 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useSelector } from 'react-redux'; // Assuming you're using Redux for auth state
-import AuthStack from './src/features/AuthStack';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {useSelector} from 'react-redux'; // Assuming you're using Redux for auth state
 import AppStack from './src/features/AppStack';
-import { RootState } from './src/app/store';
+import {RootState} from './src/app/store';
+import Home from './src/features/Home/Home';
+import Login from './src/features/Signup/Login/Login';
+import UserDetailsChecker from './src/features/Signup/UserDetailsChecker/UserDetailsChecker';
+export type RootParamList = {
+  home: undefined; // No parameters for the "home" screen
+  login: undefined; // No parameters for the "login" screen
+};
 
-const RootStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootParamList>();
 
 export default function RootNavigator() {
-  const isLoggedIn = useSelector((state:RootState) => state.home.isLogin); // Replace with your auth logic
 
   return (
     <NavigationContainer>
-      <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        {isLoggedIn ? (
-          <RootStack.Screen name="AppStack" component={AppStack} />
-        ) : (
-          <RootStack.Screen name="AuthStack" component={AuthStack} />
-        )}
-      </RootStack.Navigator>
+   
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Screen name="login" component={Login} />
+          <Stack.Screen name="home" component={Home} />
+
+        </Stack.Navigator>
+  
     </NavigationContainer>
   );
 }

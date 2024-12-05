@@ -33,6 +33,7 @@ export default function App() {
             </View>
           }
           persistor={persistor}>
+
           <RootNavigator />
         </PersistGate>
       </ReduxProvider>

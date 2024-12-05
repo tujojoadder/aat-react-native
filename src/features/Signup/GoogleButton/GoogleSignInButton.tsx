@@ -5,9 +5,11 @@ import {
   statusCodes,
   GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
-
+import * as Keychain from 'react-native-keychain'; // Import Keychain for storing tokens
+import {useGoogleSignInMutation} from '../../../services/userLogin';
 export default function GoogleSignInButton() {
   const [isInProgress, setIsInProgress] = useState(false); // State to track sign-in progress
+  const [googleSignIn, {isSuccess, isError, data}] = useGoogleSignInMutation(); // RTK Query hook for Google Sign-In API
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -15,15 +17,29 @@ export default function GoogleSignInButton() {
         '212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com',
     });
   }, []);
-
   const signIn = async () => {
     setIsInProgress(true); // Set progress to true before starting
     try {
       await GoogleSignin.hasPlayServices(); // Check Play Services
       const userInfo = await GoogleSignin.signIn(); // Attempt to sign in
-      console.log('Google User Info:', userInfo);
+
+      // Send the Google ID token to the backend for verification and to get an API token
+      const res = await googleSignIn(userInfo.data?.idToken); // Send the ID token
+
+      if (res.data) {
+        // Store the token securely in Keychain
+        await Keychain.setGenericPassword('authToken', res.data.token);
+      } else {
+        console.log(res.error);
+      }
+
+      // Store token with a key (e.g., 'authToken')
+      /* 
+      console.log('Google User Info:', userInfo); */
+
       Alert.alert('Sign-In Successful');
-    } catch (error) {
+    } catch (error: any) {
+      //deafault is unknown data type for try catch
       console.error('Google Sign-In Error:', error);
 
       // Handle errors based on their status codes
