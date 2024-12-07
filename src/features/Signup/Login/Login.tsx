@@ -24,16 +24,6 @@ export default function Login({navigation}: LoginProps) {
   };
 
   
-  const storeKeyChain = async () => {
-    try {
-      await Keychain.setGenericPassword(
-        'token',
-        '120|ZP8C4dGETwsCGSNS8vlH5uxAb8uIADrTyhxYvbWXd8d5a1b1',
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const [token, setToken] = useState(''); // State to store the token
 
@@ -79,9 +69,7 @@ export default function Login({navigation}: LoginProps) {
         <Button mode="contained" onPress={handleLogin} style={styles.button}>
           Login
         </Button>
-        <Button mode="outlined" onPress={storeKeyChain} style={styles.button}>
-          store token
-        </Button>
+   
         <Text>{token}</Text>
 
         <View style={{marginVertical: 10}} />

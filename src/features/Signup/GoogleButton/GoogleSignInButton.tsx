@@ -7,7 +7,11 @@ import {
 } from '@react-native-google-signin/google-signin';
 import * as Keychain from 'react-native-keychain'; // Import Keychain for storing tokens
 import {useGoogleSignInMutation} from '../../../services/userLogin';
+import { setAuthenticated } from '../../Home/HomeSlice';
+import { useDispatch } from 'react-redux';
 export default function GoogleSignInButton() {
+
+  const dispatch=useDispatch();
   const [isInProgress, setIsInProgress] = useState(false); // State to track sign-in progress
   const [googleSignIn, {isSuccess, isError, data}] = useGoogleSignInMutation(); // RTK Query hook for Google Sign-In API
 
@@ -25,10 +29,11 @@ export default function GoogleSignInButton() {
 
       // Send the Google ID token to the backend for verification and to get an API token
       const res = await googleSignIn(userInfo.data?.idToken); // Send the ID token
-
-      if (res.data) {
+      console.log(res);
+      if (res.data?.token) {
         // Store the token securely in Keychain
         await Keychain.setGenericPassword('authToken', res.data.token);
+        dispatch(setAuthenticated(true));
       } else {
         console.log(res.error);
       }

@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 /* Initial state */
 const initialState = {
+  isAuthenticated: null, // `null` for loading state
   user_id: "",
   profile_picture: "",
   user_fname: "",
@@ -17,6 +18,10 @@ export const homeSlice = createSlice({
   name: "userDetails",
   initialState,
   reducers: {
+
+    setAuthenticated: (state, action) => {
+      state.isAuthenticated = action.payload; // Directly set to the boolean payload
+    },
     setUser_id: (state, action) => {
       state.user_id = action.payload;
     },
@@ -48,6 +53,7 @@ export const homeSlice = createSlice({
 });
 
 export const {
+  setAuthenticated,
   setUser_id,
   setProfile_picture,
   setUser_fname,
