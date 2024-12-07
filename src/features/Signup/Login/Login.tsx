@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {
   TextInput,
@@ -7,14 +7,42 @@ import {
   Text,
   Title,
   Provider as PaperProvider,
+  Appbar,
 } from 'react-native-paper';
 
 import GoogleSignInButton from '../GoogleButton/GoogleSignInButton';
 import {RootParamList} from '../../../../RootNavigator';
 import * as Keychain from 'react-native-keychain';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 type LoginProps = NativeStackScreenProps<RootParamList, 'login'>;
 
 export default function Login({navigation}: LoginProps) {
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com',
+    });
+  }, []);
+ 
+
+
+
+  useEffect(() => {
+    const signOut = async () => {
+      try {
+        await GoogleSignin.signOut(); // Attempt to sign out
+
+      } catch (error) {
+        console.error('Google Sign-Out Error:', error);
+       
+      }
+    };
+    signOut();
+  }, [])
+  
+
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -22,8 +50,6 @@ export default function Login({navigation}: LoginProps) {
     console.log('Logged in with:', email, password);
     // Add login logic here
   };
-
-  
 
   const [token, setToken] = useState(''); // State to store the token
 
@@ -50,6 +76,8 @@ export default function Login({navigation}: LoginProps) {
   return (
     <PaperProvider>
       <View style={styles.container}>
+
+
         <Title style={styles.title}>Login</Title>
         <TextInput
           label="Email"
@@ -69,7 +97,7 @@ export default function Login({navigation}: LoginProps) {
         <Button mode="contained" onPress={handleLogin} style={styles.button}>
           Login
         </Button>
-   
+
         <Text>{token}</Text>
 
         <View style={{marginVertical: 10}} />

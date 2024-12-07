@@ -9,8 +9,14 @@ import * as Keychain from 'react-native-keychain'; // Import Keychain for storin
 import {useGoogleSignInMutation} from '../../../services/userLogin';
 import { setAuthenticated } from '../../Home/HomeSlice';
 import { useDispatch } from 'react-redux';
-export default function GoogleSignInButton() {
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootParamList } from '../../../../RootNavigator';
 
+type NavigationProp = NativeStackNavigationProp<RootParamList, 'signupAddInfo'>; // Type for navigating to 'signupAddInfo'
+
+export default function GoogleSignInButton() {
+  const navigation = useNavigation<NavigationProp>(); // Get navigation instance
   const dispatch=useDispatch();
   const [isInProgress, setIsInProgress] = useState(false); // State to track sign-in progress
   const [googleSignIn, {isSuccess, isError, data}] = useGoogleSignInMutation(); // RTK Query hook for Google Sign-In API
@@ -30,11 +36,15 @@ export default function GoogleSignInButton() {
       // Send the Google ID token to the backend for verification and to get an API token
       const res = await googleSignIn(userInfo.data?.idToken); // Send the ID token
       console.log(res);
-      if (res.data?.token) {
+      if (res.data.message=='have account') {
         // Store the token securely in Keychain
         await Keychain.setGenericPassword('authToken', res.data.token);
         dispatch(setAuthenticated(true));
-      } else {
+      }else if(res.data.message=='no account'){
+        navigation.navigate('signupAddInfo', { email: res.data.email });
+      }
+      
+      else {
         console.log(res.error);
       }
 

@@ -9,10 +9,12 @@ import {ActivityIndicator} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from './src/app/store';
 import {setAuthenticated} from './src/features/Home/HomeSlice';
+import SignupAddInfo from './src/features/Signup/SignupAddInfo';
 
 export type RootParamList = {
   home: undefined; // No parameters for the "home" screen
-  login: undefined; // No parameters for the "login" screen
+  login: undefined; // No parameters for the "login" screen,
+  signupAddInfo: {email:string};
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -54,10 +56,17 @@ export default function RootNavigator() {
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {isAuthenticated ? (
           // If authenticated, show home screen
-          <Stack.Screen name="home" component={Home} />
+
+          <>
+            <Stack.Screen name="home" component={Home} />
+          </>
         ) : (
           // If not authenticated, show login screen
-          <Stack.Screen name="login" component={Login} />
+
+          <>
+            <Stack.Screen name="login" component={Login} />
+            <Stack.Screen name="signupAddInfo" component={SignupAddInfo} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
