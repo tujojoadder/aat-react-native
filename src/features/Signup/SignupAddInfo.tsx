@@ -174,7 +174,7 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
         >
           <Picker.Item label="Male"  value="male" />
           <Picker.Item label="Female" value="female" />
-          <Picker.Item label="Other" value="others" />
+          <Picker.Item label="Others" value="others" />
         </Picker>
 
         <Button
