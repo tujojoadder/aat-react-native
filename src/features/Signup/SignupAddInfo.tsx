@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,12 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootParamList } from '../../../RootNavigator';
-import { useAdditionalInformationMutation } from '../../services/userLogin';
-import { setAuthenticated } from '../Home/HomeSlice';
+import {useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootParamList} from '../../../RootNavigator';
+import {useAdditionalInformationMutation} from '../../services/userLogin';
+import {setAuthenticated} from '../Home/HomeSlice';
 import * as Keychain from 'react-native-keychain';
 import {
   TextInput,
@@ -21,17 +21,67 @@ import {
   Appbar,
   HelperText,
 } from 'react-native-paper';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { Picker } from '@react-native-picker/picker';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {Picker} from '@react-native-picker/picker';
 
 type NavigationProp = NativeStackNavigationProp<RootParamList, 'signupAddInfo'>;
 
-const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
+const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: '212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com',
+      webClientId:
+        '212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com',
     });
   }, []);
+
+  const [errors, setErrors] = useState<any>({
+    fname: '',
+    lname: '',
+    password: '',
+  });
+  const validateForm = () => {
+    let valid = true;
+    let newErrors = {fname: '', lname: '', password: ''};
+
+    // Validate first name
+    if (!formData.fname.trim()) {
+      newErrors.fname = 'First name is required.';
+      valid = false;
+    } else if (formData.fname.length > 50) {
+      newErrors.fname = 'First name must not exceed 50 characters.';
+      valid = false;
+    } else if (!/^[a-zA-Z\s]+$/.test(formData.fname)) {
+      newErrors.fname = 'First name must contain only letters.';
+      valid = false;
+    }
+
+    // Validate last name
+    if (!formData.lname.trim()) {
+      newErrors.lname = 'Last name is required.';
+      valid = false;
+    } else if (formData.lname.length > 50) {
+      newErrors.lname = 'Last name must not exceed 50 characters.';
+      valid = false;
+    } else if (!/^[a-zA-Z\s]+$/.test(formData.lname)) {
+      newErrors.lname = 'Last name must contain only letters.';
+      valid = false;
+    }
+
+    // Validate password
+    if (!formData.password.trim()) {
+      newErrors.password = 'Password is required.';
+      valid = false;
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters.';
+      valid = false;
+    } else if (formData.password.length > 50) {
+      newErrors.password = 'Password must not exceed 50 characters.';
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
 
   const navigation = useNavigation<NavigationProp>();
   const [formData, setFormData] = useState({
@@ -39,37 +89,30 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
     lname: '',
     gender: 'male',
     password: '',
-    birthdate_day: '',
-    birthdate_month: '',
-    birthdate_year: '',
+    birthdate_day: '1',
+    birthdate_month: '1',
+    birthdate_year: '2000',
   });
 
   const [isInProgress, setIsInProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const dispatch = useDispatch();
-  const [additionalInformation, { isSuccess, isError, data }] = useAdditionalInformationMutation();
+  const [additionalInformation] = useAdditionalInformationMutation();
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData({...formData, [field]: value});
+
+    // Clear errors dynamically
+    if (errors[field]) {
+      setErrors({...errors, [field]: ''});
+    }
   };
-
   const handleSubmit = async () => {
-    setIsInProgress(true);
+    if (validateForm()) {
+      setIsInProgress(true);
 
-    try {
-      const {
-        fname,
-        lname,
-        gender,
-        password,
-        birthdate_day,
-        birthdate_month,
-        birthdate_year,
-      } = formData;
-      const birthdate = `${birthdate_year}-${birthdate_month}-${birthdate_day}`;
-
-      const res = await additionalInformation({
-        formData: {
+      try {
+        const {
           fname,
           lname,
           gender,
@@ -77,102 +120,145 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
           birthdate_day,
           birthdate_month,
           birthdate_year,
-        },
-        email: route.params.email,
-      }).unwrap();
+        } = formData;
+        const birthdate = `${birthdate_year}-${birthdate_month}-${birthdate_day}`;
 
-      if (res.message === 'Registration successful') {
-        await Keychain.setGenericPassword('authToken', res.token);
-        dispatch(setAuthenticated(true));
-        Alert.alert('Sign Up Successful');
-      } else {
-        setErrorMessage(res.message);
+        const res = await additionalInformation({
+          formData: {
+            fname,
+            lname,
+            gender,
+            password,
+            birthdate_day,
+            birthdate_month,
+            birthdate_year,
+          },
+          email: route.params.email,
+        }).unwrap();
+
+        if (res.message === 'Registration successful') {
+          await Keychain.setGenericPassword('authToken', res.token);
+          dispatch(setAuthenticated(true));
+          Alert.alert('Sign Up Successful');
+        } else {
+          setErrorMessage(res.message);
+        }
+      } catch (error) {
+        setErrorMessage('An error occurred. Please try again.');
+      } finally {
+        setIsInProgress(false);
       }
-    } catch (error) {
-      setErrorMessage('An error occurred. Please try again.');
-    } finally {
-      setIsInProgress(false);
     }
   };
 
+  const days = Array.from({length: 31}, (_, i) => (i + 1).toString());
+  const months = [
+    {label: 'Jan', value: '1'},
+    {label: 'Feb', value: '2'},
+    {label: 'Mar', value: '3'},
+    {label: 'Apr', value: '4'},
+    {label: 'May', value: '5'},
+    {label: 'Jun', value: '6'},
+    {label: 'Jul', value: '7'},
+    {label: 'Aug', value: '8'},
+    {label: 'Sep', value: '9'},
+    {label: 'Oct', value: '10'},
+    {label: 'Nov', value: '11'},
+    {label: 'Dec', value: '12'},
+  ];
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({length: 100}, (_, i) =>
+    (currentYear - i).toString(),
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Appbar.Header style={styles.appbar}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Back" />
-      </Appbar.Header>
-
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Sign-Up Information</Text>
 
         <TextInput
           label="First Name"
           value={formData.fname}
-          onChangeText={(text) => handleInputChange('fname', text)}
+          onChangeText={text => handleInputChange('fname', text)}
           style={styles.input}
-          mode="outlined"
           placeholder="Enter your first name"
         />
-        <HelperText type="error" visible={!formData.fname}>
-          First Name is required
+        <HelperText type="error" visible={!!errors.fname}>
+          {errors.fname}
         </HelperText>
 
         <TextInput
           label="Last Name"
           value={formData.lname}
-          onChangeText={(text) => handleInputChange('lname', text)}
+          onChangeText={text => handleInputChange('lname', text)}
           style={styles.input}
-          mode="outlined"
           placeholder="Enter your last name"
         />
+        <HelperText type="error" visible={!!errors.lname}>
+          {errors.lname}
+        </HelperText>
 
         <TextInput
           label="Password"
           secureTextEntry
           value={formData.password}
-          onChangeText={(text) => handleInputChange('password', text)}
+          onChangeText={text => handleInputChange('password', text)}
           style={styles.input}
-          mode="outlined"
           placeholder="Create a password"
         />
+        <HelperText type="error" visible={!!errors.password}>
+          {errors.password}
+        </HelperText>
 
-        <View style={styles.dateRow}>
-          <TextInput
-            label="Day"
-            value={formData.birthdate_day}
-            onChangeText={(text) => handleInputChange('birthdate_day', text)}
-            style={[styles.input, styles.dateInput]}
-            mode="outlined"
-            keyboardType="numeric"
-            placeholder="DD"
-          />
-          <TextInput
-            label="Month"
-            value={formData.birthdate_month}
-            onChangeText={(text) => handleInputChange('birthdate_month', text)}
-            style={[styles.input, styles.dateInput]}
-            mode="outlined"
-            keyboardType="numeric"
-            placeholder="MM"
-          />
-          <TextInput
-            label="Year"
-            value={formData.birthdate_year}
-            onChangeText={(text) => handleInputChange('birthdate_year', text)}
-            style={[styles.input, styles.dateInput]}
-            mode="outlined"
-            keyboardType="numeric"
-            placeholder="YYYY"
-          />
+        <Text style={styles.label}>Birthdate</Text>
+        <View style={styles.dateSection}>
+          <View style={styles.dateColumn}>
+            <Text style={styles.dateLabel}>Day</Text>
+            <Picker
+              selectedValue={formData.birthdate_day}
+              onValueChange={value => handleInputChange('birthdate_day', value)}
+              style={styles.picker}>
+              {days.map(day => (
+                <Picker.Item key={day} label={day} value={day} />
+              ))}
+            </Picker>
+          </View>
+          <View style={styles.dateColumn}>
+            <Text style={styles.dateLabel}>Month</Text>
+            <Picker
+              selectedValue={formData.birthdate_month}
+              onValueChange={value =>
+                handleInputChange('birthdate_month', value)
+              }
+              style={styles.picker}>
+              {months.map(({label, value}) => (
+                <Picker.Item key={value} label={label} value={value} />
+              ))}
+            </Picker>
+          </View>
+          <View style={styles.dateColumn}>
+            <Text style={styles.dateLabel}>Year</Text>
+            <Picker
+              selectedValue={formData.birthdate_year}
+              onValueChange={value =>
+                handleInputChange('birthdate_year', value)
+              }
+              style={styles.picker}>
+              {years.map(year => (
+                <Picker.Item key={year} label={year} value={year} />
+              ))}
+            </Picker>
+          </View>
         </View>
 
         <Text style={styles.label}>Gender</Text>
         <Picker
           selectedValue={formData.gender}
-          onValueChange={(value) => handleInputChange('gender', value)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Male"  value="male" />
+          onValueChange={value => handleInputChange('gender', value)}
+          style={styles.picker}>
+          <Picker.Item label="Male" value="male" />
           <Picker.Item label="Female" value="female" />
           <Picker.Item label="Others" value="others" />
         </Picker>
@@ -183,8 +269,7 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
           loading={isInProgress}
           disabled={isInProgress}
           style={styles.button}
-          labelStyle={{ color: 'white' }} // Set text color to white
-        >
+          labelStyle={{color: 'white'}}>
           {isInProgress ? 'Signing Up...' : 'Create account'}
         </Button>
 
@@ -195,8 +280,7 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
           action={{
             label: 'Dismiss',
             onPress: () => setErrorMessage(null),
-          }}
-        >
+          }}>
           {errorMessage}
         </Snackbar>
       </ScrollView>
@@ -207,55 +291,74 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#f5f7fa', // Light background
   },
   appbar: {
     backgroundColor: 'transparent',
-   
+    elevation: 0, // Removes shadow for clean look
   },
   container: {
     flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingHorizontal: 13,
+    paddingVertical: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+
+    elevation: 2, // Subtle shadow for card effect
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   title: {
-    fontSize: 26,
-    fontWeight: '600',
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333',
+    color: '#4A90E2', // Modern blue accent
   },
   input: {
     marginBottom: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f8ff',
+    borderRadius: 8,
   },
-  dateRow: {
+  dateSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
+    gap: 2,
   },
-  dateInput: {
+  dateColumn: {
     flex: 1,
-    marginHorizontal: 8,
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  dateLabel: {
+    fontSize: 14,
+    marginBottom: 5,
+    color: '#555',
   },
   button: {
     marginTop: 20,
     borderRadius: 8,
-    padding:2,
-    backgroundColor: '#2e2e4a',
-    alignSelf: 'center',  // This will center the button based on its content width
-  }
-  ,
+
+    backgroundColor: '#5569ff', // Professional blue tone
+    alignSelf: 'center',
+  },
   picker: {
-    height: 50,
     width: '100%',
-    marginBottom: 15,
- 
+    backgroundColor: '#f0f4f8',
+    borderRadius: 8,
+    elevation: 1,
   },
   label: {
     fontSize: 16,
     marginBottom: 10,
     color: '#333',
+    fontWeight: '500',
+  },
+  snackbar: {
+    backgroundColor: '#e74c3c', // Error red
   },
 });
 
