@@ -1,5 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import * as Keychain from 'react-native-keychain';
+interface LogoutResponse {
+  message: string;
+ 
+}
 
 // Define a service using a base URL and expected endpoints
 export const userAuthApi = createApi({
@@ -30,12 +34,13 @@ export const userAuthApi = createApi({
       }),
     }),
     // Log out user
-    logOutUser: builder.mutation({
+    logOutUser: builder.mutation<LogoutResponse, void>({
       query: () => ({
         url: '/logout',
         method: 'POST',
       }),
     }),
+    
   }),
 });
 
