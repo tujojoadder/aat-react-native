@@ -38,10 +38,11 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
     fname: '',
     lname: '',
     password: '',
+    birthdate: '',
   });
   const validateForm = () => {
     let valid = true;
-    let newErrors = {fname: '', lname: '', password: ''};
+    let newErrors = {fname: '', lname: '', password: '', birthdate: ''};
 
     // Validate first name
     if (!formData.fname.trim()) {
@@ -76,6 +77,36 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
       valid = false;
     } else if (formData.password.length > 50) {
       newErrors.password = 'Password must not exceed 50 characters.';
+      valid = false;
+    }
+
+    // Validate birthdate
+    // Validate birthdate
+    const {birthdate_day, birthdate_month, birthdate_year} = formData;
+    const selectedDate = new Date(
+      parseInt(birthdate_year, 10),
+      parseInt(birthdate_month, 10) - 1, // Months are 0-indexed in JavaScript Date
+      parseInt(birthdate_day, 10),
+    );
+    const today = new Date();
+    const fiveYearsAgo = new Date(
+      today.getFullYear() - 5,
+      today.getMonth(),
+      today.getDate(),
+    );
+
+    if (
+      selectedDate.getFullYear() !== parseInt(birthdate_year, 10) ||
+      selectedDate.getMonth() !== parseInt(birthdate_month, 10) - 1 ||
+      selectedDate.getDate() !== parseInt(birthdate_day, 10)
+    ) {
+      newErrors.birthdate = 'Invalid date selected.';
+      valid = false;
+    } else if (selectedDate > today) {
+      newErrors.birthdate = 'Birthdate cannot be in the future.';
+      valid = false;
+    } else if (selectedDate > fiveYearsAgo) {
+      newErrors.birthdate = 'You must be at least 5 years old.';
       valid = false;
     }
 
@@ -252,6 +283,9 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
             </Picker>
           </View>
         </View>
+        <HelperText type="error" visible={!!errors.birthdate}>
+          {errors.birthdate}
+        </HelperText>
 
         <Text style={styles.label}>Gender</Text>
         <Picker
