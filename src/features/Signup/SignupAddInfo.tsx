@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Alert, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  Alert,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -7,79 +14,94 @@ import { RootParamList } from '../../../RootNavigator';
 import { useAdditionalInformationMutation } from '../../services/userLogin';
 import { setAuthenticated } from '../Home/HomeSlice';
 import * as Keychain from 'react-native-keychain';
-import { TextInput, Button, Snackbar, Appbar } from 'react-native-paper';
+import {
+  TextInput,
+  Button,
+  Snackbar,
+  Appbar,
+  HelperText,
+} from 'react-native-paper';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { Picker } from '@react-native-picker/picker';
 
 type NavigationProp = NativeStackNavigationProp<RootParamList, 'signupAddInfo'>;
 
 const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
-
-    useEffect(() => {
-        GoogleSignin.configure({
-          webClientId:
-            '212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com',
-        });
-      }, []);
-
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com',
+    });
+  }, []);
 
   const navigation = useNavigation<NavigationProp>();
   const [formData, setFormData] = useState({
     fname: '',
     lname: '',
-    gender: 'male', // Default value
+    gender: 'male',
     password: '',
     birthdate_day: '',
     birthdate_month: '',
     birthdate_year: '',
   });
 
-  const [isInProgress, setIsInProgress] = useState(false); // For button disable during request
+  const [isInProgress, setIsInProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const dispatch = useDispatch();
   const [additionalInformation, { isSuccess, isError, data }] = useAdditionalInformationMutation();
 
-  // Handle form input change
   const handleInputChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
   };
 
   const handleSubmit = async () => {
-    setIsInProgress(true); // Start loading
+    setIsInProgress(true);
 
     try {
-      // Prepare the data to be sent
-      const { fname, lname, gender, password, birthdate_day, birthdate_month, birthdate_year } = formData;
+      const {
+        fname,
+        lname,
+        gender,
+        password,
+        birthdate_day,
+        birthdate_month,
+        birthdate_year,
+      } = formData;
       const birthdate = `${birthdate_year}-${birthdate_month}-${birthdate_day}`;
 
-      // Send data using RTK Query
       const res = await additionalInformation({
-        formData: { fname, lname, gender, password, birthdate_day, birthdate_month, birthdate_year },
+        formData: {
+          fname,
+          lname,
+          gender,
+          password,
+          birthdate_day,
+          birthdate_month,
+          birthdate_year,
+        },
         email: route.params.email,
       }).unwrap();
 
       if (res.message === 'Registration successful') {
-        // Store token and update authenticated state
         await Keychain.setGenericPassword('authToken', res.token);
         dispatch(setAuthenticated(true));
         Alert.alert('Sign Up Successful');
-
       } else {
-        setErrorMessage(res.message); // Show error message
+        setErrorMessage(res.message);
       }
     } catch (error) {
-      console.error('Sign-Up Error:', error);
       setErrorMessage('An error occurred. Please try again.');
     } finally {
-      setIsInProgress(false); // Reset loading state
+      setIsInProgress(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Adjust for iOS/Android
-    >
-    
+    <SafeAreaView style={styles.safeArea}>
+      <Appbar.Header style={styles.appbar}>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Back" />
+      </Appbar.Header>
+
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Sign-Up Information</Text>
 
@@ -89,14 +111,21 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
           onChangeText={(text) => handleInputChange('fname', text)}
           style={styles.input}
           mode="outlined"
+          placeholder="Enter your first name"
         />
+        <HelperText type="error" visible={!formData.fname}>
+          First Name is required
+        </HelperText>
+
         <TextInput
           label="Last Name"
           value={formData.lname}
           onChangeText={(text) => handleInputChange('lname', text)}
           style={styles.input}
           mode="outlined"
+          placeholder="Enter your last name"
         />
+
         <TextInput
           label="Password"
           secureTextEntry
@@ -104,9 +133,9 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
           onChangeText={(text) => handleInputChange('password', text)}
           style={styles.input}
           mode="outlined"
+          placeholder="Create a password"
         />
 
-        {/* Birthdate (Day, Month, Year) Inputs in One Row */}
         <View style={styles.dateRow}>
           <TextInput
             label="Day"
@@ -115,6 +144,7 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
             style={[styles.input, styles.dateInput]}
             mode="outlined"
             keyboardType="numeric"
+            placeholder="DD"
           />
           <TextInput
             label="Month"
@@ -123,6 +153,7 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
             style={[styles.input, styles.dateInput]}
             mode="outlined"
             keyboardType="numeric"
+            placeholder="MM"
           />
           <TextInput
             label="Year"
@@ -131,16 +162,20 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
             style={[styles.input, styles.dateInput]}
             mode="outlined"
             keyboardType="numeric"
+            placeholder="YYYY"
           />
         </View>
 
-        <TextInput
-          label="Gender"
-          value={formData.gender}
-          onChangeText={(text) => handleInputChange('gender', text)}
-          style={styles.input}
-          mode="outlined"
-        />
+        <Text style={styles.label}>Gender</Text>
+        <Picker
+          selectedValue={formData.gender}
+          onValueChange={(value) => handleInputChange('gender', value)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Male"  value="male" />
+          <Picker.Item label="Female" value="female" />
+          <Picker.Item label="Other" value="others" />
+        </Picker>
 
         <Button
           mode="contained"
@@ -148,8 +183,9 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
           loading={isInProgress}
           disabled={isInProgress}
           style={styles.button}
+          labelStyle={{ color: 'white' }} // Set text color to white
         >
-          {isInProgress ? 'Signing Up...' : 'Submit'}
+          {isInProgress ? 'Signing Up...' : 'Create account'}
         </Button>
 
         <Snackbar
@@ -164,37 +200,62 @@ const SignupAddInfo = ({ route }: { route: { params: { email: string } } }) => {
           {errorMessage}
         </Snackbar>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f8f8f8',
+  },
+  appbar: {
+    backgroundColor: 'transparent',
+   
+  },
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
     paddingHorizontal: 20,
-    paddingBottom: 30, // To ensure there is space at the bottom when the keyboard is visible
+    paddingVertical: 30,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '600',
     marginBottom: 20,
     textAlign: 'center',
+    color: '#333',
   },
   input: {
     marginBottom: 15,
+    backgroundColor: '#fff',
   },
   dateRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    marginBottom: 20,
   },
   dateInput: {
     flex: 1,
-    marginHorizontal: 5,
+    marginHorizontal: 8,
   },
   button: {
     marginTop: 20,
+    borderRadius: 8,
+    padding:2,
+    backgroundColor: '#2e2e4a',
+    alignSelf: 'center',  // This will center the button based on its content width
+  }
+  ,
+  picker: {
+    height: 50,
+    width: '100%',
+    marginBottom: 15,
+ 
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#333',
   },
 });
 

@@ -14,7 +14,7 @@ const theme = {
   colors: {
     ...DefaultTheme.colors,
     onPrimary: 'yellow',
-    primary: 'red',
+    primary: '#1d1e30',
     onSurface: 'black',
     onBackground: 'darkgray',
   },
