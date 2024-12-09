@@ -11,7 +11,7 @@ import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootParamList} from '../../../RootNavigator';
-import {useAdditionalInformationMutation} from '../../services/userLogin';
+import {useAdditionalInformationMutation} from '../../services/userLoginApi';
 import {setAuthenticated} from '../Home/HomeSlice';
 import * as Keychain from 'react-native-keychain';
 import {
@@ -141,7 +141,6 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
   const handleSubmit = async () => {
     if (validateForm()) {
       setIsInProgress(true);
-
       try {
         const {
           fname,
@@ -208,7 +207,6 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Sign-Up Information</Text>
-
         <TextInput
           label="First Name"
           value={formData.fname}
@@ -219,7 +217,6 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
         <HelperText type="error" visible={!!errors.fname}>
           {errors.fname}
         </HelperText>
-
         <TextInput
           label="Last Name"
           value={formData.lname}
@@ -230,7 +227,6 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
         <HelperText type="error" visible={!!errors.lname}>
           {errors.lname}
         </HelperText>
-
         <TextInput
           label="Password"
           secureTextEntry
@@ -242,7 +238,6 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
         <HelperText type="error" visible={!!errors.password}>
           {errors.password}
         </HelperText>
-
         <Text style={styles.label}>Birthdate</Text>
         <View style={styles.dateSection}>
           <View style={styles.dateColumn}>
@@ -286,7 +281,6 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
         <HelperText type="error" visible={!!errors.birthdate}>
           {errors.birthdate}
         </HelperText>
-
         <Text style={styles.label}>Gender</Text>
         <Picker
           selectedValue={formData.gender}
@@ -296,7 +290,6 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
           <Picker.Item label="Female" value="female" />
           <Picker.Item label="Others" value="others" />
         </Picker>
-
         <Button
           mode="contained"
           onPress={handleSubmit}
@@ -306,7 +299,7 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
           labelStyle={{color: 'white'}}>
           {isInProgress ? 'Signing Up...' : 'Create account'}
         </Button>
-
+        //Show error message
         <Snackbar
           visible={!!errorMessage}
           onDismiss={() => setErrorMessage(null)}

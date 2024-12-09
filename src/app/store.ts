@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { profileApi } from '../services/profileApi';
 import { groupsApi } from './../services/groupsApi';
 import { homeSlice } from '../features/Home/HomeSlice';
-import { userLoginApi } from '../services/userLogin';
+import { userLoginApi } from '../services/userLoginApi';
 import { userAuthApi } from '../services/userAuthApi';
 
 // Persist configuration

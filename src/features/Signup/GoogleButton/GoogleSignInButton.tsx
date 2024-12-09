@@ -6,7 +6,7 @@ import {
   GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
 import * as Keychain from 'react-native-keychain'; // Import Keychain for storing tokens
-import {useGoogleSignInMutation} from '../../../services/userLogin';
+import {useGoogleSignInMutation} from '../../../services/userLoginApi';
 import { setAuthenticated } from '../../Home/HomeSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -80,18 +80,7 @@ export default function GoogleSignInButton() {
     setIsInProgress(false); // Reset progress state after attempt
   };
 
-  const signOut = async () => {
-    try {
-      await GoogleSignin.signOut(); // Attempt to sign out
-      Alert.alert('Sign-Out Successful', 'You have successfully signed out.');
-    } catch (error) {
-      console.error('Google Sign-Out Error:', error);
-      Alert.alert(
-        'Sign-Out Error',
-        'An error occurred while signing out. Please try again.',
-      );
-    }
-  };
+
 
   return (
     <View>
@@ -103,7 +92,7 @@ export default function GoogleSignInButton() {
         disabled={isInProgress} // Disable button while in progress
       />
       <View style={{marginVertical: 10}} />
-      <Button title="Sign Out" onPress={signOut} />
+   
     </View>
   );
 }
