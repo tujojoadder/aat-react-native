@@ -299,7 +299,7 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
           labelStyle={{color: 'white'}}>
           {isInProgress ? 'Signing Up...' : 'Create account'}
         </Button>
-        //Show error message
+        {/* //Show error message */}
         <Snackbar
           visible={!!errorMessage}
           onDismiss={() => setErrorMessage(null)}
@@ -318,7 +318,7 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f5f7fa', // Light background
+    backgroundColor: '#f5f7fa',/*  // Light background */
   },
   appbar: {
     backgroundColor: 'transparent',

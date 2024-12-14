@@ -36,11 +36,11 @@ export default function GoogleSignInButton() {
       // Send the Google ID token to the backend for verification and to get an API token
       const res = await googleSignIn(userInfo.data?.idToken); // Send the ID token
       console.log(res);
-      if (res.data.message=='have account') {
+      if (res?.data?.message=='have account') {
         // Store the token securely in Keychain
         await Keychain.setGenericPassword('authToken', res.data.token);
         dispatch(setAuthenticated(true));
-      }else if(res.data.message=='no account'){
+      }else if(res?.data?.message=='no account'){
         navigation.navigate('signupAddInfo', { email: res.data.email });
       }
       
