@@ -81,12 +81,30 @@ export const userLoginApi = createApi({
         };
       },
     }),
+
+
+//send email to forgot password
+
+forgotPassword: builder.mutation({
+  query: (user) => {
+    return {
+      url: "forgotpassword",
+      method: "POST",
+      body: user,
+    };
+  },
+}),
+
+
+
+
   }),
 });
 
 // Export hooks for usage in functional components
 export const {
   useGoogleSignInMutation,
+  useForgotPasswordMutation,
   useAdditionalInformationMutation,
   useLoginMutation,
 } = userLoginApi;

@@ -7,17 +7,17 @@ import {
 } from '@react-native-google-signin/google-signin';
 import * as Keychain from 'react-native-keychain'; // Import Keychain for storing tokens
 import {useGoogleSignInMutation} from '../../../services/userLoginApi';
-import { setAuthenticated } from '../../Home/HomeSlice';
-import { useDispatch } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootParamList } from '../../../../RootNavigator';
+import {setAuthenticated} from '../../Home/HomeSlice';
+import {useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootParamList} from '../../../../RootNavigator';
 
 type NavigationProp = NativeStackNavigationProp<RootParamList, 'signupAddInfo'>; // Type for navigating to 'signupAddInfo'
 
 export default function GoogleSignInButton() {
   const navigation = useNavigation<NavigationProp>(); // Get navigation instance
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const [isInProgress, setIsInProgress] = useState(false); // State to track sign-in progress
   const [googleSignIn, {isSuccess, isError, data}] = useGoogleSignInMutation(); // RTK Query hook for Google Sign-In API
 
@@ -36,27 +36,20 @@ export default function GoogleSignInButton() {
       // Send the Google ID token to the backend for verification and to get an API token
       const res = await googleSignIn(userInfo.data?.idToken); // Send the ID token
       console.log(res);
-      if (res?.data?.message=='have account') {
+      if (res?.data?.message == 'have account') {
         // Store the token securely in Keychain
         await Keychain.setGenericPassword('authToken', res.data.token);
         dispatch(setAuthenticated(true));
-      }else if(res?.data?.message=='no account'){
-        navigation.navigate('signupAddInfo', { email: res.data.email });
-      }
-      
-      else {
-        console.log(res.error);
+      } else if (res?.data?.message == 'no account') {
+        navigation.navigate('signupAddInfo', {email: res.data.email});
+      } else {
+        console.log(res);
       }
 
       // Store token with a key (e.g., 'authToken')
       /* 
       console.log('Google User Info:', userInfo); */
-
-      Alert.alert('Sign-In Successful');
     } catch (error: any) {
-      //deafault is unknown data type for try catch
-      console.error('Google Sign-In Error:', error);
-
       // Handle errors based on their status codes
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         Alert.alert('Sign-In Cancelled', 'You cancelled the sign-in process.');
@@ -80,11 +73,9 @@ export default function GoogleSignInButton() {
     setIsInProgress(false); // Reset progress state after attempt
   };
 
-
-
   return (
     <View>
-      <Text style={{fontSize: 20, marginBottom: 10}}>Google Sign-In</Text>
+      <Text style={{fontSize: 20, marginTop: 20,marginBottom:15}}>Signup with</Text>
       <GoogleSigninButton
         size={GoogleSigninButton.Size.Wide}
         color={GoogleSigninButton.Color.Light}
@@ -92,7 +83,6 @@ export default function GoogleSignInButton() {
         disabled={isInProgress} // Disable button while in progress
       />
       <View style={{marginVertical: 10}} />
-   
     </View>
   );
 }

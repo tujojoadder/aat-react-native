@@ -10,11 +10,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from './src/app/store';
 import {setAuthenticated} from './src/features/Home/HomeSlice';
 import SignupAddInfo from './src/features/Signup/SignupAddInfo';
+import Forgotpassword from './src/features/Signup/Forgotpassword/Forgotpassword';
 
 export type RootParamList = {
   home: undefined; // No parameters for the "home" screen
   login: undefined; // No parameters for the "login" screen,
   signupAddInfo: {email:string};
+  forgotpassword:undefined;
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -53,7 +55,7 @@ export default function RootNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Navigator  screenOptions={{headerShown: false,animation: 'fade'}}>
         {isAuthenticated ? (
           // If authenticated, show home screen
 
@@ -66,6 +68,7 @@ export default function RootNavigator() {
           <>
             <Stack.Screen name="login" component={Login} />
             <Stack.Screen name="signupAddInfo" component={SignupAddInfo} />
+            <Stack.Screen  name="forgotpassword" component={Forgotpassword} />
           </>
         )}
       </Stack.Navigator>

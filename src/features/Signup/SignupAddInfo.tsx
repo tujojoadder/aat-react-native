@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     color: '#4A90E2', // Modern blue accent
   },
   input: {
-    marginBottom: 15,
+   
     backgroundColor: '#f8f8ff',
     borderRadius: 8,
   },

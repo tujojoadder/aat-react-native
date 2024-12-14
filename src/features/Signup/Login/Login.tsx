@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, ScrollView, SafeAreaView } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   TextInput,
@@ -33,7 +40,7 @@ export default function Login({ navigation }: LoginProps) {
   const [errors, setErrors] = useState({ email: '', password: '' });
   const [token, setToken] = useState<string | null>(null);
 
-  const [login, { isLoading, isSuccess, isError, error }] = useLoginMutation();
+  const [login, { isLoading, isError, error }] = useLoginMutation();
 
   // Normal login logic
   const handleLogin = async () => {
@@ -70,18 +77,6 @@ export default function Login({ navigation }: LoginProps) {
     fetchToken();
   }, []);
 
-  // Sign out logic
-  const handleSignOut = async () => {
-    try {
-      await GoogleSignin.signOut();
-      await Keychain.resetGenericPassword();
-      setToken(null);
-      Alert.alert('Signed out', 'You have been signed out successfully');
-    } catch (error) {
-      console.error('Sign out error', error);
-    }
-  };
-
   // Form validation
   const validateForm = () => {
     let valid = true;
@@ -116,13 +111,16 @@ export default function Login({ navigation }: LoginProps) {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Title style={styles.title}>Login</Title>
+        <Title style={styles.title}>Welcome Back</Title>
+        <Text style={styles.subtitle}>Login to your account</Text>
+        
         <TextInput
           label="Email"
           value={email}
           onChangeText={setEmail}
           mode="outlined"
           style={styles.input}
+          placeholder="Enter your email"
         />
         <HelperText type="error" visible={!!errors.email}>
           {errors.email}
@@ -135,10 +133,23 @@ export default function Login({ navigation }: LoginProps) {
           mode="outlined"
           secureTextEntry
           style={styles.input}
+          placeholder="Enter your password"
         />
         <HelperText type="error" visible={!!errors.password}>
           {errors.password}
         </HelperText>
+
+        <TouchableOpacity
+          onPress={() =>
+            
+            
+            
+            navigation.navigate('forgotpassword')
+
+          } // Placeholder navigation
+          style={styles.forgotPasswordContainer}>
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        </TouchableOpacity>
 
         <Button
           mode="contained"
@@ -153,13 +164,9 @@ export default function Login({ navigation }: LoginProps) {
           <Text style={styles.errorText}>{getErrorMessage(error)}</Text>
         )}
 
-        {token && <Text style={styles.tokenText}>Token: {token}</Text>}
-
         <GoogleSignInButton />
 
-        <Button mode="outlined" onPress={handleSignOut} style={styles.button}>
-          Sign Out
-        </Button>
+        
       </ScrollView>
     </SafeAreaView>
   );
@@ -168,32 +175,54 @@ export default function Login({ navigation }: LoginProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f9f9f9',
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 16,
     textAlign: 'center',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6b6b6b',
+    textAlign: 'center',
+    marginBottom: 24,
   },
   input: {
+    margin: 0,
+  },
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end',
     marginBottom: 16,
   },
+  forgotPasswordText: {
+    color: '#007bff',
+    fontSize: 14,
+    fontWeight: '500',
+  },
   button: {
-    marginTop: 8,
+    marginTop: 12,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  footerText: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: '#6b6b6b',
+  },
+  signUpText: {
+    color: '#007bff',
+    fontWeight: 'bold',
   },
   errorText: {
     color: 'red',
     textAlign: 'center',
     marginTop: 8,
-  },
-  tokenText: {
-    marginTop: 20,
-    textAlign: 'center',
-    color: 'green',
   },
 });
