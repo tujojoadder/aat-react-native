@@ -6,6 +6,7 @@ import {setAuthenticated} from './HomeSlice';
 import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {useLogOutUserMutation} from '../../services/userAuthApi';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -31,6 +32,9 @@ export default function Home() {
 
   const handlePostLogoutActions = async () => {
     try {
+      // Sign out from Google
+       await GoogleSignin.signOut();
+       // If backend logout was successful, clear stored credentials
       const success = await Keychain.resetGenericPassword(); // Deletes the credentials
       if (success) {
         dispatch(setAuthenticated(false)); // Update Redux state
@@ -55,7 +59,7 @@ export default function Home() {
         <Appbar.BackAction onPress={() => navigation.goBack()} />
       </Appbar.Header>
       <Text>Home</Text>
-      <Button onPress={showDialog}>Delete</Button>
+      <Button onPress={showDialog}>Logout</Button>
 
       {/* Dialog for confirmation */}
       <Portal>

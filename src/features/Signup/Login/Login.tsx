@@ -83,6 +83,18 @@ export default function Login({ navigation }: LoginProps) {
     fetchToken();
   }, []);
 
+ // Sign out logic
+  const handleSignOut = async () => {
+    try {
+      await GoogleSignin.signOut();
+      await Keychain.resetGenericPassword();
+      setToken(null);
+      Alert.alert('Signed out', 'You have been signed out successfully');
+    } catch (error) {
+      console.error('Sign out error', error);
+    }
+  };
+
   // Form validation
   const validateForm = () => {
     let valid = true;
