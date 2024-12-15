@@ -63,8 +63,8 @@ export default function RootNavigator() {
             <Stack.Screen name="home" component={Home} />
           </>
         ) : (
-          // If not authenticated, show login screen
 
+          // If not authenticated, show login screen
           <>
             <Stack.Screen name="login" component={Login} />
             <Stack.Screen name="signupAddInfo" component={SignupAddInfo} />
