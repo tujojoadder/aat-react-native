@@ -9,7 +9,10 @@ import {
 } from 'react-native';
 import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 import {RootParamList} from '../../../RootNavigator';
 import {useAdditionalInformationMutation} from '../../services/userLoginApi';
 import {setAuthenticated} from '../Home/HomeSlice';
@@ -24,15 +27,25 @@ import {
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {Picker} from '@react-native-picker/picker';
 
-type NavigationProp = NativeStackNavigationProp<RootParamList, 'signupAddInfo'>;
+type NavigationProp = NativeStackScreenProps<RootParamList, 'signupAddInfo'>;
 
-const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
+const SignupAddInfo = ({navigation, route}: NavigationProp) => {
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
         '212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com',
     });
   }, []);
+
+  const [formData, setFormData] = useState({
+    fname: '',
+    lname: '',
+    gender: 'male',
+    password: '',
+    birthdate_day: '1',
+    birthdate_month: '1',
+    birthdate_year: '2000',
+  });
 
   const [errors, setErrors] = useState<any>({
     fname: '',
@@ -81,8 +94,8 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
     }
 
     // Validate birthdate
-    // Validate birthdate
     const {birthdate_day, birthdate_month, birthdate_year} = formData;
+    //make the date integer becase paper take all input as string
     const selectedDate = new Date(
       parseInt(birthdate_year, 10),
       parseInt(birthdate_month, 10) - 1, // Months are 0-indexed in JavaScript Date
@@ -90,10 +103,12 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
     );
     const today = new Date();
     const fiveYearsAgo = new Date(
-      today.getFullYear() - 5,
+      today.getFullYear() - 5, //5years ago date
       today.getMonth(),
       today.getDate(),
     );
+
+    //selectedDate.getDate()--> If you enter February 30, JavaScript will adjust it to March 2 because February only has 28 or 29 days
 
     if (
       selectedDate.getFullYear() !== parseInt(birthdate_year, 10) ||
@@ -114,17 +129,6 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
     return valid;
   };
 
-  const navigation = useNavigation<NavigationProp>();
-  const [formData, setFormData] = useState({
-    fname: '',
-    lname: '',
-    gender: 'male',
-    password: '',
-    birthdate_day: '1',
-    birthdate_month: '1',
-    birthdate_year: '2000',
-  });
-
   const [isInProgress, setIsInProgress] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const dispatch = useDispatch();
@@ -142,27 +146,8 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
     if (validateForm()) {
       setIsInProgress(true);
       try {
-        const {
-          fname,
-          lname,
-          gender,
-          password,
-          birthdate_day,
-          birthdate_month,
-          birthdate_year,
-        } = formData;
-        const birthdate = `${birthdate_year}-${birthdate_month}-${birthdate_day}`;
-
         const res = await additionalInformation({
-          formData: {
-            fname,
-            lname,
-            gender,
-            password,
-            birthdate_day,
-            birthdate_month,
-            birthdate_year,
-          },
+          formData,
           email: route.params.email,
         }).unwrap();
 
@@ -207,6 +192,7 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Sign-Up Information</Text>
+        
         <TextInput
           label="First Name"
           value={formData.fname}
@@ -217,6 +203,8 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
         <HelperText type="error" visible={!!errors.fname}>
           {errors.fname}
         </HelperText>
+
+
         <TextInput
           label="Last Name"
           value={formData.lname}
@@ -318,7 +306,7 @@ const SignupAddInfo = ({route}: {route: {params: {email: string}}}) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f5f7fa',/*  // Light background */
+    backgroundColor: '#f5f7fa' /*  // Light background */,
   },
   appbar: {
     backgroundColor: 'transparent',
@@ -345,7 +333,6 @@ const styles = StyleSheet.create({
     color: '#4A90E2', // Modern blue accent
   },
   input: {
-   
     backgroundColor: '#f8f8ff',
     borderRadius: 8,
   },

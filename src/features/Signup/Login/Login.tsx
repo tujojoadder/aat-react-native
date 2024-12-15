@@ -56,7 +56,13 @@ export default function Login({ navigation }: LoginProps) {
           Alert.alert('Error', result.message);
         }
       } catch (err: any) {
-        Alert.alert('Login failed', err.data.message);
+        if (err.data) {
+          // Server-side error (err.data exists)
+          Alert.alert('Login failed', err.data.message); 
+        } else {
+          // Client-side error (e.g., Network error)
+          Alert.alert('Login failed', err.message || 'An unexpected error occurred.');
+        }
       }
     }
   };

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, SafeAreaView} from 'react-native';
 import {
   TextInput,
   Button,
@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Title,
   Paragraph,
+  Appbar, // Import Appbar from react-native-paper
 } from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import {useForgotPasswordMutation} from '../../../services/userLoginApi';
@@ -41,6 +42,7 @@ const ForgotPassword = ({navigation}: LoginProps) => {
         setSnackbarVisible(true);
         setLinkSent(true); // Update state when the link is sent
       } else {
+        console.log(response.error);
         setSnackbarMessage('Failed to send email, please try again.');
         setSnackbarVisible(true);
       }
@@ -59,65 +61,74 @@ const ForgotPassword = ({navigation}: LoginProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.formContainer}>
-        <Title style={styles.header}>Forgot Password</Title>
+    <SafeAreaView style={{flex:1, backgroundColor: '#f8f8f8',}}>
+      {/* Top Appbar with Back button */}
+      <Appbar.Header style={{backgroundColor: '#f8f8f8'}} >
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        
+      </Appbar.Header>
 
-        {/* Conditional message based on linkSent state */}
-        <Paragraph
-          style={[
-            styles.subHeader,
-            linkSent && {color: 'red'}, // Set the color to red when linkSent is true
-          ]}>
-          {linkSent
-            ? 'Go to your email and click the link to reset your password.'
-            : 'Reset Password link sent to your email'}
-        </Paragraph>
+      {/* Main Content */}
+      <View style={styles.container}>
+        <View style={styles.formContainer}>
+          <Title style={styles.header}>Forgot Password</Title>
 
-        {!linkSent ? (
-          <TextInput
-            label="Email address"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            style={styles.input}
-          />
-        ) : null}
+          {/* Conditional message based on linkSent state */}
+          <Paragraph
+            style={[
+              styles.subHeader,
+              linkSent && {color: 'red'}, // Set the color to red when linkSent is true
+            ]}>
+            {linkSent
+              ? 'Go to your email and click the link to reset your password.'
+              : 'Reset Password link sent to your email'}
+          </Paragraph>
 
-        <Button
-          mode="contained"
-          onPress={handleSubmission}
-          disabled={isLoading}
-          style={styles.button}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#ffffff" />
-          ) : linkSent ? (
-            'Send one more time' // Text changes after link is sent
-          ) : (
-            'Send link to email'
-          )}
-        </Button>
+          {!linkSent ? (
+            <TextInput
+              label="Email address"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              style={styles.input}
+            />
+          ) : null}
 
-        {/* Back to Login button appears if the link is sent */}
-        {linkSent && (
           <Button
-            mode="text"
-            onPress={handleBackToLogin}
-            style={styles.backButton}>
-            Back to Login Page
+            mode="contained"
+            onPress={handleSubmission}
+            disabled={isLoading}
+            style={styles.button}>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : linkSent ? (
+              'Send one more time' // Text changes after link is sent
+            ) : (
+              'Send link to email'
+            )}
           </Button>
-        )}
-      </View>
 
-      {/* Snackbar at the bottom center */}
-      <Snackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        duration={3000}
-        style={styles.snackbar}>
-        {snackbarMessage}
-      </Snackbar>
-    </View>
+          {/* Back to Login button appears if the link is sent */}
+          {linkSent && (
+            <Button
+              mode="text"
+              onPress={handleBackToLogin}
+              style={styles.backButton}>
+              Back to Login Page
+            </Button>
+          )}
+        </View>
+
+        {/* Snackbar at the bottom center */}
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={3000}
+          style={styles.snackbar}>
+          {snackbarMessage}
+        </Snackbar>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -126,7 +137,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8f8f8',
+   
     padding: 20,
   },
   formContainer: {
