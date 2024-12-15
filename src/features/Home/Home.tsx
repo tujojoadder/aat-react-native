@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, SafeAreaView} from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import {Appbar, Button, Dialog, Portal, Paragraph} from 'react-native-paper';
 import {setAuthenticated} from './HomeSlice';
 import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {useLogOutUserMutation} from '../../services/userAuthApi';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -33,8 +33,8 @@ export default function Home() {
   const handlePostLogoutActions = async () => {
     try {
       // Sign out from Google
-       await GoogleSignin.signOut();
-       // If backend logout was successful, clear stored credentials
+      await GoogleSignin.signOut();
+      // If backend logout was successful, clear stored credentials
       const success = await Keychain.resetGenericPassword(); // Deletes the credentials
       if (success) {
         dispatch(setAuthenticated(false)); // Update Redux state
@@ -54,10 +54,10 @@ export default function Home() {
   }, [isSuccess]);
 
   return (
-    <View>
-      <Appbar.Header>
+    <SafeAreaView>
+      {/*    <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-      </Appbar.Header>
+      </Appbar.Header> */}
       <Text>Home</Text>
       <Button onPress={showDialog}>Logout</Button>
 
@@ -80,6 +80,6 @@ export default function Home() {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-    </View>
+    </SafeAreaView>
   );
 }
