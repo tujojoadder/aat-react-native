@@ -30,6 +30,19 @@ import {Picker} from '@react-native-picker/picker';
 type NavigationProp = NativeStackScreenProps<RootParamList, 'signupAddInfo'>;
 
 const SignupAddInfo = ({navigation, route}: NavigationProp) => {
+  const navigations = useNavigation();
+  const handleBackAction = async () => {
+    try {
+      // Sign out from Google
+      await GoogleSignin.signOut();
+      console.log('User signed out from Google');
+      // Navigate back
+      navigations.goBack();
+    } catch (error) {
+      console.error('Error during sign out:', error);
+    }
+  };
+
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
@@ -188,11 +201,14 @@ const SignupAddInfo = ({navigation, route}: NavigationProp) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+     <Appbar.Header style={{backgroundColor:'white'}}>
+      <Appbar.BackAction onPress={() => {navigation.goBack()}} />
+      <Appbar.Content  title="Sign-Up Information" />
+    </Appbar.Header>
       <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Sign-Up Information</Text>
-        
+     
         <TextInput
           label="First Name"
           value={formData.fname}

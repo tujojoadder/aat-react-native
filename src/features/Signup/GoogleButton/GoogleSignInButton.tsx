@@ -30,6 +30,9 @@ export default function GoogleSignInButton() {
   const signIn = async () => {
     setIsInProgress(true); // Set progress to true before starting
     try {
+      //at first signout
+      await GoogleSignin.signOut();
+      
       await GoogleSignin.hasPlayServices(); // Check Play Services
       const userInfo = await GoogleSignin.signIn(); // Attempt to sign in
 
