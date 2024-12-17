@@ -11,9 +11,10 @@ import {RootState} from './src/app/store';
 import {setAuthenticated} from './src/features/Home/HomeSlice';
 import SignupAddInfo from './src/features/Signup/SignupAddInfo';
 import Forgotpassword from './src/features/Signup/Forgotpassword/Forgotpassword';
+import MainScreen from './src/features/MainScreen';
 
 export type RootParamList = {
-  home: undefined; // No parameters for the "home" screen
+  main: undefined; // No parameters for the "home" screen
   login: undefined; // No parameters for the "login" screen,
   signupAddInfo: {email:string};
   forgotpassword:undefined;
@@ -60,7 +61,7 @@ export default function RootNavigator() {
           // If authenticated, show home screen
 
           <>
-            <Stack.Screen name="home" component={Home} />
+            <Stack.Screen name="main" component={MainScreen} />
           </>
         ) : (
 
