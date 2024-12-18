@@ -1,6 +1,6 @@
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -13,16 +13,15 @@ import {
   NativeScrollEvent,
   Easing,
 } from 'react-native';
-import { Appbar, Button, Dialog, Paragraph, Portal } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import {Appbar, Button, Dialog, Paragraph, Portal} from 'react-native-paper';
+import {useDispatch} from 'react-redux';
 import * as Keychain from 'react-native-keychain';
-import { useLogOutUserMutation } from '../../services/userAuthApi';
-import { setAuthenticated } from './HomeSlice';
+import {useLogOutUserMutation} from '../../services/userAuthApi';
+import {setAuthenticated} from './HomeSlice';
 
-const { height } = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 export default function Home() {
-  
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -96,15 +95,6 @@ export default function Home() {
     prevScrollY.current = currentScrollY;
   };
 
-
-
-
-
-
-
-
-
-
   const [logOutUser, {isLoading, isSuccess, isError, error}] =
     useLogOutUserMutation();
 
@@ -146,7 +136,7 @@ export default function Home() {
   }, [isSuccess]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <StatusBar backgroundColor="white" barStyle="dark-content" translucent />
 
       {/* Animated AppBar */}
@@ -154,11 +144,10 @@ export default function Home() {
         style={[
           styles.appBar,
           {
-            transform: [{ translateY: appBarOffset }],
+            transform: [{translateY: appBarOffset}],
             opacity: appBarOpacity,
           },
-        ]}
-      >
+        ]}>
         <Appbar.Header style={styles.appBarHeader}>
           <Text style={styles.title}>aat</Text>
           <Appbar.Action icon="magnify" color="black" onPress={() => {}} />
@@ -168,40 +157,51 @@ export default function Home() {
 
       {/* Scrollable Content */}
       <Animated.ScrollView
-        contentContainerStyle={{ paddingTop: 100 }}
+        contentContainerStyle={{paddingTop: 100}}
         onScroll={handleScroll}
-        scrollEventThrottle={16}
-      >
-        <View >
-
-        
-
-
+        scrollEventThrottle={16}>
+        <View>
           <Text style={styles.content}>
-     Lorem ipsum dolor sit amet consectetur adipisicing elit. Et maiores facere reprehenderit debitis fuga, numquam molestiae. Eos maxime dolore obcaecati cumque quisquam voluptatem blanditiis! Explicabo recusandae earum aperiam eos quae dignissimos odit illum quis exercitationem corrupti laudantium, autem sint blanditiis, optio ab dolores reprehenderit voluptas odio doloribus aliquam porro. Consequuntur quo id dolores sunt earum quas porro veritatis in numquam? Quidem neque maxime quae eos ullam praesentium vitae sint aut iste velit soluta quam voluptas eius hic vero tempore temporibus fugit voluptatum veniam cum minus, omnis ab provident illo. Soluta mollitia similique esse blanditiis quidem quos harum nisi. Iste perspiciatis fugit, deserunt ut temporibus officiis assumenda harum facere quod. Architecto a ratione quasi sunt quod. Libero neque odio atque. Laudantium, saepe voluptatibus harum, eius, quidem alias ullam error? Velit in explicabo veniam sapiente blanditiis. Porro dolorum amet iure officiis, app bar behavior.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Et maiores
+            facere reprehenderit debitis fuga, numquam molestiae. Eos maxime
+            dolore obcaecati cumque quisquam voluptatem blanditiis! Explicabo
+            recusandae earum aperiam eos quae dignissimos odit illum quis
+            exercitationem corrupti laudantium, autem sint blanditiis, optio ab
+            dolores reprehenderit voluptas odio doloribus aliquam porro.
+            Consequuntur quo id dolores sunt earum quas porro veritatis in
+            numquam? Quidem neque maxime quae eos ullam praesentium vitae sint
+            aut iste velit soluta quam voluptas eius hic vero tempore temporibus
+            fugit voluptatum veniam cum minus, omnis ab provident illo. Soluta
+            mollitia similique esse blanditiis quidem quos harum nisi. Iste
+            perspiciatis fugit, deserunt ut temporibus officiis assumenda harum
+            facere quod. Architecto a ratione quasi sunt quod. Libero neque odio
+            atque. Laudantium, saepe voluptatibus harum, eius, quidem alias
+            ullam error? Velit in explicabo veniam sapiente blanditiis. Porro
+            dolorum amet iure officiis, app bar behavior.
           </Text>
-          <Button mode="outlined"  onPress={showDialog}>Delete</Button>
+          <Button mode="outlined" onPress={showDialog}>
+            Delete
+          </Button>
 
-{/* Dialog for confirmation */}
-<Portal>
-  <Dialog visible={visible} onDismiss={hideDialog}>
-    <Dialog.Title>Confirm Logout</Dialog.Title>
-    <Dialog.Content>
-      <Paragraph>Are you sure you want to logout?</Paragraph>
-    </Dialog.Content>
-    <Dialog.Actions>
-      <Button onPress={hideDialog}>Cancel</Button>
-      <Button
-        onPress={() => {
-          handleLogout();
-          hideDialog();
-        }}>
-        Logout
-      </Button>
-    </Dialog.Actions>
-  </Dialog>
-</Portal>
-
+          {/* Dialog for confirmation */}
+          <Portal>
+            <Dialog visible={visible} onDismiss={hideDialog}>
+              <Dialog.Title>Confirm Logout</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>Are you sure you want to logout?</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={hideDialog}>Cancel</Button>
+                <Button
+                  onPress={() => {
+                    handleLogout();
+                    hideDialog();
+                  }}>
+                  Logout
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </View>
       </Animated.ScrollView>
     </SafeAreaView>
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
   },
   appBarHeader: {
     backgroundColor: 'transparent',
