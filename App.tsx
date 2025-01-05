@@ -19,8 +19,9 @@ import ImageFlip from './src/features/Test/ImageFlip';
 import GestureAnimation from './src/features/Test/GestureAnimation';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import LoveAnimation from './src/features/Test/LoveAnimation';
-import SearchAnimation from './src/features/Test/SearchAnimation';
+
 import Home from './src/features/Home/Home';
+import SearchAnimation from './src/features/Test/SearchAnimation';
 const theme = {
   ...DefaultTheme,
   colors: {
@@ -55,10 +56,10 @@ export default function App() {
           {/* <ImageFlip/> */}
          {/*  <SearchAnimation/> */}
         {/* <GestureAnimation/> */}
-          <LoveAnimation/>
+          {/* <LoveAnimation/> */}
 
 
-          {/* <RootNavigator /> */}
+          <RootNavigator />
         </PersistGate>
       </ReduxProvider>
     </PaperProvider>
