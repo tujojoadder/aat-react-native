@@ -9,6 +9,18 @@ import {persistor, store} from './src/app/store';
 import {PersistGate} from 'redux-persist/integration/react';
 import {View} from 'react-native';
 import RootNavigator from './RootNavigator';
+import Animation from './src/features/Test/Animation';
+import AnimationStyle from './src/features/Test/AnimationStyle';
+import AnimationImage from './src/features/Test/AnimationImage';
+import ShopCard from './src/features/Test/ShopCard';
+import AnimationInterponate from './src/features/Test/AnimationInterponate';
+import Transform from './src/features/Test/Transform';
+import ImageFlip from './src/features/Test/ImageFlip';
+import GestureAnimation from './src/features/Test/GestureAnimation';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import LoveAnimation from './src/features/Test/LoveAnimation';
+import SearchAnimation from './src/features/Test/SearchAnimation';
+import Home from './src/features/Home/Home';
 const theme = {
   ...DefaultTheme,
   colors: {
@@ -22,7 +34,7 @@ const theme = {
 
 export default function App() {
   return (
-    
+    <GestureHandlerRootView >
     <PaperProvider theme={theme}>
       <ReduxProvider store={store}>
         <PersistGate
@@ -33,10 +45,23 @@ export default function App() {
             </View>
           }
           persistor={persistor}>
+            
+            {/* <Animation/> */}
+            {/* <AnimationStyle/> */}
+           {/*  <AnimationImage/> */}
+           {/*   <ShopCard/> */}
+          {/* <AnimationInterponate/> */}
+         {/*  <Transform /> */}
+          {/* <ImageFlip/> */}
+         {/*  <SearchAnimation/> */}
+        {/* <GestureAnimation/> */}
+          <LoveAnimation/>
 
-          <RootNavigator />
+
+          {/* <RootNavigator /> */}
         </PersistGate>
       </ReduxProvider>
     </PaperProvider>
+    </GestureHandlerRootView>
   );
 }
