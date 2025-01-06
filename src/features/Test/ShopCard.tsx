@@ -10,6 +10,11 @@ import Animated, {
 
 export default function ShopCard() {
   const [count, setCount] = useState(0);
+
+  const [element1Layout, setElement1Layout] = useState({x: 0, y: 0});
+  const [element2Layout, setElement2Layout] = useState({x: 0, y: 0});
+
+
   const [buttonDisable, setButtonDisable] = useState(false);
 
   const animationViewX = useSharedValue(0);
@@ -70,6 +75,11 @@ export default function ShopCard() {
         />
 
         <Animated.View
+
+onLayout={(event) => {
+  const {x, y} = event.nativeEvent.layout;
+  setElement1Layout({x, y});
+}}
           style={[{
             height: 24,
             width: 24,
@@ -88,6 +98,10 @@ export default function ShopCard() {
         
       </View>
       <Animated.View
+      onLayout={(event) => {
+        const {x, y} = event.nativeEvent.layout;
+        setElement2Layout({x, y});
+      }}
           style={[
             {
               height: 24,
@@ -118,8 +132,11 @@ export default function ShopCard() {
           onPress={() => {
             setButtonDisable(true);
             viewScale.value = 1;
-            animationViewX.value = withTiming(-130, {duration: 800});
-            animationViewY.value = withTiming(-457, {duration: 800});
+            const deltaX = element1Layout.x - element2Layout.x;
+            const deltaY = element1Layout.y - element2Layout.y; 
+
+            animationViewX.value = withTiming(deltaX, {duration: 800});
+            animationViewY.value = withTiming(deltaY, {duration: 800});
             setTimeout(() => {
               viewScale.value = 0;
               animationViewX.value = 0;
@@ -131,7 +148,7 @@ export default function ShopCard() {
                 viewScale2.value=withSpring(1);
             }, 150);
 
-            }, 800);
+            }, 700);
           }}>
           <Text style={{color: 'white'}}>Add new</Text>
         </TouchableOpacity>

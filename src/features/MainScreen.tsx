@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 
 import Home from './Home/Home';
+import MenuPage from './Menu/ManuPage';
 
 function ProfileTabBottom() {
   return (
@@ -93,11 +94,11 @@ export default function MainScreen() {
       />
       <Tab.Screen
         name="Settings"
-        component={SettingsTabBottom}
+        component={MenuPage}
         options={{
-          tabBarLabel: 'Settings',
+          tabBarLabel: 'Menu',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="cog-outline" color={color} size={size} />
+            <MaterialCommunityIcons name="menu" color={color} size={size} />
           ),
         }}
       />

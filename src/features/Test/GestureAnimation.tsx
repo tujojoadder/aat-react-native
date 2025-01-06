@@ -26,12 +26,12 @@ export default function GestureAnimation() {
       content.startY = y.value;
     },
     onActive: (event, content) => {
-      console.log(event);
+      
       x.value = content.startX + event.translationX;
       y.value = content.startY + event.translationY;
     },
     onEnd: (event, content) => {
-      console.log('event');
+     
 
       x.value = withSpring(0);
       y.value = withSpring(0);
@@ -39,7 +39,7 @@ export default function GestureAnimation() {
   });
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1,margin:20}}>
       <PanGestureHandler onGestureEvent={gestureHandler}>
         <Animated.View
           style={[

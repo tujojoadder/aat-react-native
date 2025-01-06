@@ -50,7 +50,7 @@ export default function App() {
             {/* <Animation/> */}
             {/* <AnimationStyle/> */}
            {/*  <AnimationImage/> */}
-           {/*   <ShopCard/> */}
+             <ShopCard/>
           {/* <AnimationInterponate/> */}
          {/*  <Transform /> */}
           {/* <ImageFlip/> */}
@@ -59,7 +59,7 @@ export default function App() {
           {/* <LoveAnimation/> */}
 
 
-          <RootNavigator />
+          {/* <RootNavigator /> */}
         </PersistGate>
       </ReduxProvider>
     </PaperProvider>

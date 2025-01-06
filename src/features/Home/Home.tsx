@@ -1,5 +1,5 @@
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
@@ -126,10 +126,16 @@ export default function Home() {
     }
   }, [isSuccess]);
 
+
+  /* make status bar right */
+  useFocusEffect(() => {
+    StatusBar.setBarStyle('dark-content');
+    StatusBar.setBackgroundColor('white');
+  });
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <StatusBar backgroundColor="white" barStyle="dark-content" translucent />
-
+  
       <Animated.View style={[styles.appBar, appBarAnimatedStyle]}>
         <Appbar.Header style={styles.appBarHeader}>
           <Text style={styles.title}>aat</Text>
@@ -298,7 +304,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 100,
+    height: 70,
     zIndex: 1,
     backgroundColor: 'white',
     borderBottomColor: '#ddd',
