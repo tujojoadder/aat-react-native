@@ -141,12 +141,14 @@ export default function Home() {
           <Text style={styles.title}>aat</Text>
           <Appbar.Action icon="magnify" color="black" onPress={() => {}} />
           <Appbar.Action icon="bell-outline" color="black" onPress={() => {}} />
+          <Appbar.Action icon="menu" color="black" onPress={() => {}} />
         </Appbar.Header>
       </Animated.View>
 
       <Animated.ScrollView
-        contentContainerStyle={{paddingTop: 100}}
+        contentContainerStyle={{paddingTop: 70}}
         onScroll={handleScroll}
+        showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         scrollEventThrottle={16}>
         <View>
           <Text style={styles.content}>
@@ -313,6 +315,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 8,
+
     shadowOffset: {width: 0, height: 2},
   },
   appBarHeader: {

@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
 
 import Home from './Home/Home';
 import MenuPage from './Menu/ManuPage';
@@ -66,9 +68,9 @@ export default function MainScreen() {
         name="ProfileBottomTab"
         component={ProfileTabBottom}
         options={{
-          tabBarLabel: 'Profile',
+          tabBarLabel: 'iChannel',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" color={color} size={size} />
+            <MaterialCommunityIcons name="mosque" color={color} size={size} />
           ),
         }}
       />
@@ -86,9 +88,9 @@ export default function MainScreen() {
         name="Notifications"
         component={NotificationsTabBottom}
         options={{
-          tabBarLabel: 'Alerts',
+          tabBarLabel: 'Groups',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell-outline" color={color} size={size} />
+            <Feather name="users" color={color} size={size} />
           ),
         }}
       />
@@ -96,9 +98,9 @@ export default function MainScreen() {
         name="Settings"
         component={MenuPage}
         options={{
-          tabBarLabel: 'Menu',
+          tabBarLabel: 'Message',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="menu" color={color} size={size} />
+            <MaterialCommunityIcons name="message-outline" color={color} size={size} />
           ),
         }}
       />
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 27,
+    alignSelf:'center',
     marginBottom: 10, // Adjust to make it pop above the tab bar
   },
 });
