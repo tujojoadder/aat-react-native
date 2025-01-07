@@ -163,6 +163,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf:'center',
-    marginBottom: 10, // Adjust to make it pop above the tab bar
+    marginBottom:7
   },
 });

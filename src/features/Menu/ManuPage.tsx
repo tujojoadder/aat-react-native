@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   menuItem: {
-    width: (width - 50) / 2,
+    width:(width - (width * 0.13)) / 2,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
