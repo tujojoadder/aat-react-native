@@ -12,12 +12,14 @@ import {setAuthenticated} from './src/features/Home/HomeSlice';
 import SignupAddInfo from './src/features/Signup/SignupAddInfo';
 import Forgotpassword from './src/features/Signup/Forgotpassword/Forgotpassword';
 import MainScreen from './src/features/MainScreen';
+import MenuPage from './src/features/Menu/ManuPage';
 
 export type RootParamList = {
   main: undefined; // No parameters for the "home" screen
   login: undefined; // No parameters for the "login" screen,
   signupAddInfo: {email:string};
   forgotpassword:undefined;
+  menu:undefined;
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -62,6 +64,7 @@ export default function RootNavigator() {
 
           <>
             <Stack.Screen name="main" component={MainScreen} />
+            <Stack.Screen name="menu" component={MenuPage} />
           </>
         ) : (
 

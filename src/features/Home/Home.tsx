@@ -22,12 +22,22 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootParamList} from '../../../RootNavigator';
+import HadithStatus from '../../HadithStatus/HadithStatus';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+type SettingsScreenNavigationProp = NativeStackNavigationProp<
+  RootParamList,
+  'menu'
+>;
 
 const {height} = Dimensions.get('window');
 
 export default function Home() {
+  const navigation = useNavigation<SettingsScreenNavigationProp>();
+
   const dispatch = useDispatch();
-  const navigation = useNavigation();
 
   const appBarOffset = useSharedValue(0); // For AppBar movement
   const appBarOpacity = useSharedValue(1); // For AppBar fade effect
@@ -44,7 +54,7 @@ export default function Home() {
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentScrollY = event.nativeEvent.contentOffset.y;
-   /*  console.log('currentScrollY' + currentScrollY);
+    /*  console.log('currentScrollY' + currentScrollY);
     console.log('prevScrollY.current' + prevScrollY.current); */
     if (currentScrollY <= 100) {
       appBarOffset.value = withTiming(0, {
@@ -88,6 +98,10 @@ export default function Home() {
     prevScrollY.current = currentScrollY;
   };
 
+
+
+/*   Logout */
+
   const [logOutUser, {isLoading, isSuccess, isError, error}] =
     useLogOutUserMutation();
 
@@ -99,7 +113,6 @@ export default function Home() {
   const handleLogout = async () => {
     try {
       const data = await logOutUser().unwrap();
-
       await handlePostLogoutActions();
     } catch (error) {
       console.log('Error during logout:', error);
@@ -126,7 +139,6 @@ export default function Home() {
     }
   }, [isSuccess]);
 
-
   /* make status bar right */
   useFocusEffect(() => {
     StatusBar.setBarStyle('dark-content');
@@ -135,22 +147,40 @@ export default function Home() {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-  
       <Animated.View style={[styles.appBar, appBarAnimatedStyle]}>
         <Appbar.Header style={styles.appBarHeader}>
           <Text style={styles.title}>aat</Text>
+          <Appbar.Action
+            icon={() => (
+              <MaterialCommunityIcons
+                name="plus-circle"
+                size={24}
+                color="black"
+              />
+            )}
+            onPress={() => {}}
+          />
+
           <Appbar.Action icon="magnify" color="black" onPress={() => {}} />
-          <Appbar.Action icon="bell-outline" color="black" onPress={() => {}} />
-          <Appbar.Action icon="menu" color="black" onPress={() => {}} />
+          <Appbar.Action
+            icon="menu"
+            color="black"
+            onPress={() => navigation.navigate('menu')}
+          />
         </Appbar.Header>
       </Animated.View>
 
       <Animated.ScrollView
-        contentContainerStyle={{paddingTop: 70}}
+        overScrollMode="never" // Disable overscroll effect on Android
+        bounces={false} // Disable bounce effect on iOS
         onScroll={handleScroll}
         showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
         scrollEventThrottle={16}>
         <View>
+          <View style={{height: 70, backgroundColor: '#f9f9f9'}}></View>
+
+          <HadithStatus />
+
           <Text style={styles.content}>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Et maiores
             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Animi

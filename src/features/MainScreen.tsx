@@ -88,15 +88,15 @@ export default function MainScreen() {
         name="Notifications"
         component={NotificationsTabBottom}
         options={{
-          tabBarLabel: 'Groups',
+          tabBarLabel: 'Alert',
           tabBarIcon: ({ color, size }) => (
-            <Feather name="users" color={color} size={size} />
+            <MaterialCommunityIcons name="bell-outline" color={color} size={size} />
           ),
         }}
       />
       <Tab.Screen
         name="Settings"
-        component={MenuPage}
+        component={SettingsTabBottom}
         options={{
           tabBarLabel: 'Message',
           tabBarIcon: ({ color, size }) => (

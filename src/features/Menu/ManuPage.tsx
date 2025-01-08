@@ -1,5 +1,5 @@
 import {useFocusEffect} from '@react-navigation/native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {
@@ -13,10 +13,17 @@ import {
   ScrollView,
   Pressable,
 } from 'react-native';
-import {Text, Avatar, Badge, List, Appbar} from 'react-native-paper';
+import * as Keychain from 'react-native-keychain';
+import {Text, Avatar, Badge, List, Appbar, Button, Portal, Dialog, Paragraph} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { useLogOutUserMutation } from '../../services/userAuthApi';
+import { setAuthenticated } from '../Home/HomeSlice';
+import { useDispatch } from 'react-redux';
 
 const MenuPage = ({navigation}: any) => {
+
+  const dispatch = useDispatch();
   const layoutRef = useRef({width: 0, height: 0});
 
   const handleLayout = (event: any) => {
@@ -30,11 +37,65 @@ const MenuPage = ({navigation}: any) => {
     photo: 'https://via.placeholder.com/150', // Replace with actual user image
   };
 
+
+
+
+/*   Logout */
+
+  const [logOutUser, {isLoading, isSuccess, isError, error}] =
+    useLogOutUserMutation();
+
+  const [visible, setVisible] = useState(false);
+
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
+
+  const handleLogout = async () => {
+    try {
+      const data = await logOutUser().unwrap();
+
+      await handlePostLogoutActions();
+    } catch (error) {
+      console.log('Error during logout:', error);
+    }
+  };
+
+  const handlePostLogoutActions = async () => {
+    try {
+      await GoogleSignin.signOut();
+      const success = await Keychain.resetGenericPassword();
+      if (success) {
+        dispatch(setAuthenticated(false));
+      } else {
+        console.log('Failed to delete the token');
+      }
+    } catch (error) {
+      console.error('Error deleting the token:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      handlePostLogoutActions();
+    }
+  }, [isSuccess]);
+
+
+
+
+
+
+
+
+
   /* make status bar right */
   useFocusEffect(() => {
     StatusBar.setBarStyle('light-content');
     StatusBar.setBackgroundColor('#007BFF');
   });
+
+
+
   return (
     <SafeAreaView style={[styles.container]}>
       {/* Header Section */}
@@ -46,7 +107,11 @@ const MenuPage = ({navigation}: any) => {
         /*     stickyHeaderIndices={[0]} // Index of the header to stick */
       >
         <View>
-          <Appbar.Header style={{backgroundColor: '#007BFF'}}>
+          <Appbar.Header style={{backgroundColor: '#007BFF', elevation: 0}}>
+            <Appbar.BackAction
+              color="white"
+              onPress={() => navigation.goBack()}
+            />
             <Appbar.Content title="Menu" titleStyle={{color: 'white'}} />
           </Appbar.Header>
         </View>
@@ -169,25 +234,106 @@ const MenuPage = ({navigation}: any) => {
               />
               <Text style={styles.menuText}>Groups</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem2]}>
+              <MaterialCommunityIcons
+                name="account-group-outline"
+                size={30}
+                color="#4A4A4A"
+              />
+              <Text style={styles.menuText}>Groups</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem2]}>
+              <MaterialCommunityIcons
+                name="account-group-outline"
+                size={30}
+                color="#4A4A4A"
+              />
+              <Text style={styles.menuText}>Groups</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem2]}>
+              <MaterialCommunityIcons
+                name="account-group-outline"
+                size={30}
+                color="#4A4A4A"
+              />
+              <Text style={styles.menuText}>Groups</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem2]}>
+              <MaterialCommunityIcons
+                name="account-group-outline"
+                size={30}
+                color="#4A4A4A"
+              />
+              <Text style={styles.menuText}>Groups</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem2]}>
+              <MaterialCommunityIcons
+                name="account-group-outline"
+                size={30}
+                color="#4A4A4A"
+              />
+              <Text style={styles.menuText}>Groups</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem2]}>
+              <MaterialCommunityIcons
+                name="account-group-outline"
+                size={30}
+                color="#4A4A4A"
+              />
+              <Text style={styles.menuText}>Groups</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem2]}>
+              <MaterialCommunityIcons
+                name="account-group-outline"
+                size={30}
+                color="#4A4A4A"
+              />
+              <Text style={styles.menuText}>Groups</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Logout */}
 
-          <View
-            onLayout={handleLayout}
-            style={[
+   
+
+
+
+
+
+
+
+          <TouchableOpacity  style={[
               styles.menuItem2,
               {
                 width: 'auto',
                 paddingHorizontal: 15,
                 backgroundColor: '#e1eded',
                 elevation: 0,
-                marginTop:15
+                marginTop: 15,
               },
-            ]}>
-            <MaterialCommunityIcons name="logout" size={30} color="#4A4A4A" />
-            <Text style={styles.menuText}>Logout</Text>
-          </View>
+            ]} onPress={showDialog}>
+                <MaterialCommunityIcons name="logout" size={30} color="#4A4A4A" />
+                <Text style={styles.menuText}>Logout</Text>
+          </TouchableOpacity>
+
+          <Portal>
+            <Dialog visible={visible} onDismiss={hideDialog}>
+              <Dialog.Title>Confirm Logout</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>Are you sure you want to logout?</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={hideDialog}>Cancel</Button>
+                <Button
+                  onPress={() => {
+                    handleLogout();
+                    hideDialog();
+                  }}>
+                  Logout
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </Animated.View>
       </ScrollView>
     </SafeAreaView>
@@ -237,7 +383,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   menuItem: {
-    width:(width - (width * 0.13)) / 2,
+    width: (width - width * 0.13) / 2,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
