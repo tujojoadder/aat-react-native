@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   rightTapZone: {
     position: 'absolute',
     right: 0,
-    width: '15%',
+    width: '20%',
     height: '100%',
     backgroundColor: 'transparent',
     zIndex: 1,
