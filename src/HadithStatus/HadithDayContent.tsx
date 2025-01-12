@@ -16,6 +16,12 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated'; // Import Reanimated hooks
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootParamList } from '../../RootNavigator';
+import { useNavigation } from '@react-navigation/native';
+
+type  HadithProp=NativeStackNavigationProp<RootParamList,'hadithContent'>;
+
 
 // Define the interface for each item in the demoData array
 interface HadithData {
@@ -36,7 +42,7 @@ const demoData: HadithData[] = [
     Identifier: 'john_doe',
     profile_picture:
       'https://wallpapers.com/images/hd/gallant-roman-reigns-mka85s1lh2ns81kx.jpg',
-    hadith: 'This is Hadith 1.',
+    hadith: 'ফির্কার লোকেরা ইজমা‘ ও কিয়াসকে ওয়াহীর আসনে বসিয়েছে এবং বলে থাকেঃ শারী‘আহ্‌র ভিত্তি চারটি বিষয়ের উপর। কুরআন, সুন্নাহ, ইজমা‘ ও কিয়াস। বড় আশ্চর্যের বিষয় এই যে, সহাবায়ে কেরাম যাদের উপর আল্লাহ তা‘আলা তার সন্তুষ্টির ঘোষণা দিয়েছেন, তাদেরকে সত্যবাদী বলে স্বীকৃতি দেয়া হয়েছে এবং মুসলিম উম্মাহ এ ব্যাপারে সকলেই একমত। অথচ তারা সহাবায়ে কেরামকে দু’ ভাগে ভাগ করেছেন। (১) ফকীহ (২) গাইরে ফকীহ। আর বলেছেন যে সকল সাহাবী ফকীহ ছিলেন তারা যদি কিয়াসের বিপরীতে হাদীস বর্ণনা করেন তবে তা গ্রহণযোগ্য কিন্তু যে সকল সাহাবী গাইরে ফকীহ অর্থাৎ ফকীহ নন তাঁরা যদি কিয়াসের খেলাফ হাদীস বর্ণনা করেন তাহলে তা গ্রহণযো',
     loveReactions: 5,
   },
   {
@@ -57,7 +63,7 @@ const demoData: HadithData[] = [
     Identifier: 'ali_khan',
     profile_picture:
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTM1Q4yaQHkUCvG4FrN3eUPkDqXvbAZDpCeA&s',
-    hadith: 'This is Hadith 3.',
+    hadith: 'ফির্কার লোকেরা ইজমা‘ ও কিয়াসকে ওয়াহীর আসনে বসিয়েছে এবং বলে থাকেঃ শারী‘আহ্‌র ভিত্তি চারটি বিষয়ের উপর। কুরআন, সুন্নাহ, ইজমা‘ ও কিয়াস। বড় আশ্চর্যের বিষয় এই যে, সহাবায়ে কেরাম যাদের উপর আল্লাহ তা‘আলা তার সন্তুষ্টির ঘোষণা দিয়েছেন, তাদেরকে সত্যবাদী বলে স্বীকৃতি দেয়া হয়েছে এবং মুসলিম উম্মাহ এ ব্যাপারে সকলেই একমত। অথচ তারা সহাবায়ে কেরামকে দু’ ভাগে ভাগ করেছেন। (১) ফকীহ (২) গাইরে ফকীহ। আর বলেছেন যে সকল সাহাবী ফকীহ ছিলেন তারা যদি কিয়াসের বিপরীতে হাদীস বর্ণনা করেন তবে তা গ্রহণযোগ্য কিন্তু যে সকল সাহাবী গাইরে ফকীহ অর্থাৎ ফকীহ নন তাঁরা যদি কিয়াসের খেলাফ হাদীস বর্ণনা করেন তাহলে তা গ্রহণযো',
     loveReactions: 8,
   },
 ];
@@ -66,7 +72,7 @@ export default function HadithDayContent() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasReacted, setHasReacted] = useState(false); // Track if the user has reacted
   const heartScale = useSharedValue(1); // Shared value for scaling the heart icon
-
+const navigation=useNavigation<HadithProp>();
   const handleNavigation = (direction: 'previous' | 'next') => {
     if (direction === 'previous' && currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
@@ -98,16 +104,16 @@ export default function HadithDayContent() {
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Appbar.BackAction onPress={() => {}} />
+        <Appbar.BackAction onPress={() => {navigation.goBack()}} />
         <Image
           source={{uri: currentHadith.profile_picture}}
           style={styles.profilePicture}
         />
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>
+          <Text numberOfLines={1} style={styles.userName}>
             {currentHadith.userFname} {currentHadith.userLname}
           </Text>
-          <Text style={styles.identifier}>@{currentHadith.Identifier}</Text>
+          <Text  numberOfLines={1} style={styles.identifier}>@{currentHadith.Identifier}</Text>
         </View>
       </View>
 
@@ -120,13 +126,10 @@ export default function HadithDayContent() {
         </TouchableWithoutFeedback>
 
         {/* Scrollable Content */}
-        <ScrollView 
-             
-              
-                showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
-                showsHorizontalScrollIndicator={false} // Hides the horizontal scrollbar (optional)
-        
-        contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
+          showsHorizontalScrollIndicator={false} // Hides the horizontal scrollbar (optional)
+          contentContainerStyle={styles.scrollContent}>
           <View style={styles.hadithContainer}>
             <Text style={styles.hadithText}>{currentHadith.hadith}</Text>
           </View>
@@ -165,13 +168,15 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+   
     backgroundColor: '#fff',
+    paddingVertical:16
   },
   profilePicture: {
     width: 50,
     height: 50,
     borderRadius: 25,
+    marginLeft:5
   },
   userInfo: {
     marginLeft: 12,
@@ -201,7 +206,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    
   },
   hadithContainer: {
     paddingHorizontal: 0,
@@ -209,8 +213,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   hadithText: {
-    fontSize: 18,
-    
+    fontSize: 18.3,
+
     textAlign: 'center',
   },
   rightTapZone: {
@@ -222,10 +226,9 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   reactionContainer: {
-    alignSelf:'center',
-    marginTop:20,
+    alignSelf: 'center',
+    marginTop: 20,
     marginBottom: 45,
-
   },
   reactionCount: {
     fontSize: 16,

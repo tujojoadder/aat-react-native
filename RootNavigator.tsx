@@ -13,6 +13,8 @@ import SignupAddInfo from './src/features/Signup/SignupAddInfo';
 import Forgotpassword from './src/features/Signup/Forgotpassword/Forgotpassword';
 import MainScreen from './src/features/MainScreen';
 import MenuPage from './src/features/Menu/ManuPage';
+import HadithDayContent from './src/HadithStatus/HadithDayContent';
+import HadithStatusBar from './src/HadithStatus/HadithStatusBar';
 
 export type RootParamList = {
   main: undefined; // No parameters for the "home" screen
@@ -20,6 +22,8 @@ export type RootParamList = {
   signupAddInfo: {email:string};
   forgotpassword:undefined;
   menu:undefined;
+  hadithStaus:undefined;
+  hadithContent:undefined;
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -58,13 +62,15 @@ export default function RootNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator  screenOptions={{headerShown: false,animation: 'slide_from_right'}}>
+      <Stack.Navigator  screenOptions={{headerShown: false,animation: 'fade'}}>
         {isAuthenticated ? (
           // If authenticated, show home screen
 
           <>
             <Stack.Screen name="main" component={MainScreen} />
             <Stack.Screen name="menu" component={MenuPage} />
+            <Stack.Screen name="hadithStaus" component={HadithStatusBar} />
+            <Stack.Screen name="hadithContent" component={HadithDayContent} />
           </>
         ) : (
 

@@ -7,6 +7,10 @@ import {
   ImageBackground,
 } from 'react-native';
 import {Avatar, Text} from 'react-native-paper';
+import {RootParamList} from '../../RootNavigator';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {useNavigation} from '@react-navigation/native';
+type HadithProp = NativeStackNavigationProp<RootParamList, 'hadithContent'>;
 
 const demoData = [
   {
@@ -38,6 +42,8 @@ const demoData = [
 ];
 
 export default function HadithStatusBar() {
+  const navigation = useNavigation<HadithProp>(); // Use the correct type
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -53,7 +59,12 @@ export default function HadithStatusBar() {
 
         {/* User Hadith Cards */}
         {demoData.map(item => (
-          <TouchableOpacity key={item.id} style={styles.hadithCard}>
+          <TouchableOpacity
+            key={item.id}
+            style={styles.hadithCard}
+            onPress={() => {
+              navigation.navigate('hadithContent');
+            }}>
             <ImageBackground
               source={{
                 uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTM1Q4yaQHkUCvG4FrN3eUPkDqXvbAZDpCeA&s',
@@ -145,7 +156,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   cardHadith: {
-    paddingTop:3,
+    paddingTop: 3,
     color: '#555',
     fontSize: 14,
     lineHeight: 16,

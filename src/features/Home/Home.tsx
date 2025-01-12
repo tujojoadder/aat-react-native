@@ -24,7 +24,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootParamList} from '../../../RootNavigator';
-import HadithStatus from '../../HadithStatus/HadithStatus';
+import HadithStatus from '../../HadithStatus/HadithStatusBar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type SettingsScreenNavigationProp = NativeStackNavigationProp<
