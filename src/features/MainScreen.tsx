@@ -9,6 +9,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import Home from './Home/Home';
 import MenuPage from './Menu/ManuPage';
 import HadithDayContent from '../HadithStatus/HadithDayContent';
+import HadithBox from '../HadithStatus/HadithBox/HadithBox ';
 
 function ProfileTabBottom() {
   return (
@@ -87,7 +88,7 @@ export default function MainScreen() {
       />
       <Tab.Screen
         name="Notifications"
-        component={HadithDayContent}
+        component={HadithBox}
         options={{
           tabBarLabel: 'Alert',
           tabBarIcon: ({ color, size }) => (
