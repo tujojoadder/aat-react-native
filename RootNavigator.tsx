@@ -58,7 +58,7 @@ export default function RootNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator  screenOptions={{headerShown: false,animation: 'fade'}}>
+      <Stack.Navigator  screenOptions={{headerShown: false,animation: 'slide_from_right'}}>
         {isAuthenticated ? (
           // If authenticated, show home screen
 

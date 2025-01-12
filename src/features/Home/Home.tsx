@@ -147,7 +147,7 @@ export default function Home() {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <Animated.View style={[styles.appBar, appBarAnimatedStyle]}>
+      <Animated.View  sharedTransitionTag="posted" style={[styles.appBar, appBarAnimatedStyle]}>
         <Appbar.Header style={styles.appBarHeader}>
           <Text style={styles.title}>aat</Text>
           <Appbar.Action
@@ -166,6 +166,8 @@ export default function Home() {
             icon="menu"
             color="black"
             onPress={() => navigation.navigate('menu')}
+
+            
           />
         </Appbar.Header>
       </Animated.View>
