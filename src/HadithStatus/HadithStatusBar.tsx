@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -9,41 +9,61 @@ import {
 import {Avatar, Text} from 'react-native-paper';
 import {RootParamList} from '../../RootNavigator';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {useGetDayHadithsQuery} from '../services/hadithApi';
+import {RootState} from '../app/store';
+import {setAllDayHadith} from '../features/Home/HomeSlice';
 type HadithProp = NativeStackNavigationProp<RootParamList, 'hadithContent'>;
 
-const demoData = [
-  {
-    id: 1,
-    name: 'Turjo joadder',
-    hadith: 'বিপরীতে হিত ; প্রথমে খারাপ হিসেবে মনে হলেও পরবর্তীতে ভালো হয় ',
-    image: 'https://via.placeholder.com/150',
-  },
-  {
-    id: 2,
-    name: 'User 2',
-    hadith:
-      '“Do not waste water, even if performing ablution on the banks of a fast-flowing river.”',
-    image: 'https://via.placeholder.com/150',
-  },
-  {
-    id: 3,
-    name: 'User 3',
-    hadith: '“The best of you are those who learn the Quran and teach it.”',
-    image: 'https://via.placeholder.com/150',
-  },
-  {
-    id: 4,
-    name: 'User 4',
-    hadith:
-      '“God does not look at your forms and possessions but He looks at your hearts and deeds.”',
-    image: 'https://via.placeholder.com/150',
-  },
-];
-
 export default function HadithStatusBar() {
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState(''); // For Snackbar error message
   const navigation = useNavigation<HadithProp>(); // Use the correct type
+  const {
+    data: GetDayHadithsQuery,
+    isSuccess: GetDayHadithsQuerySuccess,
+    isLoading: GetDayHadithsQueryLoading,
+    isError: GetDayHadithsQueryError,
+    error, // error is automatically provided by the hook
+    refetch,
+  } = useGetDayHadithsQuery();
+  const allDayHadith = useSelector(
+    (state: RootState) => state.home.allDayHadith,
+  );
 
+  // Trigger refetch when this screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      setIsLoading(true);
+      refetch()
+        .then(response => {
+          if (response?.data) {
+            dispatch(setAllDayHadith(response.data.data));
+          }
+        })
+        .catch(error => {
+          setErrorMessage('Failed to fetch Hadiths. Please try again.'); // Set error message
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }, [refetch, dispatch]),
+  );
+
+  if (GetDayHadithsQueryLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (GetDayHadithsQueryError) {
+    console.log('Error:', error); // Print the error
+    return <Text>Error occurred while fetching day hadiths.</Text>;
+  }
+
+  if (GetDayHadithsQuerySuccess) {
+    console.log(GetDayHadithsQuery.data);
+  }
   return (
     <View style={styles.container}>
       <ScrollView
@@ -58,32 +78,35 @@ export default function HadithStatusBar() {
         </TouchableOpacity>
 
         {/* User Hadith Cards */}
-        {demoData.map(item => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.hadithCard}
-            onPress={() => {
-              navigation.navigate('hadithContent');
-            }}>
-            <ImageBackground
-              source={{
-                uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTM1Q4yaQHkUCvG4FrN3eUPkDqXvbAZDpCeA&s',
-              }}
-              resizeMode="cover"
-              style={styles.cardBackground}
-              imageStyle={{borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
-              <View style={styles.overlay}></View>
-            </ImageBackground>
-            <View style={styles.cardContent}>
-              <Text numberOfLines={1} style={styles.cardName}>
-                {item.name}
-              </Text>
-              <Text numberOfLines={2} style={styles.cardHadith}>
-                {item.hadith}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+
+        {/* User Hadith Cards */}
+        {allDayHadith && allDayHadith.length > 0
+          && allDayHadith.map(item => (
+              <TouchableOpacity
+                    key={item.day_hadith.day_hadith_id}
+                style={styles.hadithCard}
+                onPress={() => navigation.navigate('hadithContent')}>
+                <ImageBackground
+                  source={{uri:`${process.env.REACT_APP_LARAVEL_URL}/${item.profile_picture}`}}
+                  resizeMode="cover"
+                  style={styles.cardBackground}
+                  imageStyle={{
+                    borderTopLeftRadius: 15,
+                    borderTopRightRadius: 15,
+                  }}>
+                  <View style={styles.overlay}></View>
+                </ImageBackground>
+                <View style={styles.cardContent}>
+                  <Text numberOfLines={1} style={styles.cardName}>
+                    {item.user_fname} {item.user_lname} 
+                  </Text>
+                  <Text numberOfLines={2} style={styles.cardHadith}>
+                    {item.day_hadith.hadith.hadith}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))
+          }
       </ScrollView>
     </View>
   );
@@ -148,6 +171,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0f7fa',
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
+    height:81.3
   },
   cardName: {
     color: '#333',

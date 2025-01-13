@@ -9,6 +9,8 @@ import { groupsApi } from './../services/groupsApi';
 import { homeSlice } from '../features/Home/HomeSlice';
 import { userLoginApi } from '../services/userLoginApi';
 import { userAuthApi } from '../services/userAuthApi';
+import { hadithApi } from '../services/hadithApi';
+
 
 // Persist configuration
 const persistConfig = {
@@ -24,6 +26,7 @@ const rootReducer = combineReducers({
   [profileApi.reducerPath]: profileApi.reducer,
   [userLoginApi.reducerPath]: userLoginApi.reducer,
   [userAuthApi.reducerPath]: userAuthApi.reducer,
+  [hadithApi.reducerPath]: hadithApi.reducer,
   // Add more reducers as needed
 });
 
@@ -41,6 +44,7 @@ export const store = configureStore({
       groupsApi.middleware,
       userLoginApi.middleware,
       userAuthApi.middleware,
+      hadithApi.middleware,
       // Add other middlewares as needed
     ),
 });

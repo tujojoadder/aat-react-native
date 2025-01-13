@@ -12,7 +12,7 @@ import {
   NativeScrollEvent,
 } from 'react-native';
 import {Appbar, Button, Dialog, Paragraph, Portal} from 'react-native-paper';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import * as Keychain from 'react-native-keychain';
 import {useLogOutUserMutation} from '../../services/userAuthApi';
 import {setAuthenticated} from './HomeSlice';
@@ -26,6 +26,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootParamList} from '../../../RootNavigator';
 import HadithStatus from '../../HadithStatus/HadithStatusBar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {RootState} from '../../app/store';
 
 type SettingsScreenNavigationProp = NativeStackNavigationProp<
   RootParamList,
@@ -35,10 +36,12 @@ type SettingsScreenNavigationProp = NativeStackNavigationProp<
 const {height} = Dimensions.get('window');
 
 export default function Home() {
-  const navigation = useNavigation<SettingsScreenNavigationProp>();
-
   const dispatch = useDispatch();
+  const allDayHadith = useSelector(
+    (state: RootState) => state.home.allDayHadith,
+  );
 
+  const navigation = useNavigation<SettingsScreenNavigationProp>();
   const appBarOffset = useSharedValue(0); // For AppBar movement
   const appBarOpacity = useSharedValue(1); // For AppBar fade effect
   const prevScrollY = useRef(0); // Previous scroll position tracker
@@ -98,9 +101,7 @@ export default function Home() {
     prevScrollY.current = currentScrollY;
   };
 
-
-
-/*   Logout */
+  /*   Logout */
 
   const [logOutUser, {isLoading, isSuccess, isError, error}] =
     useLogOutUserMutation();
@@ -147,7 +148,9 @@ export default function Home() {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <Animated.View  sharedTransitionTag="posted" style={[styles.appBar, appBarAnimatedStyle]}>
+      <Animated.View
+        sharedTransitionTag="posted"
+        style={[styles.appBar, appBarAnimatedStyle]}>
         <Appbar.Header style={styles.appBarHeader}>
           <Text style={styles.title}>aat</Text>
           <Appbar.Action
@@ -166,8 +169,6 @@ export default function Home() {
             icon="menu"
             color="black"
             onPress={() => navigation.navigate('menu')}
-
-            
           />
         </Appbar.Header>
       </Animated.View>
@@ -182,7 +183,7 @@ export default function Home() {
           <View style={{height: 70, backgroundColor: '#f9f9f9'}}></View>
 
           <HadithStatus />
-
+         
           <Text style={styles.content}>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Et maiores
             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Animi

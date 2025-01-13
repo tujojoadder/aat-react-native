@@ -1,24 +1,51 @@
-import { createSlice } from "@reduxjs/toolkit";
-
-/* Initial state */
-const initialState = {
-  isAuthenticated: null, // `null` for loading state
-  user_id: "",
-  profile_picture: "",
-  user_fname: "",
-  user_lname: "",
-  email: "",
-  identifier: "",
-  cover_photo: "",
-  gender: "",
-  birthdate: "",
+import {createSlice} from '@reduxjs/toolkit';
+type DayHadith = {
+  day_hadith: {
+    isLiked: boolean;
+    day_hadith_id:string;
+    hadith:{
+      hadith:string;
+    }
+  };
+  profile_picture:string;
+  user_fname:string;
+  user_lname:string;
 };
 
+interface HomeState {
+  isAuthenticated: boolean | null;
+  user_id: string;
+  profile_picture: string;
+  user_fname: string;
+  user_lname: string;
+  email: string;
+  identifier: string;
+  cover_photo: string;
+  gender: string;
+  birthdate: string;
+  allDayHadith: DayHadith[];
+  
+}
+
+const initialState: HomeState = {
+  isAuthenticated: null,
+  user_id: '',
+  profile_picture: '',
+  user_fname: '',
+  user_lname: '',
+  email: '',
+  identifier: '',
+  cover_photo: '',
+  gender: '',
+  birthdate: '',
+  allDayHadith: [],
+};
+
+
 export const homeSlice = createSlice({
-  name: "userDetails",
+  name: 'userDetails',
   initialState,
   reducers: {
-
     setAuthenticated: (state, action) => {
       state.isAuthenticated = action.payload; // Directly set to the boolean payload
     },
@@ -49,6 +76,24 @@ export const homeSlice = createSlice({
     setGender: (state, action) => {
       state.gender = action.payload;
     },
+
+
+
+    /* Hadith reducers */
+
+    setAllDayHadith: (state, action) => {
+      state.allDayHadith = action.payload;
+    },
+
+    setIsLiked: (state, action) => {
+      const { index } = action.payload;
+      state.allDayHadith[index].day_hadith.isLiked = true;
+    },
+
+
+
+
+
   },
 });
 
@@ -63,6 +108,8 @@ export const {
   setCover_photo,
   setBirthDate,
   setGender,
+  setAllDayHadith,
+  setIsLiked
 } = homeSlice.actions;
 
 export default homeSlice.reducer;
