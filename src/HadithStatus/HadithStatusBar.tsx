@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -40,11 +40,18 @@ export default function HadithStatusBar() {
       refetch()
         .then(response => {
           if (response?.data) {
-            dispatch(setAllDayHadith(response.data.data));
+            const dataWithSerialNumbers = response.data.data.map(
+              (item, index) => ({
+                ...item,
+                serialNumber: index,
+              }),
+            );
+            console.log(dataWithSerialNumbers);
+            dispatch(setAllDayHadith(dataWithSerialNumbers));
           }
         })
         .catch(error => {
-          setErrorMessage('Failed to fetch Hadiths. Please try again.'); // Set error message
+          setErrorMessage('Failed to fetch Hadiths. Please try again.');
         })
         .finally(() => {
           setIsLoading(false);
@@ -61,9 +68,6 @@ export default function HadithStatusBar() {
     return <Text>Error occurred while fetching day hadiths.</Text>;
   }
 
-  if (GetDayHadithsQuerySuccess) {
-    console.log(GetDayHadithsQuery.data);
-  }
   return (
     <View style={styles.container}>
       <ScrollView
@@ -80,33 +84,41 @@ export default function HadithStatusBar() {
         {/* User Hadith Cards */}
 
         {/* User Hadith Cards */}
-        {allDayHadith && allDayHadith.length > 0
-          && allDayHadith.map(item => (
-              <TouchableOpacity
-                    key={item.day_hadith.day_hadith_id}
-                style={styles.hadithCard}
-                onPress={() => navigation.navigate('hadithContent')}>
-                <ImageBackground
-                  source={{uri:`${process.env.REACT_APP_LARAVEL_URL}/${item.profile_picture}`}}
-                  resizeMode="cover"
-                  style={styles.cardBackground}
-                  imageStyle={{
-                    borderTopLeftRadius: 15,
-                    borderTopRightRadius: 15,
-                  }}>
-                  <View style={styles.overlay}></View>
-                </ImageBackground>
-                <View style={styles.cardContent}>
-                  <Text numberOfLines={1} style={styles.cardName}>
-                    {item.user_fname} {item.user_lname} 
-                  </Text>
-                  <Text numberOfLines={2} style={styles.cardHadith}>
-                    {item.day_hadith.hadith.hadith}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))
-          }
+        {allDayHadith &&
+          allDayHadith.length > 0 &&
+          allDayHadith.map(item => (
+            <TouchableOpacity
+              key={item.day_hadith.day_hadith_id}
+              style={styles.hadithCard}
+              onPress={() =>
+                navigation.navigate('hadithContent', {
+                  serialNumber: item.serialNumber,
+                })
+              }
+              
+              >
+              <ImageBackground
+                source={{
+                  uri: `${process.env.REACT_APP_LARAVEL_URL}/${item.profile_picture}`,
+                }}
+                resizeMode="cover"
+                style={styles.cardBackground}
+                imageStyle={{
+                  borderTopLeftRadius: 15,
+                  borderTopRightRadius: 15,
+                }}>
+                <View style={styles.overlay}></View>
+              </ImageBackground>
+              <View style={styles.cardContent}>
+                <Text numberOfLines={1} style={styles.cardName}>
+                  {item.user_fname} {item.user_lname}
+                </Text>
+                <Text numberOfLines={2} style={styles.cardHadith}>
+                  {item.day_hadith.hadith.hadith}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
       </ScrollView>
     </View>
   );
@@ -171,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0f7fa',
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
-    height:80
+    height: 80,
   },
   cardName: {
     color: '#333',

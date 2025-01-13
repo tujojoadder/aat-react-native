@@ -23,7 +23,7 @@ export type RootParamList = {
   forgotpassword:undefined;
   menu:undefined;
   hadithStaus:undefined;
-  hadithContent:undefined;
+  hadithContent:{serialNumber:number};
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 

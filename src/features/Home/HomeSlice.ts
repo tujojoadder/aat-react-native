@@ -10,6 +10,8 @@ type DayHadith = {
   profile_picture:string;
   user_fname:string;
   user_lname:string;
+  serialNumber:number;
+  identifier:string;
 };
 
 interface HomeState {

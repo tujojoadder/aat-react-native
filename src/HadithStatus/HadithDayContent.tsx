@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -16,14 +16,16 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated'; // Import Reanimated hooks
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootParamList } from '../../RootNavigator';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { RootState } from '../app/store';
 
-type  HadithProp=NativeStackNavigationProp<RootParamList,'hadithContent'>;
+type  HadithProp=NativeStackScreenProps<RootParamList,'hadithContent'>;
 
 
-// Define the interface for each item in the demoData array
+// Define the interface for each item in the allDayHadith array
 interface HadithData {
   id: number;
   userFname: string;
@@ -34,57 +36,47 @@ interface HadithData {
   loveReactions: number;
 }
 
-const demoData: HadithData[] = [
-  {
-    id: 1,
-    userFname: 'John',
-    userLname: 'Doe',
-    Identifier: 'john_doe',
-    profile_picture:
-      'https://wallpapers.com/images/hd/gallant-roman-reigns-mka85s1lh2ns81kx.jpg',
-    hadith: 'ফির্কার লোকেরা ইজমা‘ ও কিয়াসকে ওয়াহীর আসনে বসিয়েছে এবং বলে থাকেঃ শারী‘আহ্‌র ভিত্তি চারটি বিষয়ের উপর। কুরআন, সুন্নাহ, ইজমা‘ ও কিয়াস। বড় আশ্চর্যের বিষয় এই যে, সহাবায়ে কেরাম যাদের উপর আল্লাহ তা‘আলা তার সন্তুষ্টির ঘোষণা দিয়েছেন, তাদেরকে সত্যবাদী বলে স্বীকৃতি দেয়া হয়েছে এবং মুসলিম উম্মাহ এ ব্যাপারে সকলেই একমত। অথচ তারা সহাবায়ে কেরামকে দু’ ভাগে ভাগ করেছেন। (১) ফকীহ (২) গাইরে ফকীহ। আর বলেছেন যে সকল সাহাবী ফকীহ ছিলেন তারা যদি কিয়াসের বিপরীতে হাদীস বর্ণনা করেন তবে তা গ্রহণযোগ্য কিন্তু যে সকল সাহাবী গাইরে ফকীহ অর্থাৎ ফকীহ নন তাঁরা যদি কিয়াসের খেলাফ হাদীস বর্ণনা করেন তাহলে তা গ্রহণযো',
-    loveReactions: 5,
-  },
-  {
-    id: 2,
-    userFname: 'Jane',
-    userLname: 'Smith',
-    Identifier: 'jane_smith',
-    profile_picture:
-      'https://i.ebayimg.com/images/g/xXQAAOSwh0ldgdY-/s-l1200.jpg',
-    hadith:
-      '’আলক্বামাহ ইবনু ওয়াক্কাস আল-লায়সী (রহ.) হতে বর্ণিত। আমি ’উমার ইবনুল খাত্তাব (রাঃ)-কে মিম্বারের উপর দাঁড়িয়ে বলতে শুনেছিঃ আমি আল্লাহর রাসূল সাল্লাল্লাহু আলাইহি ওয়াসাল্লাম-কে বলতে শুনেছিঃ কাজ (এর প্রাপ্য হবে) নিয়্যাত অনুযায়ী। আর মানুষ তার নিয়্যাত অনুযায়ী প্রতিফল পাবে। তাই যার হিজরত হবে ইহকাল লাভের অথবা কোন মহিলাকে বিবাহ করার উদ্দেশে- তবে তার হিজরত সে উদ্দেশেই হবে, যে জন্যে, সে হিজরত করেছে।] (৫৪, ২৫২৯, ৩৮৯৮, ৫০৭০, ৬৬৮৯, ৬৯৫৩; মুসলিম ২৩/৪৫ হাঃ ১৯০৭, আহমাদ ১৬৮) ( আধুনিক প্রকাশনী- ১, ইসলামিক ফাউন্ডেশন ১) কিন্তু বাতিল ফির্কার লোকেরা ইজমা‘ ও কিয়াসকে ওয়াহীর আসনে বসিয়েছে এবং বলে থাকেঃ শারী‘আহ্‌র ভিত্তি চারটি বিষয়ের উপর। কুরআন, সুন্নাহ, ইজমা‘ ও কিয়াস। বড় আশ্চর্যের বিষয় এই যে, সহাবায়ে কেরাম যাদের উপর আল্লাহ তা‘আলা তার ',
-    loveReactions: 3,
-  },
-  {
-    id: 3,
-    userFname: 'Ali',
-    userLname: 'Khan',
-    Identifier: 'ali_khan',
-    profile_picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTM1Q4yaQHkUCvG4FrN3eUPkDqXvbAZDpCeA&s',
-       hadith:
-      '’আলক্বামাহ ইবনু ওয়াক্কাস আল-লায়সী (রহ.) হতে বর্ণিত। আমি ’উমার ইবনুল খাত্তাব (রাঃ)-কে মিম্বারের উপর দাঁড়িয়ে বলতে শুনেছিঃ আমি আল্লাহর রাসূল সাল্লাল্লাহু আলাইহি ওয়াসাল্লাম-কে বলতে শুনেছিঃ কাজ (এর প্রাপ্য হবে) নিয়্যাত',
-    loveReactions: 8,
-  },
-];
 
-export default function HadithDayContent() {
+export default function HadithDayContent({navigation,route}:HadithProp) {
+  const {serialNumber} = route.params;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasReacted, setHasReacted] = useState(false); // Track if the user has reacted
   const heartScale = useSharedValue(1); // Shared value for scaling the heart icon
-const navigation=useNavigation<HadithProp>();
+  const allDayHadith = useSelector(
+    (state: RootState) => state.home.allDayHadith,
+  );
+  // Set currentIndex based on location.state.serialNumber
+  useEffect(() => {
+
+    if (serialNumber && allDayHadith.length > 0) {
+      const index = allDayHadith.findIndex(hadith => hadith.serialNumber === serialNumber);
+      if (index !== -1) {
+        setCurrentIndex(index);
+      }
+    }
+  }, [serialNumber]);
+
+
+
+
+
   const handleNavigation = (direction: 'previous' | 'next') => {
     if (direction === 'previous' && currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
-    } else if (direction === 'next' && currentIndex < demoData.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+    } else if (direction === 'next') {
+      if (currentIndex < allDayHadith.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      } else {
+        // If no more Hadiths, navigate back
+        navigation.goBack();
+      }
     }
   };
+  
 
   const handleLoveReaction = () => {
     if (!hasReacted) {
-      demoData[currentIndex].loveReactions += 1;
+      /* allDayHadith[currentIndex].loveReactions += 1; */
       setHasReacted(true); // Set that the user has reacted
       heartScale.value = withSpring(1.5, {damping: 2, stiffness: 150}); // Animate heart scale on press
       setTimeout(() => {
@@ -99,7 +91,7 @@ const navigation=useNavigation<HadithProp>();
     };
   });
 
-  const currentHadith = demoData[currentIndex];
+  const currentHadith = allDayHadith[currentIndex];
 
   return (
     <View style={styles.container}>
@@ -107,14 +99,16 @@ const navigation=useNavigation<HadithProp>();
       <View style={styles.header}>
         <Appbar.BackAction onPress={() => {navigation.goBack()}} />
         <Image
-          source={{uri: currentHadith.profile_picture}}
+            source={{
+              uri: `${process.env.REACT_APP_LARAVEL_URL}/${currentHadith.profile_picture}`,
+            }}
           style={styles.profilePicture}
         />
         <View style={styles.userInfo}>
           <Text numberOfLines={1} style={styles.userName}>
-            {currentHadith.userFname} {currentHadith.userLname}
+            {currentHadith.user_fname} {currentHadith.user_lname}
           </Text>
-          <Text  numberOfLines={1} style={styles.identifier}>@{currentHadith.Identifier}</Text>
+          <Text  numberOfLines={1} style={styles.identifier}>@{currentHadith.identifier}</Text>
         </View>
       </View>
 
@@ -132,7 +126,7 @@ const navigation=useNavigation<HadithProp>();
           showsHorizontalScrollIndicator={false} // Hides the horizontal scrollbar (optional)
           contentContainerStyle={styles.scrollContent}>
           <View style={styles.hadithContainer}>
-            <Text style={styles.hadithText}>{currentHadith.hadith}</Text>
+            <Text style={styles.hadithText}>{currentHadith.day_hadith.hadith.hadith}</Text>
           </View>
 
           {/* Love Reaction Section */}
