@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0f7fa',
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
-    height:81.3
+    height:80
   },
   cardName: {
     color: '#333',
