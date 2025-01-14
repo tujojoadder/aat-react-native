@@ -50,6 +50,50 @@ interface RandomHadith {
   };
 }
 
+/* dayHadithDetails */
+type Message = {
+  created_at: string;
+  day_hadith_id: string;
+  hadith_id: string;
+  likes: string[]  ;  // Array of strings, assuming each like is a string (e.g., user IDs)
+  updated_at: string;
+  user_id: string;
+};
+
+/* type dayHadithDetailsData  */
+
+
+type User1 = {
+  identifier: string;
+  profile_picture: string;
+  user_fname: string;
+  user_id: string;
+  user_lname: string;
+};
+
+type LikeDetail = {
+  created_at: string | null;
+  day_hadith_id: string;
+  day_likes_id: string;
+  updated_at: string | null;
+  user: User1;
+  user_id: string;
+};
+type HadithMessage = {
+  created_at: string; // Timestamp
+  day_hadith_id: string; // UUID
+  hadith_id: string; // UUID
+  likes: LikeDetail[]; // Array of LikeDetail objects
+  updated_at: string; // Timestamp
+  user_id: string; // UUID
+};
+
+type HadithResponse = {
+  message: HadithMessage[]; // Array of HadithMessage objects
+};
+
+
+
 export const hadithApi = createApi({
   reducerPath: 'hadithApi',
   baseQuery: fetchBaseQuery({
@@ -111,7 +155,7 @@ export const hadithApi = createApi({
     }),
 
     /* Day hadith Details  */
-    dayHadithDetails: builder.mutation({
+    dayHadithDetails: builder.mutation<any,void>({
       query: () => {
         return {
           url: '/dayhadithdetails',

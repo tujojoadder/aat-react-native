@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,47 +10,68 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {
+  useDayHadithDetailsMutation,
   useGetRandomHadithQuery,
   useSetDayhadithMutation,
 } from '../../services/hadithApi';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import {Snackbar} from 'react-native-paper';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootParamList} from '../../../RootNavigator';
+import {useNavigation} from '@react-navigation/native';
+type User = {
+  identifier: string;
+  profile_picture: string;
+  user_fname: string;
+  user_id: string;
+  user_lname: string;
+};
+
+type LikeDetail = {
+  created_at: string | null;
+  day_hadith_id: string;
+  day_likes_id: string;
+  updated_at: string | null;
+  user: User;
+  user_id: string;
+};
+
+type LikeDetailsResponse = LikeDetail[];
 
 const HadithBox = () => {
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState(''); // State for dynamic message
-
+  const [likeDetails, setLikeDetails] = useState<LikeDetailsResponse>([]);
   const [addButtonDisabled, setAddButtonDisabled] = useState(false);
   const [refreshButtonDisable, setRefreshButtonDisabled] = useState(false);
   const [showJoinedGroups, setShowJoinedGroups] = useState(false);
-  const [likeDetails, setLikeDetails] = useState([
-    {
-      user_fname: 'John',
-      user_lname: 'Doe',
-      identifier: 'johndoe',
-      profile_picture: 'https://via.placeholder.com/40',
-    },
-    {
-      user_fname: 'Jane',
-      user_lname: 'Smith',
-      identifier: 'janesmith',
-      profile_picture: 'https://via.placeholder.com/40',
-    },
-  ]);
 
-  const hadithDemo = {
-    hadith:
-      ' ’আলক্বামাহ ইবনু ওয়াক্কাস আল-লায়সী (রহ.) হতে বর্ণিত। আমি ’উমার ইবনুল খাত্তাব (রাঃ)-কে মিম্বারের উপর দাঁড়িয়ে বলতে শুনেছিঃ আমি আল্লাহর রাসূল সাল্লাল্লাহু আলাইহি ওয়াসাল্লাম-কে বলতে শুনেছিঃ কাজ (এর প্রাপ্য হবে) নিয়্যাত অনুযায়ী। আর মানুষ তার নিয়্যাত অনুযায়ী প্রতিফল পাবে। তাই যার হিজরত হবে ইহকাল লাভের অথবা কোন মহিলাকে বিবাহ করার উদ্দেশে- তবে তার হিজরত সে উদ্দেশেই হবে, যে জন্যে, সে হিজরত করেছে।] (৫৪, ২৫২৯, ৩৮৯৮, ৫০৭০, ৬৬৮৯, ৬৯৫৩; মুসলিম ২৩/৪৫ হাঃ ১৯০৭, আহমাদ ১৬৮) ( আধুনিক প্রকাশনী- ১, ইসলামিক ফাউন্ডেশন ১)',
-    book: 'Sahih Bukhari',
-  };
+  type HadithBoxNavigationProps = NativeStackNavigationProp<
+    RootParamList,
+    'main'
+  >;
 
-  /*   const handleAddButtonClick = () => {
-    if (addButtonDisabled) return;
-    setAddButtonDisabled(true);
-    setTimeout(() => {
-      Alert.alert('Success', 'Hadith added as your Day Hadith successfully!');
-    }, 500);
-  };
- */
+  const navigation = useNavigation<HadithBoxNavigationProps>();
+
+  const heartScale = useSharedValue(0); // Initial scale value
+
+  useEffect(() => {
+    // Start the scale animation when the component mounts
+    if (showJoinedGroups) {
+      heartScale.value = withSpring(1);
+    }
+  }, [showJoinedGroups]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{scale: heartScale.value}],
+  }));
   const {
     data: hadith,
     isFetching,
@@ -67,6 +88,14 @@ const HadithBox = () => {
     },
   ] = useSetDayhadithMutation();
 
+  const [
+    DayHadithDetailsMutation,
+    {
+      isSuccess: DayHadithDetailsMutationSucess,
+      isLoading: DayHadithDetailsMutationLoading,
+      isError: DayHadithDetailsMutationError,
+    },
+  ] = useDayHadithDetailsMutation();
   const handleAddButtonClick = async () => {
     if (isFetching || setDayHadithLoading || !hadith?.data?.hadith_id) {
       // Avoid making the call if still fetching or if hadith_id is undefined
@@ -79,7 +108,6 @@ const HadithBox = () => {
       if (res.data) {
         setAddButtonDisabled(true); // Disable the button after clicking
         onToggleSnackBar('Day hadith added sucessfully');
-        console.log(res.data);
       } else if (res.error) {
         onToggleSnackBar('plz try again');
       }
@@ -100,8 +128,18 @@ const HadithBox = () => {
     }, 2000);
   };
 
-  const handleHeartClick = () => {
+  const handleHeartClick = async () => {
     setShowJoinedGroups(!showJoinedGroups);
+    try {
+      const res = await DayHadithDetailsMutation();
+
+      if (res.data) {
+        setLikeDetails(
+          res.data.message.length > 0 ? res.data.message[0].likes : [], // Remove the outer array wrapping
+        );
+      } else if (res.error) {
+      }
+    } catch (error) {}
   };
 
   const handleRefetchClick = () => {
@@ -111,25 +149,42 @@ const HadithBox = () => {
     refetch();
   };
 
-  const handleGoBack = () => {};
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
 
   return (
     <View style={styles.hadithBox}>
       {/* Header Section */}
+
       <View style={styles.hadithHead}>
-        <TouchableOpacity
-          style={[styles.btnAdd, addButtonDisabled ? styles.btnSuccess : null]}
-          onPress={handleAddButtonClick}
-          disabled={addButtonDisabled}>
-          <Icon
-            name={addButtonDisabled ? 'check' : 'plus'}
-            size={16}
-            color="#fff"
-          />
-          <Text style={styles.addText}>
-            {addButtonDisabled ? 'Added' : 'Add Day'}
-          </Text>
-        </TouchableOpacity>
+        {!showJoinedGroups ? (
+          <TouchableOpacity
+            style={[
+              styles.btnAdd,
+              addButtonDisabled ? styles.btnSuccess : null,
+            ]}
+            onPress={handleAddButtonClick}
+            disabled={addButtonDisabled}>
+            <Icon
+              name={addButtonDisabled ? 'check' : 'plus'}
+              size={16}
+              color="#fff"
+            />
+            <Text style={styles.addText}>
+              {addButtonDisabled ? 'Added' : 'Add Day'}
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={[styles.btnAdd, {backgroundColor: 'white'}]}
+            onPress={() => setShowJoinedGroups(false)}>
+            <Icon name="arrow-left" size={16} color="black" />
+            <Text style={[styles.addText, {color: 'black', fontSize: 17.5}]}>
+              Back
+            </Text>
+          </TouchableOpacity>
+        )}
 
         <View style={styles.hadithInfo}>
           <TouchableOpacity
@@ -146,13 +201,14 @@ const HadithBox = () => {
             <Text style={styles.bookText}>{hadith?.data.book}</Text>
           </View>
         </View>
-
-        <TouchableOpacity
-          disabled={isFetching}
-          onPress={handleRefetchClick}
-          style={styles.refreshButton}>
-          <Icon name="sync-alt" size={18} color="#274a65" />
-        </TouchableOpacity>
+        {!showJoinedGroups && (
+          <TouchableOpacity
+            disabled={isFetching}
+            onPress={handleRefetchClick}
+            style={styles.refreshButton}>
+            <Icon name="sync-alt" size={18} color="#274a65" />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Content Section */}
@@ -168,16 +224,22 @@ const HadithBox = () => {
                 <Text style={styles.boldText}>
                   You have {likeDetails.length}
                 </Text>{' '}
-                <Icon name="heart" size={18} color="#e63946" />
+                {/* Example Animated Heart Icon */}
+                <Animated.View style={animatedStyle}>
+                  <MaterialCommunityIcons name="heart" size={26} color="red" />
+                </Animated.View>
               </Text>
+
               {likeDetails.map((like, index) => (
                 <View key={index} style={styles.userItem}>
                   <Image
-                    source={{uri: like.profile_picture}}
+                    source={{
+                      uri: `${process.env.REACT_APP_LARAVEL_URL}/${like.user.profile_picture}`,
+                    }}
                     style={styles.userImage}
                   />
                   <Text style={styles.userName}>
-                    {like.user_fname} {like.user_lname}
+                    {like.user.user_fname} {like.user.user_lname}
                   </Text>
                 </View>
               ))}
@@ -187,14 +249,16 @@ const HadithBox = () => {
           )}
 
           {/* Go Back Button */}
-          <View style={styles.goBackContainer}>
-            <TouchableOpacity
-              style={styles.goBackButton}
-              onPress={handleGoBack}>
-              <Icon name="arrow-left" size={20} color="#fff" />
-              <Text style={styles.goBackText}>Go Back</Text>
-            </TouchableOpacity>
-          </View>
+          {!showJoinedGroups && (
+            <View style={styles.goBackContainer}>
+              <TouchableOpacity
+                style={styles.goBackButton}
+                onPress={handleGoBack}>
+                <Icon name="arrow-left" size={20} color="#fff" />
+                <Text style={styles.goBackText}>Go Back</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </ScrollView>
       </View>
 
@@ -217,12 +281,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
-    padding: 10,
   },
   hadithHead: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingBottom: 7,
+    paddingTop: 5,
+    borderBottomColor: '#274a65',
+    borderBottomWidth: 1.5,
   },
   btnAdd: {
     flexDirection: 'row',
@@ -264,11 +332,11 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   cardBody: {
-    marginTop: 15,
     borderRadius: 10,
     padding: 15,
   },
   cardBodyWhite: {
+    flex: 1,
     backgroundColor: '#f9f9f9',
   },
   cardBodyLight: {},

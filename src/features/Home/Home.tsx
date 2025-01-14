@@ -30,7 +30,7 @@ import {RootState} from '../../app/store';
 
 type SettingsScreenNavigationProp = NativeStackNavigationProp<
   RootParamList,
-  'menu'
+  'main'
 >;
 
 const {height} = Dimensions.get('window');
