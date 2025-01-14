@@ -162,8 +162,6 @@ const HadithBox = () => {
         ]}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
-          showsHorizontalScrollIndicator={false} // Hides the horizontal scrollbar (optional)
         >
           {showJoinedGroups ? (
             <>
@@ -188,16 +186,18 @@ const HadithBox = () => {
           ) : (
             <Text style={styles.cardText}>{hadith?.data?.hadith}</Text>
           )}
-        </ScrollView>
-      </View>
 
-      {/* Go Back Button */}
+           {/* Go Back Button */}
       <View style={styles.goBackContainer}>
         <TouchableOpacity style={styles.goBackButton} onPress={handleGoBack}>
           <Icon name="arrow-left" size={20} color="#fff" />
           <Text style={styles.goBackText}>Go Back</Text>
         </TouchableOpacity>
       </View>
+        </ScrollView>
+      </View>
+
+     
       <Snackbar
         visible={visible}
         onDismiss={() => setVisible(false)}
@@ -305,7 +305,8 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   goBackContainer: {
-    paddingVertical: 15,
+    marginBottom:100,
+    marginTop: 20,
     alignItems: 'center',
   },
   goBackButton: {
