@@ -105,6 +105,7 @@ const HadithBox = () => {
   };
 
   const handleRefetchClick = () => {
+    if (isFetching) return;
     setAddButtonDisabled(false); // Disable the button after clicking
 
     refetch();
@@ -160,9 +161,7 @@ const HadithBox = () => {
           styles.cardBody,
           showJoinedGroups ? styles.cardBodyWhite : styles.cardBodyLight,
         ]}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-        >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
           {showJoinedGroups ? (
             <>
               <Text style={styles.likesText}>
@@ -187,17 +186,18 @@ const HadithBox = () => {
             <Text style={styles.cardText}>{hadith?.data?.hadith}</Text>
           )}
 
-           {/* Go Back Button */}
-      <View style={styles.goBackContainer}>
-        <TouchableOpacity style={styles.goBackButton} onPress={handleGoBack}>
-          <Icon name="arrow-left" size={20} color="#fff" />
-          <Text style={styles.goBackText}>Go Back</Text>
-        </TouchableOpacity>
-      </View>
+          {/* Go Back Button */}
+          <View style={styles.goBackContainer}>
+            <TouchableOpacity
+              style={styles.goBackButton}
+              onPress={handleGoBack}>
+              <Icon name="arrow-left" size={20} color="#fff" />
+              <Text style={styles.goBackText}>Go Back</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </View>
 
-     
       <Snackbar
         visible={visible}
         onDismiss={() => setVisible(false)}
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   refreshButton: {
-    padding: 8,
+    padding: 12,
   },
   cardBody: {
     marginTop: 15,
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   goBackContainer: {
-    marginBottom:100,
+    marginBottom: 100,
     marginTop: 20,
     alignItems: 'center',
   },
