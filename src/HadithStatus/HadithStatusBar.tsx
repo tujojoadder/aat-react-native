@@ -46,7 +46,7 @@ export default function HadithStatusBar() {
                 serialNumber: index,
               }),
             );
-            console.log(dataWithSerialNumbers);
+           
             dispatch(setAllDayHadith(dataWithSerialNumbers));
           }
         })
@@ -75,7 +75,12 @@ export default function HadithStatusBar() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollViewContent}>
         {/* Create Component */}
-        <TouchableOpacity style={styles.createCard}>
+        <TouchableOpacity 
+        style={styles.createCard}
+        onPress={()=>{
+          navigation.navigate('hadithBox');
+        }}
+        >
           <Avatar.Icon size={40} icon="plus" style={styles.createIcon} />
           <Text style={[styles.createText, {fontSize: 17}]}>Add</Text>
           <Text style={styles.createText}>Day Hadith</Text>

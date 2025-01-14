@@ -37,6 +37,18 @@ interface GetDayHadithsResponse {
 }
 
 
+/* getRandomHadith */
+interface RandomHadith {
+  data: {
+    book: string; // The name of the book (e.g., "SahihBukhari")
+    created_at: string; // The timestamp of creation in ISO 8601 format
+    hadith: string; // The text of the Hadith
+    hadith_id: string; // A unique identifier for the Hadith
+    has_ques: "yes" | "no"; // Indicates if there are questions related to the Hadith
+    language: string; // The language of the Hadith (e.g., "Bangla")
+    updated_at: string; // The timestamp of the last update in ISO 8601 format
+  };
+}
 
 export const hadithApi = createApi({
   reducerPath: 'hadithApi',
@@ -59,7 +71,7 @@ export const hadithApi = createApi({
   }),
   endpoints: builder => ({
     /*    get random hadith for hadithbox */
-    getRandomHadith: builder.query({
+    getRandomHadith: builder.query<RandomHadith,void>({
       query: () => {
         return {
           url: '/get-random-hadith',
@@ -69,7 +81,7 @@ export const hadithApi = createApi({
     }),
 
     // setDayhadith
-    setDayhadith: builder.mutation({
+    setDayhadith: builder.mutation<{data:any},{ hadith_id: string }>({
       query: data => {
         return {
           url: '/setdayhadith',
