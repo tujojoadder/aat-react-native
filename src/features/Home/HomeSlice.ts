@@ -3,6 +3,7 @@ type DayHadith = {
   day_hadith: {
     isLiked: boolean;
     day_hadith_id:string;
+
     hadith:{
       hadith:string;
     }

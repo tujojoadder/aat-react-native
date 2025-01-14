@@ -16,14 +16,18 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated'; // Import Reanimated hooks
-import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootParamList } from '../../RootNavigator';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
-import { RootState } from '../app/store';
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
+import {RootParamList} from '../../RootNavigator';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../app/store';
+import {useLikeDayHadithMutation} from '../services/hadithApi';
+import {setIsLiked} from '../features/Home/HomeSlice';
 
-type  HadithProp=NativeStackScreenProps<RootParamList,'hadithContent'>;
-
+type HadithProp = NativeStackScreenProps<RootParamList, 'hadithContent'>;
 
 // Define the interface for each item in the allDayHadith array
 interface HadithData {
@@ -36,20 +40,21 @@ interface HadithData {
   loveReactions: number;
 }
 
-
-export default function HadithDayContent({navigation,route}:HadithProp) {
+export default function HadithDayContent({navigation, route}: HadithProp) {
   const {serialNumber} = route.params;
+  const dispatch = useDispatch();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasReacted, setHasReacted] = useState(false); // Track if the user has reacted
   const heartScale = useSharedValue(1); // Shared value for scaling the heart icon
   const allDayHadith = useSelector(
     (state: RootState) => state.home.allDayHadith,
   );
-  // Set currentIndex based on location.state.serialNumber
+  // Set currentIndex based on route.serialNumber and redux state serialNumber
   useEffect(() => {
-
     if (serialNumber && allDayHadith.length > 0) {
-      const index = allDayHadith.findIndex(hadith => hadith.serialNumber === serialNumber);
+      const index = allDayHadith.findIndex(
+        hadith => hadith.serialNumber === serialNumber,
+      );
       if (index !== -1) {
         setCurrentIndex(index);
       }
@@ -57,9 +62,7 @@ export default function HadithDayContent({navigation,route}:HadithProp) {
   }, [serialNumber]);
 
 
-
-
-
+  /* handle left right pressing */
   const handleNavigation = (direction: 'previous' | 'next') => {
     if (direction === 'previous' && currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
@@ -72,43 +75,87 @@ export default function HadithDayContent({navigation,route}:HadithProp) {
       }
     }
   };
-  
 
-  const handleLoveReaction = () => {
-    if (!hasReacted) {
-      /* allDayHadith[currentIndex].loveReactions += 1; */
-      setHasReacted(true); // Set that the user has reacted
-      heartScale.value = withSpring(1.5, {damping: 2, stiffness: 150}); // Animate heart scale on press
-      setTimeout(() => {
-        heartScale.value = withSpring(1); // Return to normal size after the animation
-      }, 300);
+  /* if allDayHadith not setted then navigate to home screen */
+  useEffect(() => {
+    if (!allDayHadith || allDayHadith.length === 0) {
+      navigation.navigate('main'); // Replace 'Home' with your home screen route name
     }
-  };
+  }, [allDayHadith, navigation]);
 
+/* style of animated love */
   const animatedHeartStyle = useAnimatedStyle(() => {
     return {
       transform: [{scale: heartScale.value}],
     };
   });
-
+/* track current hadith  */
   const currentHadith = allDayHadith[currentIndex];
+
+  useEffect(() => {
+    // Check if hadith alredy liked
+    if (currentHadith) {
+      if (currentHadith.day_hadith.isLiked) {
+        setHasReacted(true); // Set hasReacted to true if userFname is 'sompa'
+      } else {
+        setHasReacted(false); // Otherwise, set it to false
+      }
+    }
+  }, [currentHadith]); // This effect runs every time the currentHadith changes
+
+
+  /* Send request for reacting hadith */
+  const [
+    LikeDayHadithMutation,
+    {
+      isSuccess: LikeDayHadithMutationSucess,
+      isLoading: LikeDayHadithMutationLoading,
+      isError: LikeDayHadithMutationError,
+    },
+  ] = useLikeDayHadithMutation();
+
+  const likeClickHandle = async () => {
+    setHasReacted(true);
+
+    try {
+
+      /* controller will check day_hadith_id as parameter name */
+      const res = await LikeDayHadithMutation({
+        day_hadith_id: currentHadith.day_hadith.day_hadith_id,
+      });
+
+      if (res.data) {
+        dispatch(setIsLiked({index: serialNumber}));
+      } else if (res.error) {
+        console.log(res.error);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Appbar.BackAction onPress={() => {navigation.goBack()}} />
+        <Appbar.BackAction
+          onPress={() => {
+            navigation.goBack();
+          }}
+        />
         <Image
-            source={{
-              uri: `${process.env.REACT_APP_LARAVEL_URL}/${currentHadith.profile_picture}`,
-            }}
+          source={{
+            uri: `${process.env.REACT_APP_LARAVEL_URL}/${currentHadith.profile_picture}`,
+          }}
           style={styles.profilePicture}
         />
         <View style={styles.userInfo}>
           <Text numberOfLines={1} style={styles.userName}>
             {currentHadith.user_fname} {currentHadith.user_lname}
           </Text>
-          <Text  numberOfLines={1} style={styles.identifier}>@{currentHadith.identifier}</Text>
+          <Text numberOfLines={1} style={styles.identifier}>
+            @{currentHadith.identifier}
+          </Text>
         </View>
       </View>
 
@@ -126,18 +173,20 @@ export default function HadithDayContent({navigation,route}:HadithProp) {
           showsHorizontalScrollIndicator={false} // Hides the horizontal scrollbar (optional)
           contentContainerStyle={styles.scrollContent}>
           <View style={styles.hadithContainer}>
-            <Text style={styles.hadithText}>{currentHadith.day_hadith.hadith.hadith}</Text>
+            <Text style={styles.hadithText}>
+              {currentHadith.day_hadith.hadith.hadith}
+            </Text>
           </View>
 
           {/* Love Reaction Section */}
           <View style={styles.reactionContainer}>
-            <TouchableOpacity onPress={handleLoveReaction}>
+            <TouchableOpacity onPress={likeClickHandle}>
               <Animated.View style={animatedHeartStyle}>
                 <Text>
                   <MaterialCommunityIcons
                     name="heart"
                     size={30}
-                    color={hasReacted ? 'red' : '#888'}
+                    color={hasReacted ? 'red' : '#999'}
                   />{' '}
                   {/* Animated heart icon */}
                 </Text>
@@ -163,15 +212,15 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-   
+
     backgroundColor: '#fff',
-    paddingVertical:16
+    paddingVertical: 16,
   },
   profilePicture: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginLeft:5
+    marginLeft: 5,
   },
   userInfo: {
     marginLeft: 12,
