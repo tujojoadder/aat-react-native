@@ -9,58 +9,52 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 type PostData = {
-  approval: number;
-  audience: string;
-  author: {
-    birthdate: string;
-    blueticks: number;
-    cover_photo: string;
+    approval: number;
+    audience: string;
+    author: {
+      birthdate: string;
+      blueticks: number;
+      cover_photo: string;
+      created_at: string;
+      email: string;
+      gender: string;
+      identifier: string;
+      profile_picture: string;
+      reported_count: number;
+      total_quiz_point: number;
+      updated_at: string;
+      user_fname: string;
+      user_id: string;
+      user_lname: string;
+    };
+    author_id: string;
     created_at: string;
-    email: string;
-    gender: string;
-    identifier: string;
-    profile_picture: string;
+    group_id: string | null;
+    iaccount_id: string | null;
+    image_post: null;
+    isLove: boolean;
+    isUnlike: boolean;
+    page_id: string | null;
+    post_id: string;
+    post_type: string;
     reported_count: number;
-    total_quiz_point: number;
-    updated_at: string;
-    user_fname: string;
-    user_id: string;
-    user_lname: string;
-  };
-  author_id: string;
-  created_at: string;
-  group_id: string | null;
-  iaccount_id: string | null;
-  image_post: {
-    created_at: string;
-    image_posts_id: string;
-    post_id: string;
-    post_url: string;
+    text_post: {
+      created_at: string;
+      post_id: string;
+      post_text: string;
+      text_post_id: string;
+      updated_at: string;
+    } ;
+    timeline_ids: string;
+    totalLove: number;
+    totalUnlike: number;
+    total_comments: number;
     updated_at: string;
   };
-  isLove: boolean;
-  isUnlike: boolean;
-  page_id: string | null;
-  post_id: string;
-  post_type: string;
-  reported_count: number;
-  text_post: {
-    created_at: string;
-    post_id: string;
-    post_text: string;
-    text_post_id: string;
-    updated_at: string;
-  };
-  timeline_ids: string;
-  totalLove: number;
-  totalUnlike: number;
-  total_comments: number;
-  updated_at: string;
-};
-
-
-export default function BPost({post}:{post:PostData}) {
- const [imageHeight, setImageHeight] = useState(Dimensions.get('window').height/2);
+  
+  
+export default function TextPost({post}:{post:PostData}) {
+  const [imageHeight, setImageHeight] = useState(0);
   const [likes, setLikes] = useState(120);
   const [unlikes, setUnlikes] = useState(15);
   const [isTextExpanded, setIsTextExpanded] = useState(false); // For "See More" functionality
@@ -69,22 +63,9 @@ export default function BPost({post}:{post:PostData}) {
   const maxHeight = Dimensions.get('window').height / 1.3;
 
 
-const imageUri =`${process.env.REACT_APP_LARAVEL_URL}/${post.image_post?.post_url}`;
 const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_picture}`;
  
-
-  useEffect(() => {
-    Image.getSize(
-      imageUri,
-      (width, height) => {
-        const aspectRatio = height / width;
-        const calculatedHeight = screenWidth * aspectRatio;
-        setImageHeight(Math.min(calculatedHeight, maxHeight));
-      },
-      error => {
-      },
-    );
-  }, [imageUri, screenWidth]);
+  
 
   const handleLike = () => setLikes(likes + 1);
   const handleUnlike = () => setUnlikes(unlikes + 1);
@@ -101,7 +82,7 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
           <Image source={{uri:profilePic}} style={styles.profilePic} />
           <View style={styles.userInfo}>
             <Text style={styles.userName} numberOfLines={1}>
-              {post.author.user_fname} {post.author.user_lname}
+            {post.author.user_fname} {post.author.user_lname}
             </Text>
             <Text style={styles.identifier}>{post.author.identifier}</Text>
           </View>
@@ -121,12 +102,7 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
         )}
       </Text>
 
-      {/* Post Image */}
-      <Image
-        source={{uri: imageUri}}
-        style={[styles.image, {height: imageHeight}]}
-        resizeMode="cover"
-      />
+    
 
       {/* Reactions Section */}
       <View style={styles.reactions}>
@@ -140,7 +116,7 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
         </TouchableOpacity>
         <TouchableOpacity style={styles.reactionButton}>
           <MaterialIcons name="comment" size={20} color="#007BFF" />
-          <Text style={styles.reactionText}> 15</Text>
+          <Text style={styles.reactionText}> 22</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.reactionButton} onPress={toggleOptions}>
           <MaterialIcons name="expand-less" size={21} color="#007BFF" />
@@ -170,9 +146,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 15,
     elevation: 2,
-    marginBottom:1,
-    margin:0
- 
+    marginBottom:1
+    
   },
   header: {
     flexDirection: 'row',
@@ -219,11 +194,6 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     fontWeight: 'bold',
     fontSize: 15,
-  },
-  image: {
-    width: '100%',
-    borderRadius: 12,
-    marginBottom: 7,
   },
   reactions: {
     flexDirection: 'row',

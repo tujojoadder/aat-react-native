@@ -12,7 +12,14 @@ import {
   NativeScrollEvent,
   FlatList,
 } from 'react-native';
-import {ActivityIndicator, Appbar, Button, Dialog, Paragraph, Portal} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Appbar,
+  Button,
+  Dialog,
+  Paragraph,
+  Portal,
+} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import * as Keychain from 'react-native-keychain';
 import {useLogOutUserMutation} from '../../services/userAuthApi';
@@ -30,13 +37,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {RootState} from '../../app/store';
 import BPost from '../BPost/BPost';
 import {REACT_APP_LARAVEL_URL} from '@env';
-import { useGetPostsQuery } from '../../services/postApi';
+import {useGetPostsQuery} from '../../services/postApi';
+import ImagePost from '../ImagePost/ImagePost';
+import TextPost from './../TextPost/TextPost';
 
 type HomeNavigationProps = NativeStackNavigationProp<RootParamList, 'main'>;
-interface PostData{
-  post_id:string
-}
-const {height} = Dimensions.get('window');
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -51,25 +56,22 @@ export default function Home() {
   const isAppBarHidden = useRef(false); // AppBar visibility tracker
   const scrollThreshold = 10; // Smooth behavior threshold
 
-
   /* post data */
   const [page, setPage] = useState(1);
-  const [allPosts, setAllPosts] = useState<PostData[]>([]);
+  const [allPosts, setAllPosts] = useState<any[]>([]);
   const [hasMorePosts, setHasMorePosts] = useState(true);
 
-  const { data, isFetching,error, isError, isSuccess, isLoading } = useGetPostsQuery(page);
+  const {data, isFetching, error, isError, isSuccess, isLoading} =
+    useGetPostsQuery(page);
 
-
-  if (isSuccess) {
-   console.log(data);
-  }
   useEffect(() => {
     if (isSuccess && data?.data) {
       if (data.data.length === 0) {
         setHasMorePosts(false);
       } else {
         const newPosts = data.data.filter(
-          (newPost:PostData) => !allPosts.some(post => post.post_id === newPost.post_id),
+          (newPost: any) =>
+            !allPosts.some(post => post.post_id === newPost.post_id),
         );
         if (newPosts.length > 0) {
           setAllPosts(prevPosts => [...prevPosts, ...newPosts]);
@@ -80,16 +82,23 @@ export default function Home() {
 
   const loadMorePosts = useCallback(() => {
     if (hasMorePosts && !isFetching && !isError) {
-      console.log('Loading more posts for page:', page + 1);
-      setPage(prevPage => prevPage + 1);
+      /*       console.log('Loading more posts for page:', page + 1);
+       */ setPage(prevPage => prevPage + 1);
     }
   }, [hasMorePosts, isFetching, isError, page]);
 
-  const renderItem = ({ item }:{item:PostData}) => (
-    <View style={styles.postContainer}>
-      <Text style={styles.postText}>Post ID: {item.post_id}</Text>
-    </View>
-  );
+  const renderItem = ({item: post}: {item: any}) => {
+    // Log the post object to the console
+
+
+    return (
+      <View style={styles.postContainer} key={post.post_id}>
+        {post.text_post && !post.image_post && <TextPost post={post} />}
+        {!post.text_post && post.image_post && <ImagePost post={post} />}
+        {post.text_post && post.image_post && <BPost post={post} />}
+      </View>
+    );
+  };
 
   // Add a new state for handling the initial load state
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
@@ -101,11 +110,7 @@ export default function Home() {
     }
   }, [isSuccess, data]);
 
-
-
-
-
-/* App bar */
+  /* App bar */
   const appBarAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{translateY: appBarOffset.value}],
@@ -191,45 +196,36 @@ export default function Home() {
         </Appbar.Header>
       </Animated.View>
 
-    
-        
-    
-      <Animated.FlatList<PostData>
-
-showsVerticalScrollIndicator={false} /* hide the scrollbar */
-
-      onScroll={handleScroll}
+      <Animated.FlatList
+        showsVerticalScrollIndicator={false} /* hide the scrollbar */
+        onScroll={handleScroll}
         data={allPosts}
         renderItem={renderItem}
+        windowSize={100}
+        onEndReachedThreshold={7}
         keyExtractor={item => item.post_id.toString()}
         onEndReached={loadMorePosts}
-        ListFooterComponent={() =>
-          isFetching && allPosts.length > 0 && (
+       /*  ListFooterComponent={() =>
+          isFetching &&
+          allPosts.length > 0 && (
             <ActivityIndicator size="large" color="#0000ff" />
           )
-        }
+        } */
         ListEmptyComponent={() =>
-          !isLoading && !isFetching && allPosts.length === 0 && isInitialLoadComplete ? (
+          !isLoading &&
+          !isFetching &&
+          allPosts.length === 0 &&
+          isInitialLoadComplete ? (
             <Text style={styles.emptyText}>No posts available</Text>
           ) : null
         }
-        
-
         ListHeaderComponent={
           <View>
-          <View style={{height: 70, backgroundColor: '#f9f9f9'}}></View>
+            <View style={{height: 70, backgroundColor: '#f9f9f9'}}></View>
 
-          <HadithStatus />
-          
-          <BPost />
-          <Text style={styles.content}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Et maiores
-          </Text>
-
-          
-        </View>
+            <HadithStatus />
+          </View>
         }
-
         contentContainerStyle={allPosts.length === 0 ? styles.emptyList : null} // Handle empty list styling
       />
     </SafeAreaView>
@@ -245,14 +241,7 @@ const styles = StyleSheet.create({
     height: 70,
     zIndex: 1,
     backgroundColor: 'white',
-    borderBottomColor: '#ddd',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-
-    shadowOffset: {width: 0, height: 2},
+    elevation: 2,
   },
   appBarHeader: {
     backgroundColor: 'transparent',
@@ -274,27 +263,22 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
 
-
-
-/* post */
-postContainer: {
-  padding: 15,
-  borderBottomWidth: 1,
-  borderBottomColor: '#ddd',
-}
-,
-postText: {
-  fontSize: 16,
-  color: '#333',
-},
-emptyText: {
-  textAlign: 'center',
-  fontSize: 16,
-  color: '#888',
-},
- emptyList: {
+  /* post */
+  postContainer: {
+    
+  },
+  postText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#888',
+  },
+  emptyList: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });

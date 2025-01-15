@@ -118,7 +118,7 @@ export default function HadithStatusBar() {
                 <Text numberOfLines={1} style={styles.cardName}>
                   {item.user_fname} {item.user_lname}
                 </Text>
-                <Text numberOfLines={2} style={styles.cardHadith}>
+                <Text numberOfLines={3} style={styles.cardHadith}>
                   {item.day_hadith.hadith.hadith}
                 </Text>
               </View>
@@ -131,7 +131,7 @@ export default function HadithStatusBar() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'white',
     paddingVertical: 15,
   },
   scrollViewContent: {
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   },
   createCard: {
     width: 110,
-    height: 160,
+    height: 170,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#e0f7fa',
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   hadithCard: {
     width: 140,
-    height: 185,
+    height: 200,
     borderRadius: 15,
 
     overflow: 'hidden',
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0f7fa',
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
-    height: 80,
+    height: 95,
   },
   cardName: {
     color: '#333',
