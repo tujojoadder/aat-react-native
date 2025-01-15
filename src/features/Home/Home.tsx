@@ -195,6 +195,9 @@ export default function Home() {
         
     
       <Animated.FlatList<PostData>
+
+showsVerticalScrollIndicator={false} /* hide the scrollbar */
+
       onScroll={handleScroll}
         data={allPosts}
         renderItem={renderItem}
