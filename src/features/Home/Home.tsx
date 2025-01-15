@@ -1,6 +1,6 @@
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,9 @@ import {
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  FlatList,
 } from 'react-native';
-import {Appbar, Button, Dialog, Paragraph, Portal} from 'react-native-paper';
+import {ActivityIndicator, Appbar, Button, Dialog, Paragraph, Portal} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import * as Keychain from 'react-native-keychain';
 import {useLogOutUserMutation} from '../../services/userAuthApi';
@@ -28,12 +29,13 @@ import HadithStatus from '../../HadithStatus/HadithStatusBar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {RootState} from '../../app/store';
 import BPost from '../BPost/BPost';
+import {REACT_APP_LARAVEL_URL} from '@env';
+import { useGetPostsQuery } from '../../services/postApi';
 
-type HomeNavigationProps = NativeStackNavigationProp<
-  RootParamList,
-  'main'
->;
-
+type HomeNavigationProps = NativeStackNavigationProp<RootParamList, 'main'>;
+interface PostData{
+  post_id:string
+}
 const {height} = Dimensions.get('window');
 
 export default function Home() {
@@ -49,13 +51,67 @@ export default function Home() {
   const isAppBarHidden = useRef(false); // AppBar visibility tracker
   const scrollThreshold = 10; // Smooth behavior threshold
 
+
+  /* post data */
+  const [page, setPage] = useState(1);
+  const [allPosts, setAllPosts] = useState<PostData[]>([]);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+
+  const { data, isFetching,error, isError, isSuccess, isLoading } = useGetPostsQuery(page);
+
+
+  if (isSuccess) {
+   console.log(data);
+  }
+  useEffect(() => {
+    if (isSuccess && data?.data) {
+      if (data.data.length === 0) {
+        setHasMorePosts(false);
+      } else {
+        const newPosts = data.data.filter(
+          (newPost:PostData) => !allPosts.some(post => post.post_id === newPost.post_id),
+        );
+        if (newPosts.length > 0) {
+          setAllPosts(prevPosts => [...prevPosts, ...newPosts]);
+        }
+      }
+    }
+  }, [data, isSuccess]);
+
+  const loadMorePosts = useCallback(() => {
+    if (hasMorePosts && !isFetching && !isError) {
+      console.log('Loading more posts for page:', page + 1);
+      setPage(prevPage => prevPage + 1);
+    }
+  }, [hasMorePosts, isFetching, isError, page]);
+
+  const renderItem = ({ item }:{item:PostData}) => (
+    <View style={styles.postContainer}>
+      <Text style={styles.postText}>Post ID: {item.post_id}</Text>
+    </View>
+  );
+
+  // Add a new state for handling the initial load state
+  const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
+
+  // Mark the initial load as complete when the first successful fetch occurs
+  useEffect(() => {
+    if (isSuccess && data?.data) {
+      setIsInitialLoadComplete(true);
+    }
+  }, [isSuccess, data]);
+
+
+
+
+
+/* App bar */
   const appBarAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{translateY: appBarOffset.value}],
       opacity: appBarOpacity.value,
     };
   });
-
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentScrollY = event.nativeEvent.contentOffset.y;
     /*  console.log('currentScrollY' + currentScrollY);
@@ -135,22 +191,44 @@ export default function Home() {
         </Appbar.Header>
       </Animated.View>
 
-      <Animated.ScrollView
-        overScrollMode="never" // Disable overscroll effect on Android
-        bounces={false} // Disable bounce effect on iOS
-        onScroll={handleScroll}
-        showsVerticalScrollIndicator={false} // Hides the vertical scrollbar
-        scrollEventThrottle={16}>
-        <View>
+    
+        
+    
+      <Animated.FlatList<PostData>
+      onScroll={handleScroll}
+        data={allPosts}
+        renderItem={renderItem}
+        keyExtractor={item => item.post_id.toString()}
+        onEndReached={loadMorePosts}
+        ListFooterComponent={() =>
+          isFetching && allPosts.length > 0 && (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )
+        }
+        ListEmptyComponent={() =>
+          !isLoading && !isFetching && allPosts.length === 0 && isInitialLoadComplete ? (
+            <Text style={styles.emptyText}>No posts available</Text>
+          ) : null
+        }
+        
+
+        ListHeaderComponent={
+          <View>
           <View style={{height: 70, backgroundColor: '#f9f9f9'}}></View>
 
           <HadithStatus />
+          
           <BPost />
           <Text style={styles.content}>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Et maiores
           </Text>
+
+          
         </View>
-      </Animated.ScrollView>
+        }
+
+        contentContainerStyle={allPosts.length === 0 ? styles.emptyList : null} // Handle empty list styling
+      />
     </SafeAreaView>
   );
 }
@@ -192,4 +270,28 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     lineHeight: 28,
   },
+
+
+
+/* post */
+postContainer: {
+  padding: 15,
+  borderBottomWidth: 1,
+  borderBottomColor: '#ddd',
+}
+,
+postText: {
+  fontSize: 16,
+  color: '#333',
+},
+emptyText: {
+  textAlign: 'center',
+  fontSize: 16,
+  color: '#888',
+},
+ emptyList: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
