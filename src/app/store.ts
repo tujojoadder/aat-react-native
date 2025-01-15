@@ -10,6 +10,7 @@ import { homeSlice } from '../features/Home/HomeSlice';
 import { userLoginApi } from '../services/userLoginApi';
 import { userAuthApi } from '../services/userAuthApi';
 import { hadithApi } from '../services/hadithApi';
+import { postApi } from './../services/postApi';
 
 
 // Persist configuration
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   [userLoginApi.reducerPath]: userLoginApi.reducer,
   [userAuthApi.reducerPath]: userAuthApi.reducer,
   [hadithApi.reducerPath]: hadithApi.reducer,
+  [postApi.reducerPath]: postApi.reducer,
   // Add more reducers as needed
 });
 
@@ -45,6 +47,7 @@ export const store = configureStore({
       userLoginApi.middleware,
       userAuthApi.middleware,
       hadithApi.middleware,
+      postApi.middleware,
       // Add other middlewares as needed
     ),
 });
