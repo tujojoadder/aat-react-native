@@ -29,7 +29,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {RootState} from '../../app/store';
 import BPost from '../BPost/BPost';
 
-type SettingsScreenNavigationProp = NativeStackNavigationProp<
+type HomeNavigationProps = NativeStackNavigationProp<
   RootParamList,
   'main'
 >;
@@ -42,7 +42,7 @@ export default function Home() {
     (state: RootState) => state.home.allDayHadith,
   );
 
-  const navigation = useNavigation<SettingsScreenNavigationProp>();
+  const navigation = useNavigation<HomeNavigationProps>();
   const appBarOffset = useSharedValue(0); // For AppBar movement
   const appBarOpacity = useSharedValue(1); // For AppBar fade effect
   const prevScrollY = useRef(0); // Previous scroll position tracker
