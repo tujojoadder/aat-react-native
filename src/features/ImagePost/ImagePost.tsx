@@ -77,7 +77,12 @@ export default function ImagePost({post}:{post:PostData}) {
         const aspectRatio = height / width;
         const calculatedHeight = screenWidth * aspectRatio;
         setImageHeight(Math.min(calculatedHeight, maxHeight));
-      }
+      },
+      error => {
+
+        setImageHeight(Dimensions.get('window').height/2);
+
+      },
     );
   }, [imageUri, screenWidth]);
 

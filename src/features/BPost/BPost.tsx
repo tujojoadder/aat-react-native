@@ -82,6 +82,9 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
         setImageHeight(Math.min(calculatedHeight, maxHeight));
       },
       error => {
+
+        setImageHeight(Dimensions.get('window').height/2);
+
       },
     );
   }, [imageUri, screenWidth]);
