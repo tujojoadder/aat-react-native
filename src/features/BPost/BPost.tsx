@@ -149,11 +149,7 @@ const BPost = React.memo(({post}: {post: PostData}) => {
     </View>
   );
 });
-<<<<<<< HEAD
 export default React.memo(BPost);
-=======
-export default BPost;
->>>>>>> 49d4a89eaf350d188da8fe559e5c0fa6daa4c75e
 
 const styles = StyleSheet.create({
   container: {
