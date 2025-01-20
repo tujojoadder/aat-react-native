@@ -88,7 +88,7 @@ export default function Home() {
   }, [hasMorePosts, isFetching, isError, page]);
 
   const renderItem = useCallback(
-    ({ item: post }: { item: any }) => {
+    ({item: post}: {item: any}) => {
       return (
         <View style={styles.postContainer} key={post.post_id}>
           {post.text_post && !post.image_post && <TextPost post={post} />}
@@ -97,8 +97,8 @@ export default function Home() {
         </View>
       );
     },
-    [allPosts] // Add dependencies here if necessary (e.g., styles, child components, or props)
-  )
+    [allPosts], // Add dependencies here if necessary (e.g., styles, child components, or props)
+  );
 
   // Add a new state for handling the initial load state
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
@@ -197,15 +197,23 @@ export default function Home() {
       </Animated.View>
 
       <Animated.FlatList
-        showsVerticalScrollIndicator={false} /* hide the scrollbar */
+        showsVerticalScrollIndicator={true} /* hide the scrollbar */
         onScroll={handleScroll}
         data={allPosts}
         renderItem={renderItem}
-        windowSize={100}
-        onEndReachedThreshold={7}
+        windowSize={10}
+        onEndReachedThreshold={0.5}
+        initialNumToRender={10} // Render 10 items initially
+        maxToRenderPerBatch={5} // Render 5 items per batch
+
+
+        
+        ListFooterComponent={() => (
+          <ActivityIndicator size="large" color="#0000ff" />
+        )}
         keyExtractor={item => item.post_id.toString()}
         onEndReached={loadMorePosts}
-       /*  ListFooterComponent={() =>
+        /*  ListFooterComponent={() =>
           isFetching &&
           allPosts.length > 0 && (
             <ActivityIndicator size="large" color="#0000ff" />
@@ -264,9 +272,7 @@ const styles = StyleSheet.create({
   },
 
   /* post */
-  postContainer: {
-    
-  },
+  postContainer: {},
   postText: {
     fontSize: 16,
     color: '#333',

@@ -140,7 +140,7 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
     </View>
   );
 });
-export default TextPost;
+export default React.memo(TextPost);
 
 
 const styles = StyleSheet.create({

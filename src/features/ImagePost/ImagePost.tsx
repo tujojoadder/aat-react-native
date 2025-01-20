@@ -150,7 +150,7 @@ const ImagePost=(({post}:{post:PostData})=>{
     </View>
   );
 });
-export default ImagePost;
+export default React.memo(ImagePost);
 
 const styles = StyleSheet.create({
   container: {

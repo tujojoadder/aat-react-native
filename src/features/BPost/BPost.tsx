@@ -167,7 +167,7 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
     </View>
   );
 });
-export default BPost
+export default React.memo(BPost);
 
 const styles = StyleSheet.create({
   container: {
