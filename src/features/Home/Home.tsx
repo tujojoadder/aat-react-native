@@ -88,7 +88,7 @@ export default function Home() {
   }, [hasMorePosts, isFetching, isError, page]);
 
   const renderItem = useCallback(
-    ({ item: post }: { item: any }) => {
+    ({item: post}: {item: any}) => {
       return (
         <View style={styles.postContainer} key={post.post_id}>
           {post.text_post && !post.image_post && <TextPost post={post} />}
@@ -97,8 +97,8 @@ export default function Home() {
         </View>
       );
     },
-    [allPosts] // Add dependencies here if necessary (e.g., styles, child components, or props)
-  )
+    [], // Add dependencies here if necessary (e.g., styles, child components, or props)
+  );
 
   // Add a new state for handling the initial load state
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
@@ -169,6 +169,11 @@ export default function Home() {
     StatusBar.setBackgroundColor('white');
   });
 
+  const mykeyExtractor = useCallback(
+    (item: any) => item.post_id.toString(),
+    [],
+  );
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <Animated.View
@@ -201,12 +206,15 @@ export default function Home() {
         onScroll={handleScroll}
         data={allPosts}
         renderItem={renderItem}
-        windowSize={100}
-        onEndReachedThreshold={7}
-        keyExtractor={item => item.post_id.toString()}
+        windowSize={10}
+        maxToRenderPerBatch={7}
+        
+        onEndReachedThreshold={0.5}
+        keyExtractor={mykeyExtractor}
+        
         onEndReached={loadMorePosts}
-       /*  ListFooterComponent={() =>
-          isFetching &&
+        /*  ListFooterComponent={() =>
+        isFetching &&
           allPosts.length > 0 && (
             <ActivityIndicator size="large" color="#0000ff" />
           )
@@ -227,6 +235,9 @@ export default function Home() {
           </View>
         }
         contentContainerStyle={allPosts.length === 0 ? styles.emptyList : null} // Handle empty list styling
+        ListFooterComponent={() => (
+          <ActivityIndicator size="large" color="#0000ff" />
+        )}
       />
     </SafeAreaView>
   );
@@ -264,9 +275,7 @@ const styles = StyleSheet.create({
   },
 
   /* post */
-  postContainer: {
-    
-  },
+  postContainer: {},
   postText: {
     fontSize: 16,
     color: '#333',
