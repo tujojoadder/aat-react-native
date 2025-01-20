@@ -59,7 +59,7 @@ type PostData = {
 };
 
 
-export default function BPost({post}:{post:PostData}) {
+ const BPost=(({post}:{post:PostData})=>{
  const [imageHeight, setImageHeight] = useState(Dimensions.get('window').height/2);
   const [likes, setLikes] = useState(120);
   const [unlikes, setUnlikes] = useState(15);
@@ -166,7 +166,8 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
       )}
     </View>
   );
-}
+});
+export default BPost
 
 const styles = StyleSheet.create({
   container: {

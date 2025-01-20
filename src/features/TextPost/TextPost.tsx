@@ -53,7 +53,7 @@ type PostData = {
   };
   
   
-export default function TextPost({post}:{post:PostData}) {
+ const TextPost=React.memo(({post}:{post:PostData})=>{
   const [imageHeight, setImageHeight] = useState(0);
   const [likes, setLikes] = useState(120);
   const [unlikes, setUnlikes] = useState(15);
@@ -139,7 +139,9 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
       )}
     </View>
   );
-}
+});
+export default TextPost;
+
 
 const styles = StyleSheet.create({
   container: {

@@ -59,7 +59,7 @@ type PostData = {
   };
   
   
-export default function ImagePost({post}:{post:PostData}) {
+const ImagePost=(({post}:{post:PostData})=>{
   const [imageHeight, setImageHeight] = useState(Dimensions.get('window').height/2);
   const [likes, setLikes] = useState(120);
   const [unlikes, setUnlikes] = useState(15);
@@ -149,7 +149,8 @@ export default function ImagePost({post}:{post:PostData}) {
       )}
     </View>
   );
-}
+});
+export default ImagePost;
 
 const styles = StyleSheet.create({
   container: {

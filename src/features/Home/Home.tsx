@@ -87,18 +87,18 @@ export default function Home() {
     }
   }, [hasMorePosts, isFetching, isError, page]);
 
-  const renderItem = ({item: post}: {item: any}) => {
-    // Log the post object to the console
-
-
-    return (
-      <View style={styles.postContainer} key={post.post_id}>
-        {post.text_post && !post.image_post && <TextPost post={post} />}
-        {!post.text_post && post.image_post && <ImagePost post={post} />}
-        {post.text_post && post.image_post && <BPost post={post} />}
-      </View>
-    );
-  };
+  const renderItem = useCallback(
+    ({ item: post }: { item: any }) => {
+      return (
+        <View style={styles.postContainer} key={post.post_id}>
+          {post.text_post && !post.image_post && <TextPost post={post} />}
+          {!post.text_post && post.image_post && <ImagePost post={post} />}
+          {post.text_post && post.image_post && <BPost post={post} />}
+        </View>
+      );
+    },
+    [allPosts] // Add dependencies here if necessary (e.g., styles, child components, or props)
+  )
 
   // Add a new state for handling the initial load state
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
