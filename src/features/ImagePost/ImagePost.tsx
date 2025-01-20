@@ -59,7 +59,7 @@ type PostData = {
   };
   
   
-const ImagePost=(({post}:{post:PostData})=>{
+const ImagePost=React.memo(({post}:{post:PostData})=>{
   const [imageHeight, setImageHeight] = useState(Dimensions.get('window').height/2);
   const [likes, setLikes] = useState(120);
   const [unlikes, setUnlikes] = useState(15);
@@ -68,24 +68,7 @@ const ImagePost=(({post}:{post:PostData})=>{
   const maxHeight = Dimensions.get('window').height / 1.6;
   const imageUri =`${process.env.REACT_APP_LARAVEL_URL}/${post.image_post?.post_url}`;
   const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_picture}`;
-   
-
-  useEffect(() => {
-    Image.getSize(
-      imageUri,
-      (width, height) => {
-        const aspectRatio = height / width;
-        const calculatedHeight = screenWidth * aspectRatio;
-        setImageHeight(Math.min(calculatedHeight, maxHeight));
-      },
-      error => {
-
-        setImageHeight(Dimensions.get('window').height/2);
-
-      },
-    );
-  }, [imageUri, screenWidth]);
-
+  
   const handleLike = () => setLikes(likes + 1);
   const handleUnlike = () => setUnlikes(unlikes + 1);
 

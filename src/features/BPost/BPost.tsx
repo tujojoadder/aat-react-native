@@ -58,36 +58,18 @@ type PostData = {
   updated_at: string;
 };
 
-
- const BPost=(({post}:{post:PostData})=>{
- const [imageHeight, setImageHeight] = useState(Dimensions.get('window').height/2);
+const BPost = React.memo(({post}: {post: PostData}) => {
+  const [imageHeight, setImageHeight] = useState(
+    Dimensions.get('window').height / 2,
+  );
   const [likes, setLikes] = useState(120);
   const [unlikes, setUnlikes] = useState(15);
   const [isTextExpanded, setIsTextExpanded] = useState(false); // For "See More" functionality
   const [showOptions, setShowOptions] = useState(false); // Controls the visibility of the options dropdown
   const screenWidth = Dimensions.get('window').width;
-  const maxHeight = Dimensions.get('window').height / 1.3;
 
-
-const imageUri =`${process.env.REACT_APP_LARAVEL_URL}/${post.image_post?.post_url}`;
-const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_picture}`;
- 
-
-  useEffect(() => {
-    Image.getSize(
-      imageUri,
-      (width, height) => {
-        const aspectRatio = height / width;
-        const calculatedHeight = screenWidth * aspectRatio;
-        setImageHeight(Math.min(calculatedHeight, maxHeight));
-      },
-      error => {
-
-        setImageHeight(Dimensions.get('window').height/2);
-
-      },
-    );
-  }, [imageUri, screenWidth]);
+  const imageUri = `${process.env.REACT_APP_LARAVEL_URL}/${post.image_post?.post_url}`;
+  const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_picture}`;
 
   const handleLike = () => setLikes(likes + 1);
   const handleUnlike = () => setUnlikes(unlikes + 1);
@@ -101,7 +83,7 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
       {/* Post Header */}
       <View style={styles.header}>
         <View style={styles.leftHeader}>
-          <Image source={{uri:profilePic}} style={styles.profilePic} />
+          <Image source={{uri: profilePic}} style={styles.profilePic} />
           <View style={styles.userInfo}>
             <Text style={styles.userName} numberOfLines={1}>
               {post.author.user_fname} {post.author.user_lname}
@@ -167,16 +149,19 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
     </View>
   );
 });
+<<<<<<< HEAD
 export default React.memo(BPost);
+=======
+export default BPost;
+>>>>>>> 49d4a89eaf350d188da8fe559e5c0fa6daa4c75e
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     padding: 15,
     elevation: 2,
-    marginBottom:1,
-    margin:0
- 
+    marginBottom: 1,
+    margin: 0,
   },
   header: {
     flexDirection: 'row',
