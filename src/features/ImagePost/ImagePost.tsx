@@ -59,7 +59,7 @@ type PostData = {
   };
   
   
-const ImagePost=(({post}:{post:PostData})=>{
+const ImagePost=React.memo(({post}:{post:PostData})=>{
   const [imageHeight, setImageHeight] = useState(Dimensions.get('window').height/2);
   const [likes, setLikes] = useState(120);
   const [unlikes, setUnlikes] = useState(15);
