@@ -2,17 +2,17 @@ import {createSlice} from '@reduxjs/toolkit';
 type DayHadith = {
   day_hadith: {
     isLiked: boolean;
-    day_hadith_id:string;
+    day_hadith_id: string;
 
-    hadith:{
-      hadith:string;
-    }
+    hadith: {
+      hadith: string;
+    };
   };
-  profile_picture:string;
-  user_fname:string;
-  user_lname:string;
-  serialNumber:number;
-  identifier:string;
+  profile_picture: string;
+  user_fname: string;
+  user_lname: string;
+  serialNumber: number;
+  identifier: string;
 };
 
 interface HomeState {
@@ -27,12 +27,10 @@ interface HomeState {
   gender: string;
   birthdate: string;
   allDayHadith: DayHadith[];
-  
-  
+  /* love and unlike */
+  loveReactions: Record<string, boolean>; // Object to track love reactions by post ID
+  unlikeReactions: Record<string, boolean>; // Object to track unlike reactions by post ID
 }
-
-
-
 
 const initialState: HomeState = {
   isAuthenticated: null,
@@ -46,8 +44,11 @@ const initialState: HomeState = {
   gender: '',
   birthdate: '',
   allDayHadith: [],
-};
 
+  /* love and unlike  */
+  loveReactions: {}, // Initialize as an empty object
+  unlikeReactions: {}, // Initialize as an empty object
+};
 
 export const homeSlice = createSlice({
   name: 'userDetails',
@@ -84,8 +85,6 @@ export const homeSlice = createSlice({
       state.gender = action.payload;
     },
 
-
-
     /* Hadith reducers */
 
     setAllDayHadith: (state, action) => {
@@ -93,14 +92,31 @@ export const homeSlice = createSlice({
     },
 
     setIsLiked: (state, action) => {
-      const { index } = action.payload;
+      const {index} = action.payload;
       state.allDayHadith[index].day_hadith.isLiked = true;
     },
 
+    /* Love and Unlike */
 
+    setLoveReaction: (state, action) => {
+      const {postId, isActive} = action.payload;
+      if (isActive) {
+        state.loveReactions[postId] = true; // Mark as loved
+        delete state.unlikeReactions[postId]; // Remove the 'unlike' if it was previously active
+      } else {
+        delete state.loveReactions[postId]; // Remove love reaction if deactivated
+      }
+    },
 
-
-
+    setUnlikeReactions: (state, action) => {
+      const {postId, isActive} = action.payload;
+      if (isActive) {
+        state.unlikeReactions[postId] = true; // Mark as unliked
+        delete state.loveReactions[postId]; // Remove love reaction if it was previously active
+      } else {
+        delete state.unlikeReactions[postId]; // Remove unlike reaction if deactivated
+      }
+    },
   },
 });
 
@@ -116,7 +132,7 @@ export const {
   setBirthDate,
   setGender,
   setAllDayHadith,
-  setIsLiked
+  setIsLiked,
 } = homeSlice.actions;
 
 export default homeSlice.reducer;
