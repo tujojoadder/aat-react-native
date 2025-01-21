@@ -163,7 +163,7 @@ export default function Home() {
         keyExtractor={item => item.post_id.toString()}
         onScroll={handleScroll}
         onEndReached={loadMorePosts}
-        onEndReachedThreshold={0}
+       
         contentContainerStyle={
           allPosts.length === 0 ? styles.emptyList : undefined
         }

@@ -1,13 +1,13 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { ActivityIndicator } from 'react-native-paper'
+import {View, Text} from 'react-native';
+import React from 'react';
+import {ActivityIndicator} from 'react-native-paper';
 
-const Activator=()=> {
+const Activator = () => {
   return (
-
-    
-   <ActivityIndicator ></ActivityIndicator>
-  )
+    <View style={{paddingVertical:8}}>
+      <ActivityIndicator></ActivityIndicator>
+    </View>
+  );
 };
 
 export default React.memo(Activator);
