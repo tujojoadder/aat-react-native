@@ -16,7 +16,7 @@ import {RootState} from '../app/store';
 import {setAllDayHadith} from '../features/Home/HomeSlice';
 type HadithProp = NativeStackNavigationProp<RootParamList, 'hadithContent'>;
 
-export default function HadithStatusBar() {
+const HadithStatusBar=()=> {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState(''); // For Snackbar error message
@@ -129,10 +129,14 @@ export default function HadithStatusBar() {
   );
 }
 
+export default React.memo(HadithStatusBar);
+
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     paddingVertical: 15,
+    paddingTop:81
   },
   scrollViewContent: {
     paddingHorizontal: 15,

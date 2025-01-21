@@ -22,8 +22,14 @@ import {useGetPostsQuery} from '../../services/postApi';
 import TextPost from '../TextPost/TextPost';
 import ImagePost from '../ImagePost/ImagePost';
 import BPost from '../BPost/BPost';
-
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootParamList} from '../../../RootNavigator';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import HadithStatusBar from '../../HadithStatus/HadithStatusBar';
+import Activator from '../Activator/Activator';
+type HomeNavigationProps = NativeStackNavigationProp<RootParamList, 'main'>;
 export default function Home() {
+  const navigation = useNavigation<HomeNavigationProps>();
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const [allPosts, setAllPosts] = useState<any[]>([]);
@@ -73,57 +79,99 @@ export default function Home() {
       isAppBarHidden.current = false;
     } else if (prevScrollY.current - currentScrollY > scrollThreshold) {
       if (isAppBarHidden.current) {
-        appBarOffset.value = withTiming(0, {duration: 300, easing: Easing.ease});
-        appBarOpacity.value = withTiming(1, {duration: 300, easing: Easing.ease});
+        appBarOffset.value = withTiming(0, {
+          duration: 300,
+          easing: Easing.ease,
+        });
+        appBarOpacity.value = withTiming(1, {
+          duration: 300,
+          easing: Easing.ease,
+        });
         isAppBarHidden.current = false;
       }
     } else if (currentScrollY - prevScrollY.current > scrollThreshold) {
       if (!isAppBarHidden.current) {
-        appBarOffset.value = withTiming(-100, {duration: 300, easing: Easing.ease});
-        appBarOpacity.value = withTiming(0, {duration: 300, easing: Easing.ease});
+        appBarOffset.value = withTiming(-100, {
+          duration: 300,
+          easing: Easing.ease,
+        });
+        appBarOpacity.value = withTiming(0, {
+          duration: 300,
+          easing: Easing.ease,
+        });
         isAppBarHidden.current = true;
       }
     }
     prevScrollY.current = currentScrollY;
   };
 
+  const renderItem = useCallback(({item}: {item: any}) => {
+    if (item.text_post && !item.image_post) {
+      return <TextPost post={item} />;
+    } else if (!item.text_post && item.image_post) {
+      return <ImagePost post={item} />;
+    } else if (item.text_post && item.image_post) {
+      return <BPost post={item} />;
+    }
+    return null;
+  }, []);
+
+  /* make status bar right */
+  useFocusEffect(() => {
+    StatusBar.setBarStyle('dark-content');
+    StatusBar.setBackgroundColor('white');
+  });
 
 
-  const renderItem = useCallback(
-    ({item}: {item: any}) => {
-      if (item.text_post && !item.image_post) {
-        return <TextPost post={item}  />;
-      } else if (!item.text_post && item.image_post) {
-        return <ImagePost  post={item}  />;
-      } else if (item.text_post && item.image_post) {
-        return <BPost  post={item}  />;
-      }
-      return null;
-    },
-    [],
-  );
+  const Footer = React.memo(() => (
+    <ActivityIndicator color="blue" style={{ marginVertical: 16 }} />
+  ));
+
+ 
+  
+
 
   return (
     <SafeAreaView style={styles.container}>
       <Animated.View style={[styles.appBar, appBarAnimatedStyle]}>
         <Appbar.Header style={styles.appBarHeader}>
-          <Text style={styles.title}>Home</Text>
+          <Text style={styles.title}>aat</Text>
           <Appbar.Action
-            icon={() => <MaterialCommunityIcons name="plus-circle" size={24} />}
+            icon={() => (
+              <MaterialCommunityIcons
+                name="plus-circle"
+                size={24}
+                color="black"
+              />
+            )}
             onPress={() => {}}
+          />
+
+          <Appbar.Action icon="magnify" color="black" onPress={() => {}} />
+          <Appbar.Action
+            icon="menu"
+            color="black"
+            onPress={() => navigation.navigate('menu')}
           />
         </Appbar.Header>
       </Animated.View>
 
       <FlatList
+        showsVerticalScrollIndicator={false}
         data={allPosts}
         renderItem={renderItem}
         keyExtractor={item => item.post_id.toString()}
         onScroll={handleScroll}
         onEndReached={loadMorePosts}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0}
+        contentContainerStyle={
+          allPosts.length === 0 ? styles.emptyList : undefined
+        }
+
         
-        contentContainerStyle={allPosts.length === 0 ? styles.emptyList : undefined}
+        ListHeaderComponent={<HadithStatusBar />} // Add HadithStatusBar as the header
+        ListFooterComponent={hasMorePosts || isFetching ?<Activator />:null}
+        
       />
     </SafeAreaView>
   );
@@ -156,21 +204,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#007BFF',
   },
-  postContainer: {
-    padding: 16,
-    marginVertical: 8,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    elevation: 2,
-    height:300
-  },
-  postText: {
-    fontSize: 16,
-    color: '#333',
-  },
+
   emptyList: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerLoader: {
+    paddingVertical: 16,
     alignItems: 'center',
   },
 });
