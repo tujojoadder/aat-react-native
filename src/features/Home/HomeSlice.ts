@@ -28,7 +28,11 @@ interface HomeState {
   birthdate: string;
   allDayHadith: DayHadith[];
   
+  
 }
+
+
+
 
 const initialState: HomeState = {
   isAuthenticated: null,

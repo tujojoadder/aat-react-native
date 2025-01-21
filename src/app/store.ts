@@ -11,6 +11,8 @@ import { userLoginApi } from '../services/userLoginApi';
 import { userAuthApi } from '../services/userAuthApi';
 import { hadithApi } from '../services/hadithApi';
 import { postApi } from './../services/postApi';
+import { loveApi } from '../services/loveApi';
+import { unlikeApi } from '../services/unlikeApi';
 
 
 // Persist configuration
@@ -29,6 +31,8 @@ const rootReducer = combineReducers({
   [userAuthApi.reducerPath]: userAuthApi.reducer,
   [hadithApi.reducerPath]: hadithApi.reducer,
   [postApi.reducerPath]: postApi.reducer,
+  [loveApi.reducerPath]: loveApi.reducer,
+  [unlikeApi.reducerPath]: unlikeApi.reducer,
   // Add more reducers as needed
 });
 
@@ -48,6 +52,8 @@ export const store = configureStore({
       userAuthApi.middleware,
       hadithApi.middleware,
       postApi.middleware,
+      loveApi.middleware,
+      unlikeApi.middleware,
       // Add other middlewares as needed
     ),
 });
