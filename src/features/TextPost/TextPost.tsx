@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import PostTime from '../PostTime/PostTime';
 type PostData = {
     approval: number;
     audience: string;
@@ -87,7 +88,7 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
             <Text style={styles.identifier}>{post.author.identifier}</Text>
           </View>
         </View>
-        <Text style={styles.postTime}>{post.created_at}</Text>
+        <PostTime createdAt={post.created_at} />
       </View>
 
       {/* Post Text */}
