@@ -9,6 +9,13 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import PostTime from '../utils/PostTime/PostTime';
+import { useToggleLoveMutation } from '../../services/loveApi';
+import { useToggleUnlikeMutation } from '../../services/unlikeApi';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { setLoveReaction, setUnlikeReactions } from '../Home/HomeSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../app/store';
+import FormateLargeNumber from '../utils/FormateLargeNumber/FormateLargeNumber';
 type PostData = {
     approval: number;
     audience: string;
@@ -61,6 +68,7 @@ type PostData = {
   
   
 const ImagePost=React.memo(({post}:{post:PostData})=>{
+  const dispatch = useDispatch();
   const [imageHeight, setImageHeight] = useState(Dimensions.get('window').height/2);
   const [likes, setLikes] = useState(120);
   const [unlikes, setUnlikes] = useState(15);
@@ -72,9 +80,112 @@ const ImagePost=React.memo(({post}:{post:PostData})=>{
   
   const handleLike = () => setLikes(likes + 1);
   const handleUnlike = () => setUnlikes(unlikes + 1);
-
   const toggleOptions = () => setShowOptions(!showOptions);
 
+
+    /*  Love Unlike  */
+    const [toggleLove] = useToggleLoveMutation();
+    const [toggleUnlike] = useToggleUnlikeMutation();
+    const loveScale = useSharedValue(1); // Scale for love icon
+    const unlikeScale = useSharedValue(1); // Scale for unlike icon
+  
+  /* click on love and unlike */
+  // Redux selectors for request status
+
+  const [totalLove, setTotalLove] = useState(post.totalLove);
+  const [totalUnLike, setTotalUnlike] = useState(post.totalUnlike);
+
+  const loveReactions = useSelector(
+    (state: RootState) => state.home.loveReactions[post.post_id],
+  );
+  const unlikeReactions = useSelector(
+    (state: RootState) => state.home.unlikeReactions[post.post_id],
+  ); 
+
+  /* Initial love and unlike update */
+  useEffect(() => {
+    if (post.isLove) {
+      dispatch(setLoveReaction({postId: post.post_id, isActive: true})); // Activate love reaction
+    }
+    if (post.isUnlike) {
+      dispatch(setUnlikeReactions({postId: post.post_id, isActive: true})); // Activate unlike reaction
+    }
+  }, []);
+
+  /* handle love click  */
+  const handleLoveClick = async () => {
+    // Optimistic update
+
+    if (loveReactions) {
+      dispatch(setLoveReaction({postId: post.post_id, isActive: false}));
+      setTotalLove(value => value - 1);
+    } else {
+      loveEffect();
+      dispatch(setLoveReaction({postId: post.post_id, isActive: true})); // Activate love reaction
+      setTotalLove(value => value + 1);
+      if (unlikeReactions) {
+        setTotalUnlike(value => value - 1);
+      }
+    }
+
+    try {
+      await toggleLove({loveOnType: 'post', loveOnId: post.post_id});
+    } catch (error) {
+      /*       console.error('Failed to toggle love:', error);
+       */
+    }
+  };
+
+  /* handle unlike click */
+  const handleUnlikeClick = async () => {
+    // Optimistic update
+
+    if (unlikeReactions) {
+      dispatch(setUnlikeReactions({postId: post.post_id, isActive: false})); // Activate unlike reaction
+      setTotalUnlike(value => value - 1);
+    } else {
+      unLikeEffect();
+      dispatch(setUnlikeReactions({postId: post.post_id, isActive: true})); // Activate unlike reaction
+      setTotalUnlike(value => value + 1);
+
+      if (loveReactions) {
+        setTotalLove(value => value - 1);
+      }
+    }
+
+    try {
+      await toggleUnlike({unlikeOnType: 'post', unlikeOnId: post.post_id});
+    } catch (error) {
+      /*       console.error('Failed to toggle unlike:', error);
+       */
+    }
+  };
+
+
+
+  // Animated styles for scaling
+  const loveAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: loveScale.value }],
+  }));
+
+  const unlikeAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: unlikeScale.value }],
+  }));
+
+  // Handle scaling animation for love button
+  const loveEffect = () => {
+    loveScale.value = withTiming(1.6, { duration: 200 }, () => {
+      loveScale.value = withTiming(1, { duration: 200 });
+    });
+  };
+
+  // Handle scaling animation for unlike button
+  const unLikeEffect = () => {
+    unlikeScale.value = withTiming(1.6, { duration: 200 }, () => {
+      unlikeScale.value = withTiming(1, { duration: 200 });
+    });
+
+  };
   return (
     <View style={styles.container}>
       {/* Post Header */}
@@ -100,14 +211,29 @@ const ImagePost=React.memo(({post}:{post:PostData})=>{
 
       {/* Reactions Section */}
       <View style={styles.reactions}>
-        <TouchableOpacity style={styles.reactionButton} onPress={handleLike}>
-          <MaterialIcons name="favorite" size={20} color="#FF6F61" />
-          <Text style={styles.reactionText}> {likes}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.reactionButton} onPress={handleUnlike}>
-          <MaterialIcons name="thumb-down" size={20} color="#6C757D" />
-          <Text style={styles.reactionText}> {unlikes}</Text>
-        </TouchableOpacity>
+           {/* Love Reaction Button */}
+              <TouchableOpacity style={styles.reactionButton} onPress={handleLoveClick}>
+                <Animated.View style={loveAnimatedStyle}>
+                  <MaterialIcons
+                    name="favorite"
+                    size={20}
+                    color={loveReactions ? '#FF6F61' : '#6C757D'}
+                  />
+                </Animated.View>
+                <FormateLargeNumber number={totalLove} />
+              </TouchableOpacity>
+        
+              {/* Unlike Reaction Button */}
+              <TouchableOpacity style={styles.reactionButton} onPress={handleUnlikeClick}>
+                <Animated.View style={unlikeAnimatedStyle}>
+                  <MaterialIcons
+                    name="thumb-down"
+                    size={20}
+                    color={unlikeReactions ? '#000000' : '#6C757D'}
+                  />
+                </Animated.View>
+                <FormateLargeNumber number={totalUnLike} />
+              </TouchableOpacity>
         <TouchableOpacity style={styles.reactionButton}>
           <MaterialIcons name="comment" size={20} color="#007BFF" />
           <Text style={styles.reactionText}> 10</Text>

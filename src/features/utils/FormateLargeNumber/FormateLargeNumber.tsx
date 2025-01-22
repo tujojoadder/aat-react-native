@@ -5,7 +5,7 @@ import { formatLargeNumber } from '../mainUtils';
 const FormateLargeNumber = ({ number }: { number: number }) => {
   const formattedNumber = useMemo(() => formatLargeNumber(number), [number]);
 
-  return <Text> {formattedNumber}</Text>;
+  return <Text>  {formattedNumber}</Text>;
 };
 
 export default React.memo(FormateLargeNumber);

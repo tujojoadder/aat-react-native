@@ -9,52 +9,67 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import PostTime from '../utils/PostTime/PostTime';
+import {useToggleLoveMutation} from '../../services/loveApi';
+import {useToggleUnlikeMutation} from '../../services/unlikeApi';
+import {RootState} from '../../app/store';
+import {useDispatch, useSelector} from 'react-redux';
+import {setLoveReaction, setUnlikeReactions} from '../Home/HomeSlice';
+import FormateLargeNumber from '../utils/FormateLargeNumber/FormateLargeNumber';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 type PostData = {
-    approval: number;
-    audience: string;
-    author: {
-      birthdate: string;
-      blueticks: number;
-      cover_photo: string;
-      created_at: string;
-      email: string;
-      gender: string;
-      identifier: string;
-      profile_picture: string;
-      reported_count: number;
-      total_quiz_point: number;
-      updated_at: string;
-      user_fname: string;
-      user_id: string;
-      user_lname: string;
-    };
-    author_id: string;
+  approval: number;
+  audience: string;
+  author: {
+    birthdate: string;
+    blueticks: number;
+    cover_photo: string;
     created_at: string;
-    group_id: string | null;
-    iaccount_id: string | null;
-    image_post: null;
-    isLove: boolean;
-    isUnlike: boolean;
-    page_id: string | null;
-    post_id: string;
-    post_type: string;
+    email: string;
+    gender: string;
+    identifier: string;
+    profile_picture: string;
     reported_count: number;
-    text_post: {
-      created_at: string;
-      post_id: string;
-      post_text: string;
-      text_post_id: string;
-      updated_at: string;
-    } ;
-    timeline_ids: string;
-    totalLove: number;
-    totalUnlike: number;
-    total_comments: number;
+    total_quiz_point: number;
+    updated_at: string;
+    user_fname: string;
+    user_id: string;
+    user_lname: string;
+  };
+  author_id: string;
+  created_at: string;
+  group_id: string | null;
+  iaccount_id: string | null;
+  image_post: null;
+  isLove: boolean;
+  isUnlike: boolean;
+  page_id: string | null;
+  post_id: string;
+  post_type: string;
+  reported_count: number;
+  text_post: {
+    created_at: string;
+    post_id: string;
+    post_text: string;
+    text_post_id: string;
     updated_at: string;
   };
-  
-  
- const TextPost=React.memo(({post}:{post:PostData})=>{
+  timeline_ids: string;
+  totalLove: number;
+  totalUnlike: number;
+  total_comments: number;
+  updated_at: string;
+};
+
+const TextPost = React.memo(({post}: {post: PostData}) => {
+  const dispatch = useDispatch();
+
+  /*  Love Unlike  */
+  const [toggleLove] = useToggleLoveMutation();
+  const [toggleUnlike] = useToggleUnlikeMutation();
+  const loveScale = useSharedValue(1); // Scale for love icon
+  const unlikeScale = useSharedValue(1); // Scale for unlike icon
+
+
   const [imageHeight, setImageHeight] = useState(0);
   const [likes, setLikes] = useState(120);
   const [unlikes, setUnlikes] = useState(15);
@@ -63,10 +78,7 @@ type PostData = {
   const screenWidth = Dimensions.get('window').width;
   const maxHeight = Dimensions.get('window').height / 1.3;
 
-
-const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_picture}`;
- 
-  
+  const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_picture}`;
 
   const handleLike = () => setLikes(likes + 1);
   const handleUnlike = () => setUnlikes(unlikes + 1);
@@ -75,15 +87,113 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
 
   const toggleOptions = () => setShowOptions(!showOptions);
 
+  /* click on love and unlike */
+    // Redux selectors for request status
+  
+    const [totalLove, setTotalLove] = useState(post.totalLove);
+    const [totalUnLike, setTotalUnlike] = useState(post.totalUnlike);
+  
+    const loveReactions = useSelector(
+      (state: RootState) => state.home.loveReactions[post.post_id],
+    );
+    const unlikeReactions = useSelector(
+      (state: RootState) => state.home.unlikeReactions[post.post_id],
+    ); 
+  
+    /* Initial love and unlike update */
+    useEffect(() => {
+      if (post.isLove) {
+        dispatch(setLoveReaction({postId: post.post_id, isActive: true})); // Activate love reaction
+      }
+      if (post.isUnlike) {
+        dispatch(setUnlikeReactions({postId: post.post_id, isActive: true})); // Activate unlike reaction
+      }
+    }, []);
+  
+    /* handle love click  */
+    const handleLoveClick = async () => {
+      // Optimistic update
+  
+      if (loveReactions) {
+        dispatch(setLoveReaction({postId: post.post_id, isActive: false}));
+        setTotalLove(value => value - 1);
+      } else {
+        loveEffect();
+        dispatch(setLoveReaction({postId: post.post_id, isActive: true})); // Activate love reaction
+        setTotalLove(value => value + 1);
+        if (unlikeReactions) {
+          setTotalUnlike(value => value - 1);
+        }
+      }
+  
+      try {
+        await toggleLove({loveOnType: 'post', loveOnId: post.post_id});
+      } catch (error) {
+        /*       console.error('Failed to toggle love:', error);
+         */
+      }
+    };
+  
+    /* handle unlike click */
+    const handleUnlikeClick = async () => {
+      // Optimistic update
+  
+      if (unlikeReactions) {
+        dispatch(setUnlikeReactions({postId: post.post_id, isActive: false})); // Activate unlike reaction
+        setTotalUnlike(value => value - 1);
+      } else {
+        unLikeEffect();
+        dispatch(setUnlikeReactions({postId: post.post_id, isActive: true})); // Activate unlike reaction
+        setTotalUnlike(value => value + 1);
+  
+        if (loveReactions) {
+          setTotalLove(value => value - 1);
+        }
+      }
+  
+      try {
+        await toggleUnlike({unlikeOnType: 'post', unlikeOnId: post.post_id});
+      } catch (error) {
+        /*       console.error('Failed to toggle unlike:', error);
+         */
+      }
+    };
+  
+  
+  
+    // Animated styles for scaling
+    const loveAnimatedStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: loveScale.value }],
+    }));
+  
+    const unlikeAnimatedStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: unlikeScale.value }],
+    }));
+  
+    // Handle scaling animation for love button
+    const loveEffect = () => {
+      loveScale.value = withTiming(1.6, { duration: 200 }, () => {
+        loveScale.value = withTiming(1, { duration: 200 });
+      });
+    };
+  
+    // Handle scaling animation for unlike button
+    const unLikeEffect = () => {
+      unlikeScale.value = withTiming(1.6, { duration: 200 }, () => {
+        unlikeScale.value = withTiming(1, { duration: 200 });
+      });
+  
+    };
+
   return (
     <View style={styles.container}>
       {/* Post Header */}
       <View style={styles.header}>
         <View style={styles.leftHeader}>
-          <Image source={{uri:profilePic}} style={styles.profilePic} />
+          <Image source={{uri: profilePic}} style={styles.profilePic} />
           <View style={styles.userInfo}>
             <Text style={styles.userName} numberOfLines={1}>
-            {post.author.user_fname} {post.author.user_lname}
+              {post.author.user_fname} {post.author.user_lname}
             </Text>
             <Text style={styles.identifier}>{post.author.identifier}</Text>
           </View>
@@ -103,18 +213,31 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
         )}
       </Text>
 
-    
-
       {/* Reactions Section */}
       <View style={styles.reactions}>
-        <TouchableOpacity style={styles.reactionButton} onPress={handleLike}>
-          <MaterialIcons name="favorite" size={20} color="#FF6F61" />
-          <Text style={styles.reactionText}> {likes}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.reactionButton} onPress={handleUnlike}>
-          <MaterialIcons name="thumb-down" size={20} color="#6C757D" />
-          <Text style={styles.reactionText}> {unlikes}</Text>
-        </TouchableOpacity>
+           {/* Love Reaction Button */}
+              <TouchableOpacity style={styles.reactionButton} onPress={handleLoveClick}>
+                <Animated.View style={loveAnimatedStyle}>
+                  <MaterialIcons
+                    name="favorite"
+                    size={20}
+                    color={loveReactions ? '#FF6F61' : '#6C757D'}
+                  />
+                </Animated.View>
+                <FormateLargeNumber number={totalLove} />
+              </TouchableOpacity>
+        
+              {/* Unlike Reaction Button */}
+              <TouchableOpacity style={styles.reactionButton} onPress={handleUnlikeClick}>
+                <Animated.View style={unlikeAnimatedStyle}>
+                  <MaterialIcons
+                    name="thumb-down"
+                    size={20}
+                    color={unlikeReactions ? '#000000' : '#6C757D'}
+                  />
+                </Animated.View>
+                <FormateLargeNumber number={totalUnLike} />
+              </TouchableOpacity>
         <TouchableOpacity style={styles.reactionButton}>
           <MaterialIcons name="comment" size={20} color="#007BFF" />
           <Text style={styles.reactionText}> 22</Text>
@@ -143,14 +266,12 @@ const profilePic=`${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_pic
 });
 export default React.memo(TextPost);
 
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     padding: 15,
     elevation: 2,
-    marginBottom:1
-    
+    marginBottom: 1,
   },
   header: {
     flexDirection: 'row',
