@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Text } from 'react-native-paper';
-import { formatPostDate } from '../utils/dateUtils';
+import { formatPostDate } from '../mainUtils';
 
 const PostTime = ({ createdAt }:{createdAt:any}) => {
   const formattedDate = useMemo(() => formatPostDate(createdAt), [createdAt]);

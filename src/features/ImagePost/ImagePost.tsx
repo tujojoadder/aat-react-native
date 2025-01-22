@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import PostTime from '../PostTime/PostTime';
+import PostTime from '../utils/PostTime/PostTime';
 type PostData = {
     approval: number;
     audience: string;

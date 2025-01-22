@@ -133,6 +133,8 @@ export const {
   setGender,
   setAllDayHadith,
   setIsLiked,
+  setLoveReaction,
+  setUnlikeReactions
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

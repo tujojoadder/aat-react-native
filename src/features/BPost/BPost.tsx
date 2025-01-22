@@ -8,8 +8,14 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { formatPostDate } from './../utils/dateUtils';
-import PostTime from '../PostTime/PostTime';
+import {formatPostDate} from '../utils/mainUtils';
+import PostTime from '../utils/PostTime/PostTime';
+import {useToggleLoveMutation} from '../../services/loveApi';
+import {useToggleUnlikeMutation} from '../../services/unlikeApi';
+import {useDispatch, useSelector} from 'react-redux';
+import {setLoveReaction, setUnlikeReactions} from '../Home/HomeSlice';
+import {RootState} from '../../app/store';
+import FormateLargeNumber from '../utils/FormateLargeNumber/FormateLargeNumber';
 type PostData = {
   approval: number;
   audience: string;
@@ -61,11 +67,15 @@ type PostData = {
 };
 
 const BPost = React.memo(({post}: {post: PostData}) => {
+  const dispatch = useDispatch();
   const [imageHeight, setImageHeight] = useState(
     Dimensions.get('window').height / 2,
   );
-  const [likes, setLikes] = useState(120);
-  const [unlikes, setUnlikes] = useState(15);
+
+  /*  Love Unlike  */
+  const [toggleLove] = useToggleLoveMutation();
+  const [toggleUnlike] = useToggleUnlikeMutation();
+
   const [isTextExpanded, setIsTextExpanded] = useState(false); // For "See More" functionality
   const [showOptions, setShowOptions] = useState(false); // Controls the visibility of the options dropdown
   const screenWidth = Dimensions.get('window').width;
@@ -73,12 +83,80 @@ const BPost = React.memo(({post}: {post: PostData}) => {
   const imageUri = `${process.env.REACT_APP_LARAVEL_URL}/${post.image_post?.post_url}`;
   const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${post.author.profile_picture}`;
 
-  const handleLike = () => setLikes(likes + 1);
-  const handleUnlike = () => setUnlikes(unlikes + 1);
-
   const toggleText = () => setIsTextExpanded(!isTextExpanded);
 
   const toggleOptions = () => setShowOptions(!showOptions);
+
+  /* click on love and unlike */
+  // Redux selectors for request status
+
+  const [totalLove, setTotalLove] = useState(post.totalLove);
+  const [totalUnLike, setTotalUnlike] = useState(post.totalUnlike);
+
+  const loveReactions = useSelector(
+    (state: RootState) => state.home.loveReactions[post.post_id],
+  );
+  const unlikeReactions = useSelector(
+    (state: RootState) => state.home.unlikeReactions[post.post_id],
+  );
+
+  /* Initial love and unlike update */
+  useEffect(() => {
+    if (post.isLove) {
+      dispatch(setLoveReaction({postId: post.post_id, isActive: true})); // Activate love reaction
+    }
+    if (post.isUnlike) {
+      dispatch(setUnlikeReactions({postId: post.post_id, isActive: true})); // Activate unlike reaction
+    }
+  }, []);
+
+  /* handle love click  */
+  const handleLoveClick = async () => {
+    // Optimistic update
+
+    if (loveReactions) {
+      dispatch(setLoveReaction({postId: post.post_id, isActive: false}));
+      setTotalLove(value => value - 1);
+    } else {
+      dispatch(setLoveReaction({postId: post.post_id, isActive: true})); // Activate love reaction
+      setTotalLove(value => value + 1);
+      if (unlikeReactions) {
+        setTotalUnlike(value => value - 1);
+      }
+    }
+
+    try {
+      await toggleLove({loveOnType: 'post', loveOnId: post.post_id});
+    } catch (error) {
+      /*       console.error('Failed to toggle love:', error);
+       */
+    }
+  };
+
+  /* handle unlike click */
+
+  const handleUnlikeClick = async () => {
+    // Optimistic update
+
+    if (unlikeReactions) {
+      dispatch(setUnlikeReactions({postId: post.post_id, isActive: false})); // Activate unlike reaction
+      setTotalUnlike(value => value - 1);
+    } else {
+      dispatch(setUnlikeReactions({postId: post.post_id, isActive: true})); // Activate unlike reaction
+      setTotalUnlike(value => value + 1);
+
+      if (loveReactions) {
+        setTotalLove(value => value - 1);
+      }
+    }
+
+    try {
+      await toggleUnlike({unlikeOnType: 'post', unlikeOnId: post.post_id});
+    } catch (error) {
+      /*       console.error('Failed to toggle unlike:', error);
+       */
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -117,13 +195,25 @@ const BPost = React.memo(({post}: {post: PostData}) => {
 
       {/* Reactions Section */}
       <View style={styles.reactions}>
-        <TouchableOpacity style={styles.reactionButton} onPress={handleLike}>
-          <MaterialIcons name="favorite" size={20} color="#FF6F61" />
-          <Text style={styles.reactionText}> {likes}</Text>
+        <TouchableOpacity
+          style={styles.reactionButton}
+          onPress={handleLoveClick}>
+          <MaterialIcons
+            name="favorite"
+            size={20}
+            color={loveReactions ? '#FF6F61' : '#6C757D'}
+          />
+          <FormateLargeNumber number={totalLove} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.reactionButton} onPress={handleUnlike}>
-          <MaterialIcons name="thumb-down" size={20} color="#6C757D" />
-          <Text style={styles.reactionText}> {unlikes}</Text>
+        <TouchableOpacity
+          style={styles.reactionButton}
+          onPress={handleUnlikeClick}>
+          <MaterialIcons
+            name="thumb-down"
+            size={20}
+            color={unlikeReactions ? '#000000' : '#6C757D'}
+          />
+          <FormateLargeNumber number={totalUnLike} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.reactionButton}>
           <MaterialIcons name="comment" size={20} color="#007BFF" />
