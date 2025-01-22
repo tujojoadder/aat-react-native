@@ -98,7 +98,7 @@ const BPost = React.memo(({post}: {post: PostData}) => {
   );
   const unlikeReactions = useSelector(
     (state: RootState) => state.home.unlikeReactions[post.post_id],
-  );
+  ); 
 
   /* Initial love and unlike update */
   useEffect(() => {
