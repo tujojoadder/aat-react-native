@@ -44,6 +44,10 @@ type LikeDetail = {
 };
 
 type LikeDetailsResponse = LikeDetail[];
+type HadithBoxNavigationProps = NativeStackNavigationProp<
+  RootParamList,
+  'main'
+>;
 
 const HadithBox = () => {
   const [visible, setVisible] = useState(false);
@@ -53,10 +57,6 @@ const HadithBox = () => {
   const [refreshButtonDisable, setRefreshButtonDisabled] = useState(false);
   const [showJoinedGroups, setShowJoinedGroups] = useState(false);
 
-  type HadithBoxNavigationProps = NativeStackNavigationProp<
-    RootParamList,
-    'main'
-  >;
 
   const navigation = useNavigation<HadithBoxNavigationProps>();
 

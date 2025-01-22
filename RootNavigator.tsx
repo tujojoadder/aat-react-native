@@ -16,6 +16,7 @@ import MenuPage from './src/features/Menu/ManuPage';
 import HadithDayContent from './src/HadithStatus/HadithDayContent';
 import HadithStatusBar from './src/HadithStatus/HadithStatusBar';
 import HadithBox from './src/HadithStatus/HadithBox/HadithBox ';
+import Profile from './src/features/Profile/Profile';
 
 export type RootParamList = {
   main: undefined; // No parameters for the "home" screen
@@ -26,6 +27,7 @@ export type RootParamList = {
   hadithStaus:undefined;
   hadithContent:{serialNumber:number};
   hadithBox:undefined;
+  profile:undefined;
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -74,6 +76,7 @@ export default function RootNavigator() {
             <Stack.Screen name="hadithStaus" component={HadithStatusBar} />
             <Stack.Screen name="hadithContent" component={HadithDayContent} />
             <Stack.Screen name="hadithBox" component={HadithBox} />
+            <Stack.Screen name="profile" component={Profile} />
           </>
         ) : (
 
