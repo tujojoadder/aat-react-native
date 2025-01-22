@@ -11,6 +11,7 @@ import {Appbar} from 'react-native-paper';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootParamList} from '../../../RootNavigator';
 import {useNavigation} from '@react-navigation/native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 type ProfileNavigationProps = NativeStackNavigationProp<
   RootParamList,
@@ -19,15 +20,15 @@ type ProfileNavigationProps = NativeStackNavigationProp<
 
 export default function Profile() {
   const navigation = useNavigation<ProfileNavigationProps>();
-  const {width} = Dimensions.get('window'); // Get screen width dynamically
+  const {width} = Dimensions.get('window');
 
-  const coverPhotoHeight = width * 0.5; // Adjust height as 50% of screen width
-  const profilePhotoSize = width * 0.33; // Profile photo size as 30% of screen width
+  const coverPhotoHeight = width * 0.5;
+  const profilePhotoSize = width * 0.33;
 
   return (
     <View style={styles.container}>
       {/* App Bar */}
-      <Appbar.Header style={{height: 50}}>
+      <Appbar.Header style={styles.appBar}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
       </Appbar.Header>
 
@@ -55,7 +56,7 @@ export default function Profile() {
             {
               width: profilePhotoSize,
               height: profilePhotoSize,
-              borderRadius: profilePhotoSize / 2, // Circular profile photo
+              borderRadius: profilePhotoSize / 2,
               bottom: -profilePhotoSize / 2,
             },
           ]}
@@ -64,22 +65,32 @@ export default function Profile() {
 
       {/* Profile Details Section */}
       <View style={styles.detailsContainer}>
+        
+        <View style={styles.userNames}>
         <Text style={styles.profileName}>Turjo Joadder</Text>
         <Text style={styles.profileIdentifire}>@turjojoadder123</Text>
-
+        </View>
         {/* Button Group */}
         <View style={styles.buttonGroup}>
           <TouchableOpacity style={styles.addFriendButton}>
+            <MaterialIcons
+              name="person-add"
+              size={24}
+              color="#fff"
+              style={{marginRight: 8}}
+            />
             <Text style={styles.addFriendText}>Add Friend</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.messageButton}>
+            <MaterialIcons
+              name="message"
+              size={24}
+              color="#fff"
+              style={{marginRight: 8}}
+            />
             <Text style={styles.messageText}>Message</Text>
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.editProfileButton}>
-          <Text style={styles.editProfileText}>Edit Profile</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -87,84 +98,98 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#f8f9fa', // Softer background
     flex: 1,
   },
-
+  appBar: {
+    height: 50,
+    backgroundColor: '#fff',
+    elevation: 2,
+  },
   coverPhotoContainer: {
-    position: 'relative', // Relative positioning for profile photo overlap
+    position: 'relative',
     width: '100%',
-    backgroundColor: '#000', // Fallback color if the image fails to load
+    backgroundColor: '#000',
   },
   coverPhoto: {
     width: '100%',
-    borderBottomLeftRadius: 20, // Adds rounded corners to the bottom
+    borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
   profilePhoto: {
-    position: 'absolute', // Overlay the profile photo
+    position: 'absolute',
     left: '5%',
-/*>>> we also using bottom on component */
     borderWidth: 4,
-    borderColor: '#fff', // Add a white border around the profile photo
-    elevation: 5, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
+    borderColor: '#fff',
+    elevation: 5,
+    shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
   detailsContainer: {
-    
     paddingHorizontal: 16,
-    marginTop: 5, // Adjust for spacing
-    alignItems:'flex-start'
+    marginTop: 3,
+    alignItems: 'flex-start',
   },
   profileName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
-
   },
   profileIdentifire: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#555',
-    marginBottom: 16,
-    opacity:0.6
+    marginBottom: 15,
+    opacity: 0.6,
   },
+  userNames:{
+elevation:4
+},
+  
   buttonGroup: {
-    flexDirection: 'row', // Buttons side by side
-    justifyContent: 'center',
-    marginBottom: 16, // Space between buttons and Edit Profile
+    flexDirection: 'row',
+    justifyContent: 'space-between', // Ensures buttons fill the row
+    alignItems: 'center',
+    marginBottom: 16,
+    
   },
   addFriendButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginRight: 10, // Space between buttons
+    paddingVertical: 6,
+    flex: 1, // Make it fill half of the row
+    justifyContent: 'center', // Center icon and text horizontally
+    borderRadius: 8,
+    marginRight: 13, // Spacing between the two buttons
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   addFriendText: {
     color: '#fff',
     fontWeight: '600',
+    fontSize: 14,
   },
   messageButton: {
-    backgroundColor: '#28a745',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#000',
+    paddingVertical: 6,
+    flex: 1, // Make it fill half of the row
+    justifyContent: 'center', // Center icon and text horizontally
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+   opacity:0.96
   },
   messageText: {
     color: '#fff',
     fontWeight: '600',
-  },
-  editProfileButton: {
-    backgroundColor: '#6200ee',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
-  editProfileText: {
-    color: '#fff',
-    fontWeight: '600',
+    fontSize: 14,
   },
 });
