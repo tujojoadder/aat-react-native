@@ -14,57 +14,65 @@ import {
 } from '../../services/profileApi';
 import Activator from '../Activator/Activator';
 
-type TabType = 'Posts' | 'Activities' | 'Photos';
+type TabType = 'Posts' | 'Friends' | 'Photos';
 
 const Profile = () => {
-  const tabs: TabType[] = ['Posts', 'Activities', 'Photos'];
+  const tabs: TabType[] = ['Posts', 'Friends', 'Photos'];
   const [activeTab, setActiveTab] = useState<TabType>('Posts');
 
   // State for pagination
   const [posts, setPosts] = useState<any[]>([]);
-  const [activities, setActivities] = useState<any[]>([]);
+  const [friends, setFriends] = useState<any[]>([]);
   const [photos, setPhotos] = useState<any[]>([]);
 
   const [postPage, setPostPage] = useState(1);
-  const [activityPage, setActivityPage] = useState(1);
-  const [photoPage, setPhotoPage] = useState(1);
-
+  const [friendPage, setFriendPage] = useState(1);
+  const [photoPages, setPhotoPage] = useState(1);
+ 
   const [hasMorePosts, setHasMorePosts] = useState(true);
-  const [hasMoreActivities, setHasMoreActivities] = useState(true);
+  const [hasMoreFriends, setHasMoreFriends] = useState(true);
   const [hasMorePhotos, setHasMorePhotos] = useState(true);
 
   const userId = '526fa940-c06f-4344-ad54-f723234f2fae';
 
   // Lazy queries
   /* get post */
-  const [
-    fetchPosts,
-    {data: postData, isFetching: isFetchingPosts, isSuccess},
-  ] = useLazyGetSpecificUserPostQuery();
-  /*  */
-  const [
-    fetchActivities,
-    {data: activitiesData, isFetching: isFetchingActivities},
-  ] = useLazyGetSpecificUserFriendQuery();
+  const [fetchPosts, {data: postData, isFetching: isFetchingPosts, isSuccess}] =
+    useLazyGetSpecificUserPostQuery();
   /* get photos */
-  const [fetchPhotos, {data: photosData, isFetching: isFetchingPhotos,isSuccess:isSuccessPhotos}] =
-    useLazyGetSpecificUserPhotoQuery();
+  const [
+    fetchPhotos,
+    {
+      data: photosData,
+      isFetching: isFetchingPhotos,
+      isSuccess: isSuccessPhotos,
+    },
+  ] = useLazyGetSpecificUserPhotoQuery();
+  /* friends */
+  const [fetchFriends, {data: friendsData, isFetching: isFetchingFriends,isSuccess:isSucessFriends}] =
+    useLazyGetSpecificUserFriendQuery();
 
-if (isSuccessPhotos) {
- console.log(photosData);
-}
-
- // Fetch data on page change or tab activation
- useEffect(() => {
+  // Fetch data on page change or tab activation
+  useEffect(() => {
     if (activeTab === 'Posts') {
-      fetchPosts({ page: postPage, userId });
-    } else if (activeTab === 'Activities') {
-      fetchActivities(activityPage);
+      fetchPosts({page:postPage, userId});
+    } else if (activeTab === 'Friends') {
+      fetchFriends({friendPage,userId});
     } else if (activeTab === 'Photos') {
-      fetchPhotos({photoPage,userId});
+      fetchPhotos({photoPage:photoPages, userId});
     }
-  }, [postPage, activityPage, photoPage]);
+  }, [postPage, friendPage, photoPages]);
+
+
+  useEffect(() => {
+      setPostPage(1);  // Reset post page on tab change
+      setFriendPage(1);  // Reset friend page on tab change
+   
+      setPhotoPage(1);  // Reset photo page on tab change
+    
+  }, [activeTab]);
   
+
   // Handle data updates and append new results
   /* posts */
   useEffect(() => {
@@ -82,7 +90,7 @@ if (isSuccessPhotos) {
         }
       }
     }
-  }, [postData,isSuccess]);
+  }, [postData, isSuccess]);
 
   /* photos */
 
@@ -96,88 +104,98 @@ if (isSuccessPhotos) {
             !photos.some(photo => photo.post_id === newPhoto.post_id),
         );
         if (newPhotos.length > 0) {
-        setPhotos(prev => [...prev, ...newPhotos]);
+          setPhotos(prev => [...prev, ...newPhotos]);
         }
       }
     }
-  }, [photosData,isSuccessPhotos]);
-  /*  */
+  }, [photosData, isSuccessPhotos]);
+
+  /* friends */
   useEffect(() => {
-    if (activitiesData?.data && activeTab === 'Activities') {
-      if (activitiesData.data.length === 0) {
-        setHasMoreActivities(false);
+    if (friendsData?.data?.data && activeTab === 'Friends') { // Access the nested data
+      if (friendsData.data.data.length === 0) {
+        setHasMoreFriends(false);
       } else {
-        const newActivities = activitiesData.data.filter(
-          (newActivity: any) =>
-            !activities.some(
-              activity => activity.activity_id === newActivity.activity_id,
-            ),
+        const newFriends = friendsData.data.data.filter( // Use friendsData.data.data
+          (newFriend: any) =>
+            !friends.some(friend => friend.user_id === newFriend.user_id),
         );
-        setActivities(prev => [...prev, ...newActivities]);
+        if (newFriends.length > 0) {
+          setFriends(prev => [...prev, ...newFriends]);
+        }
       }
     }
-  }, [activitiesData]);
-
+  }, [friendsData, isSucessFriends, activeTab, friends]);
+  console.log(friendsData);  
 
   // Handle tab changes
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
-    
   };
 
   // Load more data when reaching the end of the list
 
   const loadMoreData = useCallback(() => {
     if (activeTab === 'Posts' && hasMorePosts && !isFetchingPosts) {
-      setPostPage((prev) => prev + 1);
+      setPostPage(prev => prev + 1);
     } else if (
-      activeTab === 'Activities' &&
-      hasMoreActivities &&
-      !isFetchingActivities
+      activeTab === 'Friends' &&
+      hasMoreFriends &&
+      !isFetchingFriends
     ) {
-      setActivityPage((prev) => prev + 1);
+      setFriendPage(prev => prev + 1);
     } else if (activeTab === 'Photos' && hasMorePhotos && !isFetchingPhotos) {
-      setPhotoPage((prev) => prev + 1);
+      setPhotoPage(prev => prev + 1);
     }
   }, [
     activeTab,
     hasMorePosts,
     isFetchingPosts,
-    hasMoreActivities,
-    isFetchingActivities,
+    hasMoreFriends,
+    isFetchingFriends,
     hasMorePhotos,
     isFetchingPhotos,
   ]);
-  
 
   // Data for the current tab
   const data = {
     Posts: posts,
-    Activities: activities,
+    Friends: friends,
     Photos: photos,
   }[activeTab];
 
   const isLoading = {
     Posts: isFetchingPosts,
-    Activities: isFetchingActivities,
+    Friends: isFetchingFriends,
     Photos: isFetchingPhotos,
   }[activeTab];
 
   const isHasData = {
     Posts: hasMorePosts,
-    Activities: hasMoreActivities,
+    Friends: hasMoreFriends,
     Photos: hasMorePhotos,
   }[activeTab];
- 
 
   // Render each item
   const renderItem = useCallback(({item}: {item: any}) => {
     if (activeTab === 'Posts') {
-      return  <View style={{height:300}}><Text>hi</Text></View>;
-    } else if (activeTab === 'Activities') {
-      return <View style={{height:300}}><Text>hi</Text></View>;
+      return (
+        <View style={{height: 300}}>
+          <Text>hi</Text>
+        </View>
+      );
+    } else if (activeTab === 'Friends') {
+      return (
+        <View style={{height: 300}}>
+          <Text>hi</Text>
+        </View>
+      );
     } else if (activeTab === 'Photos') {
-      return  <View style={{height:300}}><Text>hi</Text></View>;
+      return (
+        <View style={{height: 300}}>
+          <Text>hi</Text>
+        </View>
+      );
     }
     return null;
   }, []);
@@ -209,8 +227,7 @@ if (isSuccessPhotos) {
         renderItem={renderItem}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={isHasData || isLoading ?<Activator />:null}
-        
+        ListFooterComponent={isHasData || isLoading ? <Activator /> : null}
       />
     </View>
   );

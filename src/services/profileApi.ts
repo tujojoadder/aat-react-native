@@ -37,8 +37,8 @@ export const profileApi = createApi({
         `getspecificuserphotos?page=${photoPage}&id=${userId}`, // Updated to include id
     }),
 
-    /* get specific usrer frien for profile */
-    getSpecificUserFriend: builder.query({
+    /* get specific usrer friends for profile */
+    getSpecificUserFriend: builder.query<any,{friendPage:number,userId:string}>({
       query: ({ friendPage = 1, userId }) =>
         `getspecificuserfriendids?page=${friendPage}&id=${userId}`, // Updated to include id
     }),
