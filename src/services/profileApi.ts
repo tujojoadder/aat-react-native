@@ -1,28 +1,32 @@
-// Need to use the React-specific entry point to import createApi
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {REACT_APP_LARAVEL_URL} from '@env';
-// Retrieve the token from cookies
-const userToken = '120|ZP8C4dGETwsCGSNS8vlH5uxAb8uIADrTyhxYvbWXd8d5a1b1';
+import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import * as Keychain from 'react-native-keychain';
 
 // Define a service using a base URL and expected endpoints
-
 export const profileApi = createApi({
-  reducerPath: "profileApi",
+  reducerPath: 'profileApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${REACT_APP_LARAVEL_URL}/api`,
-    prepareHeaders: (headers) => {
-      if (userToken) {
-        headers.set("authorization", `Bearer ${userToken}`);
+    baseUrl: `${process.env.REACT_APP_LARAVEL_URL}/api`, // Update this as needed
+    prepareHeaders: async headers => {
+      // Retrieve token from Keychain
+      try {
+        const credentials = await Keychain.getGenericPassword();
+        if (credentials) {
+          const userToken = credentials.password; // The token is stored as the password
+          // Set the token in the authorization header if it exists
+          headers.set('Authorization', `Bearer ${userToken}`);
+        }
+      } catch (error) {
+        console.error('Error retrieving token from Keychain:', error);
       }
       return headers;
     },
   }),
-  tagTypes: ["CreatePost","AcceptFriendRequest"],
+  tagTypes: ["CreatePost"],
   endpoints: (builder) => ({
     /* <----  Other's User ---> */
 
     /*    get specific usrer post for profile */
-    getSpecificUserPost: builder.query({
+    getSpecificUserPost: builder.query<any,{page:number,userId:string}>({
       query: ({ page = 1, userId }) =>
         `getspecificuserposts?page=${page}&id=${userId}`, // Updated to include id
     }),
@@ -80,7 +84,7 @@ export const profileApi = createApi({
     /* get specific usrer images for profile */
     getAuthUserFriend: builder.query({
       query: ({ friendPage = 1 }) => `getauthuserfriendids?page=${friendPage}`, // Updated to include id
-      providesTags: ["AcceptFriendRequest"],
+     /*  providesTags: ["AcceptFriendRequest"], //no AcceptFriendRequest has */
     }),
 
     /* get all followers for specific user on profile*/
@@ -184,7 +188,7 @@ export const profileApi = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useSetFProfileMutation,
-useGetSpecificUserAboutQuery,
+  useGetSpecificUserAboutQuery,
   useSetMProfileMutation,
   useUserPostInsertMutation,
   useSetCoverPhotoMutation,
@@ -197,9 +201,9 @@ useGetSpecificUserAboutQuery,
   useSaveAboutMutation,
   useGetSpecificUserFollowingQuery,
   useGetSpecificUserFollowerQuery,
-  useGetSpecificUserPhotoQuery,
-  useGetSpecificUserPostQuery,
-  useGetSpecificUserFriendQuery,
+  useLazyGetSpecificUserPhotoQuery,
+  useLazyGetSpecificUserPostQuery,
+  useLazyGetSpecificUserFriendQuery,
   useGetAuthUserPostQuery,
   useGetAuthUserPhotoQuery,
   useGetAuthUserFollowerQuery,

@@ -1,195 +1,266 @@
-import React from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
-  View,
+  FlatList,
   Text,
-  Dimensions,
+  View,
   StyleSheet,
-  Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
-import {Appbar} from 'react-native-paper';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootParamList} from '../../../RootNavigator';
-import {useNavigation} from '@react-navigation/native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {
+  useLazyGetSpecificUserFriendQuery,
+  useLazyGetSpecificUserPhotoQuery,
+  useLazyGetSpecificUserPostQuery,
+} from '../../services/profileApi';
+import Activator from '../Activator/Activator';
 
-type ProfileNavigationProps = NativeStackNavigationProp<
-  RootParamList,
-  'profile'
->;
+type TabType = 'Posts' | 'Activities' | 'Photos';
 
-export default function Profile() {
-  const navigation = useNavigation<ProfileNavigationProps>();
-  const {width} = Dimensions.get('window');
+const Profile = () => {
+  const tabs: TabType[] = ['Posts', 'Activities', 'Photos'];
+  const [activeTab, setActiveTab] = useState<TabType>('Posts');
 
-  const coverPhotoHeight = width * 0.5;
-  const profilePhotoSize = width * 0.33;
+  // State for pagination
+  const [posts, setPosts] = useState<any[]>([]);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [photos, setPhotos] = useState<any[]>([]);
+
+  const [postPage, setPostPage] = useState(1);
+  const [activityPage, setActivityPage] = useState(1);
+  const [photoPage, setPhotoPage] = useState(1);
+
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+  const [hasMoreActivities, setHasMoreActivities] = useState(true);
+  const [hasMorePhotos, setHasMorePhotos] = useState(true);
+
+  const userId = '526fa940-c06f-4344-ad54-f723234f2fae';
+
+  // Lazy queries
+  const [
+    fetchPosts,
+    {data: postData, isFetching: isFetchingPosts, isSuccess},
+  ] = useLazyGetSpecificUserPostQuery();
+  const [
+    fetchActivities,
+    {data: activitiesData, isFetching: isFetchingActivities},
+  ] = useLazyGetSpecificUserFriendQuery();
+  const [fetchPhotos, {data: photosData, isFetching: isFetchingPhotos}] =
+    useLazyGetSpecificUserPhotoQuery();
+
+
+
+  // Fetch data on page change or tab activation
+  const fetchData = useCallback(
+    (tab: TabType) => {
+      if (tab === 'Posts') {
+        fetchPosts({page: postPage, userId});
+      } else if (tab === 'Activities') {
+        fetchActivities(activityPage);
+      } else if (tab === 'Photos') {
+        fetchPhotos(photoPage);
+      }
+    },
+    [postPage, activityPage, photoPage],
+  );
+
+  // Handle data updates and append new results
+  useEffect(() => {
+    if (postData?.data && activeTab === 'Posts') {
+      if (postData.data.length === 0) {
+        setHasMorePosts(false);
+      } else {
+        const newPosts = postData.data.filter(
+          (newPost: any) =>
+            !posts.some(post => post.post_id === newPost.post_id),
+        );
+
+        if (newPosts.length > 0) {
+          setPosts(prev => [...prev, ...newPosts]);
+        }
+      }
+    }
+  }, [postData,isSuccess]);
+
+  useEffect(() => {
+    if (activitiesData?.data && activeTab === 'Activities') {
+      if (activitiesData.data.length === 0) {
+        setHasMoreActivities(false);
+      } else {
+        const newActivities = activitiesData.data.filter(
+          (newActivity: any) =>
+            !activities.some(
+              activity => activity.activity_id === newActivity.activity_id,
+            ),
+        );
+        setActivities(prev => [...prev, ...newActivities]);
+      }
+    }
+  }, [activitiesData]);
+
+  useEffect(() => {
+    if (photosData?.data && activeTab === 'Photos') {
+      if (photosData.data.length === 0) {
+        setHasMorePhotos(false);
+      } else {
+        const newPhotos = photosData.data.filter(
+          (newPhoto: any) =>
+            !photos.some(photo => photo.photo_id === newPhoto.photo_id),
+        );
+        setPhotos(prev => [...prev, ...newPhotos]);
+      }
+    }
+  }, [photosData]);
+
+  // Handle tab changes
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    
+  };
+
+  // Load more data when reaching the end of the list
+
+  const loadMoreData = useCallback(() => {
+    if (activeTab === 'Posts' && hasMorePosts && !isFetchingPosts) {
+      setPostPage((prev) => prev + 1);
+    } else if (
+      activeTab === 'Activities' &&
+      hasMoreActivities &&
+      !isFetchingActivities
+    ) {
+      setActivityPage((prev) => prev + 1);
+    } else if (activeTab === 'Photos' && hasMorePhotos && !isFetchingPhotos) {
+      setPhotoPage((prev) => prev + 1);
+    }
+  }, [
+    activeTab,
+    hasMorePosts,
+    isFetchingPosts,
+    hasMoreActivities,
+    isFetchingActivities,
+    hasMorePhotos,
+    isFetchingPhotos,
+  ]);
+  
+
+  // Data for the current tab
+  const data = {
+    Posts: posts,
+    Activities: activities,
+    Photos: photos,
+  }[activeTab];
+
+  const isLoading = {
+    Posts: isFetchingPosts,
+    Activities: isFetchingActivities,
+    Photos: isFetchingPhotos,
+  }[activeTab];
+
+  const isHasData = {
+    Posts: hasMorePosts,
+    Activities: hasMoreActivities,
+    Photos: hasMorePhotos,
+  }[activeTab];
+
+  useEffect(() => {
+    if (activeTab === 'Posts') {
+      fetchPosts({ page: postPage, userId });
+    } else if (activeTab === 'Activities') {
+      fetchActivities(activityPage);
+    } else if (activeTab === 'Photos') {
+      fetchPhotos(photoPage);
+    }
+  }, [postPage, activityPage, photoPage]);
+  
+
+  // Render each item
+  const renderItem = useCallback(({item}: {item: any}) => {
+    if (activeTab === 'Posts') {
+      return  <View style={{height:300}}><Text>hi</Text></View>;
+    } else if (activeTab === 'Activities') {
+      return <View style={{height:300}}><Text>hi</Text></View>;
+    } else if (activeTab === 'Photos') {
+      return  <View style={{height:300}}><Text>hi</Text></View>;
+    }
+    return null;
+  }, []);
 
   return (
-    <View style={styles.container}>
-      {/* App Bar */}
-      <Appbar.Header style={styles.appBar}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-      </Appbar.Header>
-
-      {/* Cover Photo Section */}
-      <View
-        style={[
-          styles.coverPhotoContainer,
-          {marginBottom: profilePhotoSize / 2},
-        ]}>
-        <Image
-          source={{
-            uri: 'https://www.hindustantimes.com/ht-img/img/2023/04/03/1600x900/Roman_Reigns_1680493737496_1680493761254_1680493761254.jpg',
-          }}
-          style={[styles.coverPhoto, {height: coverPhotoHeight}]}
-          resizeMode="cover"
-        />
-
-        {/* Profile Photo */}
-        <Image
-          source={{
-            uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZ9uutrjp7JJ_ZmeMkOpQc3n8ql36KbvRiu9wvGrVxq1MYR_UpPAxkA11vzaABGaDoBVI&usqp=CAU',
-          }}
-          style={[
-            styles.profilePhoto,
-            {
-              width: profilePhotoSize,
-              height: profilePhotoSize,
-              borderRadius: profilePhotoSize / 2,
-              bottom: -profilePhotoSize / 2,
-            },
-          ]}
-        />
+    <View style={{flex: 1}}>
+      {/* Tabs */}
+      <View style={styles.tabs}>
+        {tabs.map(tab => (
+          <TouchableOpacity
+            key={tab}
+            style={[styles.tab, activeTab === tab && styles.activeTab]}
+            onPress={() => handleTabChange(tab)}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === tab && styles.activeTabText,
+              ]}>
+              {tab}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      {/* Profile Details Section */}
-      <View style={styles.detailsContainer}>
+      {/* List */}
+      <FlatList
+        data={data}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderItem}
+        onEndReached={loadMoreData}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={isHasData || isLoading ?<Activator />:null}
         
-        <View style={styles.userNames}>
-        <Text style={styles.profileName}>Turjo Joadder</Text>
-        <Text style={styles.profileIdentifire}>@turjojoadder123</Text>
-        </View>
-        {/* Button Group */}
-        <View style={styles.buttonGroup}>
-          <TouchableOpacity style={styles.addFriendButton}>
-            <MaterialIcons
-              name="person-add"
-              size={24}
-              color="#fff"
-              style={{marginRight: 8}}
-            />
-            <Text style={styles.addFriendText}>Add Friend</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton}>
-            <MaterialIcons
-              name="message"
-              size={24}
-              color="#fff"
-              style={{marginRight: 8}}
-            />
-            <Text style={styles.messageText}>Message</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      />
     </View>
   );
-}
+};
+
+export default Profile;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#f8f9fa', // Softer background
+  tabs: {
+    flexDirection: 'row',
+    backgroundColor: '#f8f9fa',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  tab: {
     flex: 1,
+    padding: 12,
+    alignItems: 'center',
   },
-  appBar: {
-    height: 50,
-    backgroundColor: '#fff',
-    elevation: 2,
+  activeTab: {
+    borderBottomWidth: 3,
+    borderBottomColor: '#007bff',
   },
-  coverPhotoContainer: {
-    position: 'relative',
-    width: '100%',
-    backgroundColor: '#000',
-  },
-  coverPhoto: {
-    width: '100%',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-  },
-  profilePhoto: {
-    position: 'absolute',
-    left: '5%',
-    borderWidth: 4,
-    borderColor: '#fff',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  detailsContainer: {
-    paddingHorizontal: 16,
-    marginTop: 3,
-    alignItems: 'flex-start',
-  },
-  profileName: {
-    fontSize: 22,
-    fontWeight: 'bold',
+  tabText: {
+    fontSize: 16,
     color: '#333',
   },
-  profileIdentifire: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 15,
-    opacity: 0.6,
+  activeTabText: {
+    color: '#007bff',
+    fontWeight: 'bold',
   },
-  userNames:{
-elevation:4
-},
-  
-  buttonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'space-between', // Ensures buttons fill the row
-    alignItems: 'center',
-    marginBottom: 16,
-    
-  },
-  addFriendButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#007bff',
-    paddingVertical: 6,
-    flex: 1, // Make it fill half of the row
-    justifyContent: 'center', // Center icon and text horizontally
-    borderRadius: 8,
-    marginRight: 13, // Spacing between the two buttons
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  addFriendText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  messageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#000',
-    paddingVertical: 6,
-    flex: 1, // Make it fill half of the row
-    justifyContent: 'center', // Center icon and text horizontally
+  item: {
+    padding: 16,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    backgroundColor: '#fff',
     borderRadius: 8,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
-   opacity:0.96
+    elevation: 2,
   },
-  messageText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 14,
+  itemText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  loader: {
+    paddingVertical: 16,
+    alignItems: 'center',
   },
 });
