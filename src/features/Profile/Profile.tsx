@@ -36,34 +36,37 @@ const Profile = () => {
   const userId = '526fa940-c06f-4344-ad54-f723234f2fae';
 
   // Lazy queries
+  /* get post */
   const [
     fetchPosts,
     {data: postData, isFetching: isFetchingPosts, isSuccess},
   ] = useLazyGetSpecificUserPostQuery();
+  /*  */
   const [
     fetchActivities,
     {data: activitiesData, isFetching: isFetchingActivities},
   ] = useLazyGetSpecificUserFriendQuery();
-  const [fetchPhotos, {data: photosData, isFetching: isFetchingPhotos}] =
+  /* get photos */
+  const [fetchPhotos, {data: photosData, isFetching: isFetchingPhotos,isSuccess:isSuccessPhotos}] =
     useLazyGetSpecificUserPhotoQuery();
 
+if (isSuccessPhotos) {
+ console.log(photosData);
+}
 
-
-  // Fetch data on page change or tab activation
-  const fetchData = useCallback(
-    (tab: TabType) => {
-      if (tab === 'Posts') {
-        fetchPosts({page: postPage, userId});
-      } else if (tab === 'Activities') {
-        fetchActivities(activityPage);
-      } else if (tab === 'Photos') {
-        fetchPhotos(photoPage);
-      }
-    },
-    [postPage, activityPage, photoPage],
-  );
-
+ // Fetch data on page change or tab activation
+ useEffect(() => {
+    if (activeTab === 'Posts') {
+      fetchPosts({ page: postPage, userId });
+    } else if (activeTab === 'Activities') {
+      fetchActivities(activityPage);
+    } else if (activeTab === 'Photos') {
+      fetchPhotos({photoPage,userId});
+    }
+  }, [postPage, activityPage, photoPage]);
+  
   // Handle data updates and append new results
+  /* posts */
   useEffect(() => {
     if (postData?.data && activeTab === 'Posts') {
       if (postData.data.length === 0) {
@@ -81,6 +84,24 @@ const Profile = () => {
     }
   }, [postData,isSuccess]);
 
+  /* photos */
+
+  useEffect(() => {
+    if (photosData?.data && activeTab === 'Photos') {
+      if (photosData.data.length === 0) {
+        setHasMorePhotos(false);
+      } else {
+        const newPhotos = photosData.data.filter(
+          (newPhoto: any) =>
+            !photos.some(photo => photo.post_id === newPhoto.post_id),
+        );
+        if (newPhotos.length > 0) {
+        setPhotos(prev => [...prev, ...newPhotos]);
+        }
+      }
+    }
+  }, [photosData,isSuccessPhotos]);
+  /*  */
   useEffect(() => {
     if (activitiesData?.data && activeTab === 'Activities') {
       if (activitiesData.data.length === 0) {
@@ -97,19 +118,6 @@ const Profile = () => {
     }
   }, [activitiesData]);
 
-  useEffect(() => {
-    if (photosData?.data && activeTab === 'Photos') {
-      if (photosData.data.length === 0) {
-        setHasMorePhotos(false);
-      } else {
-        const newPhotos = photosData.data.filter(
-          (newPhoto: any) =>
-            !photos.some(photo => photo.photo_id === newPhoto.photo_id),
-        );
-        setPhotos(prev => [...prev, ...newPhotos]);
-      }
-    }
-  }, [photosData]);
 
   // Handle tab changes
   const handleTabChange = (tab: TabType) => {
@@ -160,17 +168,7 @@ const Profile = () => {
     Activities: hasMoreActivities,
     Photos: hasMorePhotos,
   }[activeTab];
-
-  useEffect(() => {
-    if (activeTab === 'Posts') {
-      fetchPosts({ page: postPage, userId });
-    } else if (activeTab === 'Activities') {
-      fetchActivities(activityPage);
-    } else if (activeTab === 'Photos') {
-      fetchPhotos(photoPage);
-    }
-  }, [postPage, activityPage, photoPage]);
-  
+ 
 
   // Render each item
   const renderItem = useCallback(({item}: {item: any}) => {

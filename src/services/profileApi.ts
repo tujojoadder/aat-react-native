@@ -32,7 +32,7 @@ export const profileApi = createApi({
     }),
 
     /*    get specific usrer images for profile */
-    getSpecificUserPhoto: builder.query({
+    getSpecificUserPhoto: builder.query<any,{photoPage:number,userId:string}>({
       query: ({ photoPage = 1, userId }) =>
         `getspecificuserphotos?page=${photoPage}&id=${userId}`, // Updated to include id
     }),
