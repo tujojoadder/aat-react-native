@@ -5,13 +5,12 @@ import { Tabs } from 'react-native-collapsible-tab-view';
 const HEADER_HEIGHT = 250;
 
 const Header = () => (
-  <View style={styles.header} pointerEvents="box-none" >
+  <View style={styles.header} pointerEvents="box-none">
     <Text style={styles.headerText}>Profile</Text>
   </View>
 );
 
 const SmoothFlatList = ({ data }: { data: any }) => {
-  // Use useCallback to prevent re-creation of renderItem
   const renderItem = useCallback(
     ({ item }: { item: any }) => (
       <View style={styles.item}>
@@ -23,14 +22,20 @@ const SmoothFlatList = ({ data }: { data: any }) => {
 
   return (
     <Tabs.FlatList
+      overScrollMode="never"
       data={data}
       keyExtractor={(item) => item}
       renderItem={renderItem}
-      initialNumToRender={10} // Render the first 10 items initially
-      maxToRenderPerBatch={10} // Limit rendering to 10 items per batch
-      windowSize={5} // Keep 5 screens worth of items in memory
-      removeClippedSubviews={true} // Improve memory usage on large lists
-      showsVerticalScrollIndicator={false} // Hide vertical scrollbars for better UX
+      getItemLayout={(data, index) => ({
+        length: 200, // Fixed height for each item
+        offset: 200 * index,
+        index,
+      })}
+      initialNumToRender={10}
+      maxToRenderPerBatch={10}
+      windowSize={5}
+      removeClippedSubviews={false} // Can be set to false for smoother scrolling
+      showsVerticalScrollIndicator={false}
     />
   );
 };
@@ -41,13 +46,11 @@ const Photos = () => <SmoothFlatList data={Array.from({ length: 25 }, (_, i) => 
 
 const Profile = () => {
   return (
-    
     <Tabs.Container
-    
       renderHeader={Header}
       headerHeight={HEADER_HEIGHT}
       pagerProps={{
-        scrollEnabled: false, // Make sure scrolling is enabled for the pager
+        scrollEnabled: true, // Enable smooth scrolling for the pager
       }}
     >
       <Tabs.Tab name="Posts" label="Posts">
@@ -69,6 +72,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden', // Enable hardware acceleration
   },
   headerText: {
     fontSize: 24,
