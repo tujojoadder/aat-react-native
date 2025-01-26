@@ -33,6 +33,17 @@ const theme = {
   },
 };
 
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from 'react-native-reanimated';
+
+// This is the default configuration
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // Reanimated runs in stricrunsde by default
+});
+
 export default function App() {
   return (
     <GestureHandlerRootView >
