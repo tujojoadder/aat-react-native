@@ -5,15 +5,15 @@ import { Tabs } from 'react-native-collapsible-tab-view';
 const HEADER_HEIGHT = 250;
 
 const Header = () => (
-  <View style={styles.header}>
+  <View style={styles.header} pointerEvents="box-none" >
     <Text style={styles.headerText}>Profile</Text>
   </View>
 );
 
-const SmoothFlatList = ({ data }:{data:any}) => {
+const SmoothFlatList = ({ data }: { data: any }) => {
   // Use useCallback to prevent re-creation of renderItem
   const renderItem = useCallback(
-    ({ item }:{item:any}) => (
+    ({ item }: { item: any }) => (
       <View style={styles.item}>
         <Text>{item}</Text>
       </View>
@@ -41,26 +41,24 @@ const Photos = () => <SmoothFlatList data={Array.from({ length: 25 }, (_, i) => 
 
 const Profile = () => {
   return (
+    
     <Tabs.Container
     
       renderHeader={Header}
       headerHeight={HEADER_HEIGHT}
       pagerProps={{
-
-        scrollEnabled: false, // Enable scrolling
-
+        scrollEnabled: false, // Make sure scrolling is enabled for the pager
       }}
     >
-      <Tabs.Tab name="Posts">
+      <Tabs.Tab name="Posts" label="Posts">
         <Posts />
       </Tabs.Tab>
-      <Tabs.Tab name="Frieddnds">
+      <Tabs.Tab name="Friends" label="Friends">
         <Friends />
       </Tabs.Tab>
-      <Tabs.Tab name="Photdvdos">
+      <Tabs.Tab name="Photos" label="Photos">
         <Photos />
       </Tabs.Tab>
-
     </Tabs.Container>
   );
 };
