@@ -11,7 +11,7 @@ type ProfileNavigationProps = NativeStackNavigationProp<
   RootParamList,
   'profile'
 >;
-const HEADER_HEIGHT = 250;
+
 
 
 const Header = () =>{
@@ -133,7 +133,7 @@ const Profile = () => {
   return (
     <Tabs.Container
       renderHeader={Header}
-      headerHeight={HEADER_HEIGHT}
+    
       pagerProps={{
         scrollEnabled: true, // Enable smooth scrolling for the pager
       }}
@@ -152,18 +152,7 @@ const Profile = () => {
 };
 
 const styles = StyleSheet.create({
-  header: {
-    height: HEADER_HEIGHT,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden', // Enable hardware acceleration
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
+
   item: {
     backgroundColor: '#fff',
     padding: 16,
