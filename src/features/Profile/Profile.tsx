@@ -106,7 +106,7 @@ const Profile = () => {
         <Segmented.View header={Header}>
           <Segmented.Segment label="Posts" component={SegmentA} />
           <Segmented.Segment label="Photos" component={SegmentB} />
-          <Segmented.Segment label="Friend" component={SegmentC} />
+          <Segmented.Segment label="Friends" component={SegmentC} />
         </Segmented.View>
       </View>
     </View>
