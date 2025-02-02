@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     zIndex: 10, // Ensure it stays on top
     backgroundColor: '#fff',
     elevation: 2,
+    height:50 //app bar size 50px (we need marginTop 50 )
   },
   segmentedContainer: {
     flex: 1,
