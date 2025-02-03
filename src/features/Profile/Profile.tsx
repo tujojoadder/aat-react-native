@@ -34,7 +34,7 @@ const Header = () => {
         style={[
           styles.coverPhotoContainer,
           {marginBottom: profilePhotoSize / 2},
-        ]}>
+        ]} pointerEvents="box-none">
         <Image
           source={{
             uri: 'https://www.hindustantimes.com/ht-img/img/2023/04/03/1600x900/Roman_Reigns_1680493737496_1680493761254_1680493761254.jpg',
@@ -61,14 +61,14 @@ const Header = () => {
       </View>
 
       {/* Profile Details Section */}
-      <View style={styles.detailsContainer}>
-        <View style={styles.userNames}>
+      <View style={styles.detailsContainer} pointerEvents="box-none">
+        <View style={styles.userNames} pointerEvents="box-none">
           <Text style={styles.profileName}>Turjo Joadder</Text>
           <Text style={styles.profileIdentifire}>@turjojoadder123</Text>
         </View>
 
         {/* Follower and Following Section */}
-        <View style={styles.statsContainer}>
+        <View style={styles.statsContainer} pointerEvents="box-none">
           <TouchableOpacity style={styles.statItem}>
             <Text style={styles.statNumber}>1.2K</Text>
             <Text style={styles.statLabel}>Friends</Text>
