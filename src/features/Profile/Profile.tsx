@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  Touchable,
 } from 'react-native';
 import {Segmented, useIsFocused} from 'react-native-collapsible-segmented-view';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -27,7 +28,7 @@ const Header = () => {
   const profilePhotoSize = width * 0.33;
 
   return (
-    <View pointerEvents="box-none" >
+    <View pointerEvents="box-none">
       {/* Cover Photo Section */}
       <View
         style={[
@@ -65,6 +66,31 @@ const Header = () => {
           <Text style={styles.profileName}>Turjo Joadder</Text>
           <Text style={styles.profileIdentifire}>@turjojoadder123</Text>
         </View>
+
+        {/* Follower and Following Section */}
+        <View style={styles.statsContainer}>
+          <TouchableOpacity style={styles.statItem}>
+            <Text style={styles.statNumber}>1.2K</Text>
+            <Text style={styles.statLabel}>Friends</Text>
+          </TouchableOpacity>
+
+          {/* Vertical Divider */}
+          <View style={styles.verticalLine} />
+
+          <TouchableOpacity style={styles.statItem}>
+            <Text style={styles.statNumber}>456</Text>
+            <Text style={styles.statLabel}>Following</Text>
+          </TouchableOpacity>
+
+          {/* Vertical Divider */}
+          <View style={styles.verticalLine} />
+
+          <TouchableOpacity style={styles.statItem}>
+            <Text style={styles.statNumber}>456</Text>
+            <Text style={styles.statLabel}>Followers</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Button Group */}
         <View style={styles.buttonGroup}>
           <TouchableOpacity style={styles.addFriendButton}>
@@ -106,7 +132,7 @@ const Profile = () => {
         <Segmented.View header={Header}>
           <Segmented.Segment label="Posts" component={SegmentA} />
           <Segmented.Segment label="Photos" component={SegmentB} />
-          <Segmented.Segment label="Friends" component={SegmentC} />
+          <Segmented.Segment label="About" component={SegmentC} />
         </Segmented.View>
       </View>
     </View>
@@ -136,10 +162,10 @@ const SegmentA = () => (
 );
 
 const SegmentB = () => {
-  const isFocused = useIsFocused();
+  /* const isFocused = useIsFocused();
   if (isFocused) {
     console.log('first');
-  }
+  } */
   return (
     <Segmented.FlatList
       data={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
@@ -169,12 +195,11 @@ const styles = StyleSheet.create({
     zIndex: 10, // Ensure it stays on top
     backgroundColor: '#fff',
     elevation: 2,
-    height:50 //app bar size 50px (we need marginTop 50 )
+    height: 50, //app bar size 50px (we need marginTop 50 )
   },
   segmentedContainer: {
     flex: 1,
     marginTop: 50, // Adjust this to match the AppBar height
-  
   },
   box: {
     justifyContent: 'center',
@@ -224,6 +249,34 @@ const styles = StyleSheet.create({
   },
   userNames: {
     elevation: 4,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+    width: '100%',
+    justifyContent: 'center',
+  },
+  verticalLine: {
+    width: 1, // Thin line
+    height: 30, // Adjust height as needed
+    backgroundColor: '#ccc', // Light gray line
+    marginHorizontal: 10, // Space between items
+    alignSelf:'center'
+  },
+
+  statItem: {
+    paddingHorizontal: 10,
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#555',
+    opacity: 0.8,
   },
   buttonGroup: {
     flexDirection: 'row',
