@@ -26,9 +26,9 @@ export const profileApi = createApi({
     /* <----  Other's User ---> */
 
     /*    get specific usrer post for profile */
-    getSpecificUserPost: builder.query<any,{page:number,userId:string}>({
-      query: ({ page = 1, userId }) =>
-        `getspecificuserposts?page=${page}&id=${userId}`, // Updated to include id
+    getSpecificUserPost: builder.query<any,{postPage:number,userId:string}>({
+      query: ({ postPage = 1, userId }) =>
+        `getspecificuserposts?page=${postPage}&id=${userId}`, // Updated to include id
     }),
 
     /*    get specific usrer images for profile */
@@ -202,7 +202,7 @@ export const {
   useGetSpecificUserFollowingQuery,
   useGetSpecificUserFollowerQuery,
   useLazyGetSpecificUserPhotoQuery,
-  useLazyGetSpecificUserPostQuery,
+  useGetSpecificUserPostQuery,
   useLazyGetSpecificUserFriendQuery,
   useGetAuthUserPostQuery,
   useGetAuthUserPhotoQuery,

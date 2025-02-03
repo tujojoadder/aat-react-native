@@ -218,7 +218,7 @@ const ImagePost = React.memo(({post}: {post: PostData}) => {
               </Text>
             </TouchableOpacity>
 
-            <Text style={styles.identifier}>{post.author.identifier}</Text>
+            <Text numberOfLines={1} style={styles.identifier}>{post.author.identifier}</Text>
           </View>
         </View>
         <PostTime createdAt={post.created_at} />
@@ -314,6 +314,7 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'center',
+    maxWidth:'70%',
   },
   userName: {
     fontWeight: 'bold',
