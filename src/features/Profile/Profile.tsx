@@ -34,7 +34,8 @@ const Header = () => {
         style={[
           styles.coverPhotoContainer,
           {marginBottom: profilePhotoSize / 2},
-        ]} pointerEvents="box-none">
+        ]}
+        pointerEvents="box-none">
         <Image
           source={{
             uri: 'https://www.hindustantimes.com/ht-img/img/2023/04/03/1600x900/Roman_Reigns_1680493737496_1680493761254_1680493761254.jpg',
@@ -62,14 +63,22 @@ const Header = () => {
 
       {/* Profile Details Section */}
       <View style={styles.detailsContainer} pointerEvents="box-none">
-        <View style={styles.userNames} pointerEvents="box-none">
-          <Text style={styles.profileName}>Turjo Joadder</Text>
-          <Text style={styles.profileIdentifire}>@turjojoadder123</Text>
+        <View style={styles.nameSection} pointerEvents="box-none">
+          <View style={styles.userName}>
+            <Text style={styles.profileName}>
+              Turjo Joadder
+            </Text>
+            <Text style={styles.profileIdentifire}>@turjojoadder123</Text>
+          </View>
+
+          <TouchableOpacity style={styles.followButton}>
+            <Text style={styles.followButtonText}>Follow</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Follower and Following Section */}
-        <View style={styles.statsContainer} pointerEvents="box-none">
-          <TouchableOpacity style={styles.statItem}>
+        <View style={styles.numberSection} pointerEvents="box-none">
+          <TouchableOpacity style={styles.numberItem}>
             <Text style={styles.statNumber}>1.2K</Text>
             <Text style={styles.statLabel}>Friends</Text>
           </TouchableOpacity>
@@ -77,7 +86,7 @@ const Header = () => {
           {/* Vertical Divider */}
           <View style={styles.verticalLine} />
 
-          <TouchableOpacity style={styles.statItem}>
+          <TouchableOpacity style={styles.numberItem}>
             <Text style={styles.statNumber}>456</Text>
             <Text style={styles.statLabel}>Following</Text>
           </TouchableOpacity>
@@ -85,7 +94,7 @@ const Header = () => {
           {/* Vertical Divider */}
           <View style={styles.verticalLine} />
 
-          <TouchableOpacity style={styles.statItem}>
+          <TouchableOpacity style={styles.numberItem}>
             <Text style={styles.statNumber}>456</Text>
             <Text style={styles.statLabel}>Followers</Text>
           </TouchableOpacity>
@@ -234,8 +243,19 @@ const styles = StyleSheet.create({
   detailsContainer: {
     paddingHorizontal: 16,
     marginTop: 3,
-    alignItems: 'flex-start',
   },
+
+  nameSection: {
+    flexDirection: 'row', // Aligns username & button in a row
+    justifyContent: 'space-between',
+    alignItems: 'center', // Vertically aligns elements
+    marginBottom: 10, // Adjust spacing
+    elevation: 4,
+  },
+  userName: {
+    maxWidth:'70%'
+  },
+
   profileName: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -244,15 +264,28 @@ const styles = StyleSheet.create({
   profileIdentifire: {
     fontSize: 14,
     color: '#555',
-    marginBottom: 15,
     opacity: 0.6,
   },
-  userNames: {
-    elevation: 4,
+  followButton: {
+    backgroundColor: 'black', // Blue button color
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
   },
-  statsContainer: {
+  followButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+
+  numberSection: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginTop:7,
+    marginBottom: 20,
     width: '100%',
     justifyContent: 'center',
   },
@@ -261,10 +294,10 @@ const styles = StyleSheet.create({
     height: 30, // Adjust height as needed
     backgroundColor: '#ccc', // Light gray line
     marginHorizontal: 10, // Space between items
-    alignSelf:'center'
+    alignSelf: 'center',
   },
 
-  statItem: {
+  numberItem: {
     paddingHorizontal: 10,
     alignItems: 'center',
   },
