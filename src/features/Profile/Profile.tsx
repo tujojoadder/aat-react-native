@@ -24,8 +24,8 @@ type ProfileNavigationProps = NativeStackNavigationProp<
 const Header = () => {
   const {width} = Dimensions.get('window');
 
-  const coverPhotoHeight = width * 0.5;
-  const profilePhotoSize = width * 0.33;
+  const coverPhotoHeight = width * 0.55;
+  const profilePhotoSize = width * 0.37;
 
   return (
     <View pointerEvents="box-none">
@@ -64,13 +64,12 @@ const Header = () => {
       {/* Profile Details Section */}
       <View style={styles.detailsContainer} pointerEvents="box-none">
         <View style={styles.nameSection} pointerEvents="box-none">
+          {/* 60% width*/}
           <View style={styles.userName}>
-            <Text style={styles.profileName}>
-              Turjo Joadder
-            </Text>
+            <Text style={styles.profileName}>Turjo Joadder </Text>
             <Text style={styles.profileIdentifire}>@turjojoadder123</Text>
           </View>
-
+          {/* 40% width (90px button width) */}
           <TouchableOpacity style={styles.followButton}>
             <Text style={styles.followButtonText}>Follow</Text>
           </TouchableOpacity>
@@ -114,7 +113,7 @@ const Header = () => {
           <TouchableOpacity style={styles.messageButton}>
             <MaterialIcons
               name="message"
-              size={24}
+              size={23}
               color="#fff"
               style={{marginRight: 8}}
             />
@@ -134,6 +133,10 @@ const Profile = () => {
       {/* Fixed Appbar */}
       <Appbar.Header style={styles.appBar}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content
+          title="Turjo joadder"
+          titleStyle={{fontSize: 18, color: '#333', opacity: 0.8}}
+        />
       </Appbar.Header>
 
       {/* Segmented View with Collapsible Header */}
@@ -241,7 +244,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   detailsContainer: {
-    paddingHorizontal: 16,
     marginTop: 3,
   },
 
@@ -251,9 +253,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Vertically aligns elements
     marginBottom: 10, // Adjust spacing
     elevation: 4,
+    paddingHorizontal: 16,
   },
   userName: {
-    maxWidth:'70%'
+    maxWidth: '60%',
   },
 
   profileName: {
@@ -270,11 +273,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'black', // Blue button color
     paddingVertical: 5,
     paddingHorizontal: 20,
+
     borderRadius: 30,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 10,
+    width: 90,
   },
   followButtonText: {
     color: '#fff',
@@ -284,7 +289,7 @@ const styles = StyleSheet.create({
 
   numberSection: {
     flexDirection: 'row',
-    marginTop:7,
+    marginTop: 7,
     marginBottom: 20,
     width: '100%',
     justifyContent: 'center',
@@ -298,7 +303,8 @@ const styles = StyleSheet.create({
   },
 
   numberItem: {
-    paddingHorizontal: 10,
+    padding: 0,
+    marginHorizontal: 10,
     alignItems: 'center',
   },
   statNumber: {
@@ -313,19 +319,19 @@ const styles = StyleSheet.create({
   },
   buttonGroup: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
+    justifyContent: 'center',
+    gap: 15,
   },
   addFriendButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#007bff',
     paddingVertical: 6,
-    flex: 1,
+    paddingHorizontal: 12,
     justifyContent: 'center',
-    borderRadius: 8,
-    marginRight: 13,
+    borderRadius: 18,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
@@ -341,9 +347,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#000',
     paddingVertical: 6,
-    flex: 1,
+    paddingHorizontal: 12,
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: 18,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
