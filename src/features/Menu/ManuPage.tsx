@@ -53,7 +53,6 @@ const MenuPage = ({navigation}: any) => {
   const handleLogout = async () => {
     try {
       const data = await logOutUser().unwrap();
-
       await handlePostLogoutActions();
     } catch (error) {
       console.log('Error during logout:', error);

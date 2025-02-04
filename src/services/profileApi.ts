@@ -201,7 +201,7 @@ export const {
   useSaveAboutMutation,
   useGetSpecificUserFollowingQuery,
   useGetSpecificUserFollowerQuery,
-  useLazyGetSpecificUserPhotoQuery,
+  useGetSpecificUserPhotoQuery,
   useGetSpecificUserPostQuery,
   useLazyGetSpecificUserFriendQuery,
   useGetAuthUserPostQuery,
