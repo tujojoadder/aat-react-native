@@ -136,7 +136,7 @@ export const profileApi = createApi({
     }),
 
     /* Get About data */
-    getSpecificUserAbout: builder.query({
+    getSpecificUserAbout: builder.query<any,string>({
       query: (id) => `/about/${id}`, // API endpoint for fetching user about data
     }),
 

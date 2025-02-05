@@ -17,6 +17,7 @@ import {Appbar} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProfilePosts from './ProfilePosts';
 import ProfileImages from './ProfileImages';
+import ProfileAbout from './ProfileAbout';
 
 type ProfileNavigationProps = NativeStackNavigationProp<
   RootParamList,
@@ -146,7 +147,7 @@ const Profile = () => {
         <Segmented.View header={Header}>
           <Segmented.Segment label="Posts" component={ProfilePosts} />
           <Segmented.Segment label="Photos" component={ProfileImages} />
-          <Segmented.Segment label="About" component={SegmentC} />
+          <Segmented.Segment label="About" component={ProfileAbout} />
         </Segmented.View>
       </View>
     </View>
