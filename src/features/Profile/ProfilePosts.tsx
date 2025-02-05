@@ -9,9 +9,12 @@ import TextPost from '../TextPost/TextPost';
 import ImagePost from '../ImagePost/ImagePost';
 import BPost from '../BPost/BPost';
 import {ActivityIndicator} from 'react-native-paper';
+// Define the props type
+type ProfilePostsProps = {
+    userId: string;
+  };
+  export default function ProfilePosts({userId}: ProfilePostsProps) {
 
-export default function ProfilePosts() {
-  const userId = '526fa940-c06f-4344-ad54-f723234f2fae';
 
   // State for pagination
   const [allPosts, setPosts] = useState<any[]>([]);

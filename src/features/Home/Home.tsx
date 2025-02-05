@@ -27,8 +27,6 @@ import {RootParamList} from '../../../RootNavigator';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import HadithStatusBar from '../../HadithStatus/HadithStatusBar';
 import Activator from '../Activator/Activator';
-import { useToggleLoveMutation } from '../../services/loveApi';
-import { useToggleUnlikeMutation } from '../../services/unlikeApi';
 type HomeNavigationProps = NativeStackNavigationProp<RootParamList, 'main'>;
 export default function Home() {
   const navigation = useNavigation<HomeNavigationProps>();

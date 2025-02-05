@@ -73,10 +73,8 @@ type PostData = {
   total_comments: number;
   updated_at: string;
 };
-type ImageNavigationProps = NativeStackNavigationProp<
-  RootParamList,
-  'main'
->;
+
+type ImageNavigationProps = NativeStackNavigationProp<RootParamList, 'main'>;
 
 const ImagePost = React.memo(({post}: {post: PostData}) => {
   const dispatch = useDispatch();
@@ -198,27 +196,32 @@ const ImagePost = React.memo(({post}: {post: PostData}) => {
     });
   };
 
-  const navigateToProfile = () => {
-    navigation.navigate('profile'); // Replace '12345' with dynamic user ID if needed
-  };
-
+  /* console.log('authorId'+ 'post.author.user_id') */
   return (
     <View style={styles.container}>
       {/* Post Header */}
       <View style={styles.header}>
         <View style={styles.leftHeader}>
-          <TouchableOpacity onPress={navigateToProfile}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('profile', {authorId: post.author.user_id})
+            }>
             <Image source={{uri: profilePic}} style={styles.profilePic} />
           </TouchableOpacity>
 
           <View style={styles.userInfo}>
-            <TouchableOpacity onPress={navigateToProfile}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('profile', {authorId: post.author.user_id})
+              }>
               <Text style={styles.userName} numberOfLines={1}>
                 {post.author.user_fname} {post.author.user_lname}
               </Text>
             </TouchableOpacity>
 
-            <Text numberOfLines={1} style={styles.identifier}>{post.author.identifier}</Text>
+            <Text numberOfLines={1} style={styles.identifier}>
+              {post.author.identifier}
+            </Text>
           </View>
         </View>
         <PostTime createdAt={post.created_at} />
@@ -314,7 +317,7 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'center',
-    maxWidth:'70%',
+    maxWidth: '70%',
   },
   userName: {
     fontWeight: 'bold',

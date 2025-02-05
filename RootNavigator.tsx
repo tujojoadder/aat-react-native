@@ -27,7 +27,7 @@ export type RootParamList = {
   hadithStaus:undefined;
   hadithContent:{serialNumber:number};
   hadithBox:undefined;
-  profile:undefined;
+  profile: { authorId: string }; 
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 

@@ -9,17 +9,17 @@ import {
 import { Segmented } from 'react-native-collapsible-segmented-view';
 import { ActivityIndicator, Modal, Portal, Button } from 'react-native-paper';
 import { useGetSpecificUserPhotoQuery } from '../../services/profileApi';
-
-export default function ProfileImages() {
+// Define the props type
+type ProfileImagessProps = {
+    userId: string;
+  };
+export default function ProfileImages({userId}: ProfileImagessProps) {
 
       // Calculate number of columns dynamically based on screen width
         // Get screen width
   const screenWidth = Dimensions.get('window').width;
 
   const numColumns = useMemo(() => Math.floor(screenWidth / 150), []);
-
-  const userId = '526fa940-c06f-4344-ad54-f723234f2fae';
-
   // State for pagination
   const [allPhotos, setPhotos] = useState<any[]>([]);
   const [photoPage, setPhotoPage] = useState(1);

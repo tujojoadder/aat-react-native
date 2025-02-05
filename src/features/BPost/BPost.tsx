@@ -17,6 +17,9 @@ import {setLoveReaction, setUnlikeReactions} from '../Home/HomeSlice';
 import {RootState} from '../../app/store';
 import FormateLargeNumber from '../utils/FormateLargeNumber/FormateLargeNumber';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootParamList } from '../../../RootNavigator';
+import { useNavigation } from '@react-navigation/native';
 type PostData = {
   approval: number;
   audience: string;
@@ -66,9 +69,14 @@ type PostData = {
   total_comments: number;
   updated_at: string;
 };
-
+type BPostNavigationProps = NativeStackNavigationProp<
+  RootParamList,
+  'main'
+>;
 const BPost = React.memo(({post}: {post: PostData}) => {
   const dispatch = useDispatch();
+  const navigation = useNavigation<BPostNavigationProps>();
+  
   const [imageHeight, setImageHeight] = useState(
     Dimensions.get('window').height / 2,
   );
@@ -195,11 +203,15 @@ const BPost = React.memo(({post}: {post: PostData}) => {
       {/* Post Header */}
       <View style={styles.header}>
         <View style={styles.leftHeader}>
-          <Image source={{uri: profilePic}} style={styles.profilePic} />
+ <TouchableOpacity onPress={()=>navigation.navigate('profile',{ authorId:post.author.user_id})}>
+            <Image source={{uri: profilePic}} style={styles.profilePic} />
+          </TouchableOpacity>
           <View style={styles.userInfo}>
-            <Text style={styles.userName} numberOfLines={1}>
-              {post.author.user_fname} {post.author.user_lname}
-            </Text>
+             <TouchableOpacity onPress={()=>navigation.navigate('profile',{ authorId:post.author.user_id})}>
+                         <Text style={styles.userName} numberOfLines={1}>
+                           {post.author.user_fname} {post.author.user_lname}
+                         </Text>
+                       </TouchableOpacity>
             <Text  numberOfLines={1} style={styles.identifier}>{post.author.identifier}</Text>
           </View>
         </View>

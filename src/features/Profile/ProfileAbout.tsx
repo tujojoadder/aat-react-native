@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useGetSpecificUserAboutQuery } from '../../services/profileApi';
 import { Segmented } from 'react-native-collapsible-segmented-view';
-
-export default function ProfileAbout() {
-  const userId = '526fa940-c06f-4344-ad54-f723234f2fae';
-
+type ProfileAbout = {
+    userId: string;
+  };
+  export default function ProfileAbout({userId}: ProfileAbout) {
+    
   const { data, error, isLoading, isSuccess } = useGetSpecificUserAboutQuery(userId);
 
   if (isLoading) {

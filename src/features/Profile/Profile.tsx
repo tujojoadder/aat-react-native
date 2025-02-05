@@ -6,23 +6,20 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
-  Touchable,
 } from 'react-native';
-import {Segmented, useIsFocused} from 'react-native-collapsible-segmented-view';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {Segmented} from 'react-native-collapsible-segmented-view';
+import {
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 import React from 'react';
 import {RootParamList} from '../../../RootNavigator';
-import {useNavigation} from '@react-navigation/native';
 import {Appbar} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProfilePosts from './ProfilePosts';
 import ProfileImages from './ProfileImages';
 import ProfileAbout from './ProfileAbout';
 
-type ProfileNavigationProps = NativeStackNavigationProp<
-  RootParamList,
-  'profile'
->;
+type ProfileScreenProps = NativeStackScreenProps<RootParamList, 'profile'>;
 
 const Header = () => {
   const {width} = Dimensions.get('window');
@@ -128,8 +125,8 @@ const Header = () => {
   );
 };
 
-const Profile = () => {
-  const navigation = useNavigation<ProfileNavigationProps>();
+const Profile = ({navigation, route}: ProfileScreenProps) => {
+  const userId = route.params.authorId;
 
   return (
     <View style={styles.container}>
@@ -145,9 +142,23 @@ const Profile = () => {
       {/* Segmented View with Collapsible Header */}
       <View style={styles.segmentedContainer}>
         <Segmented.View header={Header}>
-          <Segmented.Segment label="Posts" component={ProfilePosts} />
-          <Segmented.Segment label="Photos" component={ProfileImages} />
-          <Segmented.Segment label="About" component={ProfileAbout} />
+          {/* Pass userId to ProfilePosts */}
+          <Segmented.Segment
+            label="Posts"
+            component={() => <ProfilePosts userId={userId} />}
+          />
+
+          {/* Pass userId to ProfileImages */}
+          <Segmented.Segment
+            label="Photos"
+            component={() => <ProfileImages userId={userId} />}
+          />
+
+          {/* Pass userId to ProfileAbout */}
+          <Segmented.Segment
+            label="About"
+            component={() => <ProfileAbout userId={userId} />}
+          />
         </Segmented.View>
       </View>
     </View>
@@ -166,37 +177,6 @@ const renderItem =
       </View>
     );
   };
-
-// ✅ Separate Components for Each Segment
-const SegmentA = () => (
-  <Segmented.FlatList
-    data={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-    renderItem={renderItem('#FBC02D', '#FFF9C4')}
-    keyExtractor={item => item.toString()}
-  />
-);
-
-const SegmentB = () => {
-  /* const isFocused = useIsFocused();
-  if (isFocused) {
-    console.log('first');
-  } */
-  return (
-    <Segmented.FlatList
-      data={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-      renderItem={renderItem('#0097A7', '#B2EBF2')}
-      keyExtractor={item => item.toString()}
-    />
-  );
-};
-
-const SegmentC = () => (
-  <Segmented.FlatList
-    data={[0, 1]}
-    renderItem={renderItem('#D32F2F', '#FFCDD2')}
-    keyExtractor={item => item.toString()}
-  />
-);
 
 const styles = StyleSheet.create({
   container: {
