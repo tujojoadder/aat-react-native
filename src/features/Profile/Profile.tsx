@@ -8,24 +8,39 @@ import {
   Dimensions,
 } from 'react-native';
 import {Segmented} from 'react-native-collapsible-segmented-view';
-import {
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {RootParamList} from '../../../RootNavigator';
-import {Appbar} from 'react-native-paper';
+import {ActivityIndicator, Appbar} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProfilePosts from './ProfilePosts';
 import ProfileImages from './ProfileImages';
 import ProfileAbout from './ProfileAbout';
-
+import {useGetUserDetailsQuery} from '../../services/friendsApi';
+import FormateLargeNumber from '../utils/FormateLargeNumber/FormateLargeNumber';
+import ProfileSkeleton from './ProfileSkeleton';
+interface UserDetails {
+  cover_photo: string;
+  followers_count: number;
+  followings_count: number;
+  friends_count: number;
+  identifier: string;
+  profile_picture: string;
+  user_fname: string;
+  user_lname: string;
+}
+interface ApiResponse {
+  data: UserDetails;
+}
 type ProfileScreenProps = NativeStackScreenProps<RootParamList, 'profile'>;
 
-const Header = () => {
+const Header = ({userData}: {userData?: ApiResponse}) => {
+  const coverPic = `${process.env.REACT_APP_LARAVEL_URL}/${userData?.data.cover_photo}`;
+  const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${userData?.data.profile_picture}`;
   const {width} = Dimensions.get('window');
 
   const coverPhotoHeight = width * 0.55;
-  const profilePhotoSize = width * 0.37;
+  const profilePhotoSize = width * 0.35;
 
   return (
     <View pointerEvents="box-none">
@@ -38,7 +53,7 @@ const Header = () => {
         pointerEvents="box-none">
         <Image
           source={{
-            uri: 'https://www.hindustantimes.com/ht-img/img/2023/04/03/1600x900/Roman_Reigns_1680493737496_1680493761254_1680493761254.jpg',
+            uri: coverPic,
           }}
           style={[styles.coverPhoto, {height: coverPhotoHeight}]}
           resizeMode="cover"
@@ -47,7 +62,7 @@ const Header = () => {
         {/* Profile Photo */}
         <Image
           source={{
-            uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZ9uutrjp7JJ_ZmeMkOpQc3n8ql36KbvRiu9wvGrVxq1MYR_UpPAxkA11vzaABGaDoBVI&usqp=CAU',
+            uri: profilePic,
           }}
           style={[
             styles.profilePhoto,
@@ -59,15 +74,21 @@ const Header = () => {
             },
           ]}
         />
-      </View>
+        </View>
 
       {/* Profile Details Section */}
       <View style={styles.detailsContainer} pointerEvents="box-none">
         <View style={styles.nameSection} pointerEvents="box-none">
           {/* 60% width*/}
           <View style={styles.userName}>
-            <Text style={styles.profileName}>Turjo Joadder </Text>
-            <Text style={styles.profileIdentifire}>@turjojoadder123</Text>
+            <Text style={styles.profileName}>
+              {userData?.data.user_fname} {userData?.data.user_lname}
+            </Text>
+            {userData && (
+              <Text style={styles.profileIdentifire}>
+                @{userData?.data.identifier}
+              </Text>
+            )}
           </View>
           {/* 40% width (90px button width) */}
           <TouchableOpacity style={styles.followButton}>
@@ -78,7 +99,9 @@ const Header = () => {
         {/* Follower and Following Section */}
         <View style={styles.numberSection} pointerEvents="box-none">
           <TouchableOpacity style={styles.numberItem}>
-            <Text style={styles.statNumber}>1.2K</Text>
+            <Text style={styles.statNumber}>
+              <FormateLargeNumber number={userData?.data.friends_count ?? 0} />
+            </Text>
             <Text style={styles.statLabel}>Friends</Text>
           </TouchableOpacity>
 
@@ -86,7 +109,11 @@ const Header = () => {
           <View style={styles.verticalLine} />
 
           <TouchableOpacity style={styles.numberItem}>
-            <Text style={styles.statNumber}>456</Text>
+            <Text style={styles.statNumber}>
+              <FormateLargeNumber
+                number={userData?.data.followings_count ?? 0}
+              />
+            </Text>
             <Text style={styles.statLabel}>Following</Text>
           </TouchableOpacity>
 
@@ -94,7 +121,11 @@ const Header = () => {
           <View style={styles.verticalLine} />
 
           <TouchableOpacity style={styles.numberItem}>
-            <Text style={styles.statNumber}>456</Text>
+            <Text style={styles.statNumber}>
+              <FormateLargeNumber
+                number={userData?.data.followers_count ?? 0}
+              />
+            </Text>
             <Text style={styles.statLabel}>Followers</Text>
           </TouchableOpacity>
         </View>
@@ -126,22 +157,34 @@ const Header = () => {
 };
 
 const Profile = ({navigation, route}: ProfileScreenProps) => {
+  /* get the user id from route */
   const userId = route.params.authorId;
 
+  // Fetch user profile data with user id
+  const {
+    data: profileData,
+    isFetching,
+    isError,
+    isSuccess,
+  } = useGetUserDetailsQuery(userId);
+
+  if (isFetching) {
+    return <ProfileSkeleton />
+  }
   return (
     <View style={styles.container}>
       {/* Fixed Appbar */}
       <Appbar.Header style={styles.appBar}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content
-          title="Turjo joadder"
+          title={`${profileData?.data.user_fname} ${profileData?.data.user_lname}`}
           titleStyle={{fontSize: 18, color: '#333', opacity: 0.8}}
         />
       </Appbar.Header>
 
       {/* Segmented View with Collapsible Header */}
       <View style={styles.segmentedContainer}>
-        <Segmented.View header={Header}>
+        <Segmented.View header={() => <Header userData={profileData} />}>
           {/* Pass userId to ProfilePosts */}
           <Segmented.Segment
             label="Posts"
@@ -164,19 +207,6 @@ const Profile = ({navigation, route}: ProfileScreenProps) => {
     </View>
   );
 };
-
-// Common List Render Function
-const renderItem =
-  (color0: string, color1: string): ListRenderItem<number> =>
-  ({index}) => {
-    const backgroundColor = index % 2 === 0 ? color0 : color1;
-    const color = index % 2 === 0 ? color1 : color0;
-    return (
-      <View style={[styles.box, {backgroundColor}]}>
-        <Text style={[{color}, styles.text]}>{index}</Text>
-      </View>
-    );
-  };
 
 const styles = StyleSheet.create({
   container: {

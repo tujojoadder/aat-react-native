@@ -13,6 +13,8 @@ import { hadithApi } from '../services/hadithApi';
 import { postApi } from './../services/postApi';
 import { loveApi } from '../services/loveApi';
 import { unlikeApi } from '../services/unlikeApi';
+import { friendsApi } from '../services/friendsApi';
+
 
 
 // Persist configuration
@@ -33,6 +35,7 @@ const rootReducer = combineReducers({
   [postApi.reducerPath]: postApi.reducer,
   [loveApi.reducerPath]: loveApi.reducer,
   [unlikeApi.reducerPath]: unlikeApi.reducer,
+  [friendsApi.reducerPath]: friendsApi.reducer,
   // Add more reducers as needed
 });
 
@@ -54,6 +57,7 @@ export const store = configureStore({
       postApi.middleware,
       loveApi.middleware,
       unlikeApi.middleware,
+      friendsApi.middleware,
       // Add other middlewares as needed
     ),
 });
