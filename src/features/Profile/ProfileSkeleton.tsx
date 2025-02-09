@@ -1,63 +1,49 @@
-// src/features/Profile/ProfileSkeleton.tsx
-
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import { View, Dimensions } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 const ProfileSkeleton = () => {
-  return (
-    <View style={styles.container}>
-      <SkeletonPlaceholder>
-        {/* Wrap all children inside a single parent View */}
-        <View>
-          
-          <View style={styles.coverPhotoContainer}>
-            <View style={styles.coverPhoto} />
-            <View style={styles.profilePicContainer}>
-              <View style={styles.profilePic} />
-            </View>
-          </View>
+  const { width } = Dimensions.get('window');
 
-          <View style={styles.content}></View>
+  // Dynamic dimensions
+  const coverPhotoHeight = width * 0.6; // 40% of screen width
+  const profilePhotoSize = width * 0.25; // 25% of screen width
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SkeletonPlaceholder borderRadius={4} backgroundColor="#E1E9EE" highlightColor="#F2F8FC">
+        <View>
+          {/* Cover Photo */}
+          <SkeletonPlaceholder.Item
+            width={width}
+            height={coverPhotoHeight}
+       
+          />
+
+          {/* Profile Picture */}
+          <SkeletonPlaceholder.Item
+            position="absolute"
+            top={coverPhotoHeight - profilePhotoSize / 2}
+            left={15}
+            width={profilePhotoSize}
+            height={profilePhotoSize}
+            borderRadius={profilePhotoSize / 2}
+            borderWidth={4}
+            borderColor="#fff"
+          />
+
+          {/* User Details */}
+          <SkeletonPlaceholder.Item alignItems="center" marginTop={profilePhotoSize / 2 + 20}>
+            <SkeletonPlaceholder.Item width={120} height={20} borderRadius={4} />
+            <SkeletonPlaceholder.Item width={80} height={16} borderRadius={4} marginTop={10} />
+            <SkeletonPlaceholder.Item width={200} height={14} borderRadius={4} marginTop={10} />
+          </SkeletonPlaceholder.Item>
+
+          
         </View>
       </SkeletonPlaceholder>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  coverPhotoContainer: {
-    height: '30%',
-    width: '100%',
-    position: 'relative',
-  },
-  coverPhoto: {
-    height: '100%',
-    width: '100%',
-  },
-  profilePicContainer: {
-    position: 'absolute',
-    bottom: -60,
-    left: '5%',
-  },
-  profilePic: {
-    height: 120,
-    width: 120,
-    borderRadius: 60,
-  },
-  content: {
-    marginTop: 80,
-    height: '60%',
-    width: '100%',
-  },
-  contentSkeleton: {
-    height: '100%',
-    width: '100%',
-  },
-});
 
 export default ProfileSkeleton;

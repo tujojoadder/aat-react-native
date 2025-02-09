@@ -58,7 +58,7 @@ export default function App() {
           }
           persistor={persistor}>
             
-            {/* <Animation/> */}
+           {/*  <Animation/> */}
             {/* <AnimationStyle/> */}
            {/*  <AnimationImage/> */}
             {/*  <ShopCard/> */}
