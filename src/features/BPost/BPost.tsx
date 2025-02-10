@@ -16,10 +16,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import {setLoveReaction, setUnlikeReactions} from '../Home/HomeSlice';
 import {RootState} from '../../app/store';
 import FormateLargeNumber from '../utils/FormateLargeNumber/FormateLargeNumber';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootParamList } from '../../../RootNavigator';
-import { useNavigation } from '@react-navigation/native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootParamList} from '../../../RootNavigator';
+import {useNavigation} from '@react-navigation/native';
 type PostData = {
   approval: number;
   audience: string;
@@ -69,14 +73,11 @@ type PostData = {
   total_comments: number;
   updated_at: string;
 };
-type BPostNavigationProps = NativeStackNavigationProp<
-  RootParamList,
-  'main'
->;
+type BPostNavigationProps = NativeStackNavigationProp<RootParamList, 'main'>;
 const BPost = React.memo(({post}: {post: PostData}) => {
   const dispatch = useDispatch();
   const navigation = useNavigation<BPostNavigationProps>();
-  
+
   const [imageHeight, setImageHeight] = useState(
     Dimensions.get('window').height / 2,
   );
@@ -86,8 +87,6 @@ const BPost = React.memo(({post}: {post: PostData}) => {
   const [toggleUnlike] = useToggleUnlikeMutation();
   const loveScale = useSharedValue(1); // Scale for love icon
   const unlikeScale = useSharedValue(1); // Scale for unlike icon
-
-
 
   const [isTextExpanded, setIsTextExpanded] = useState(false); // For "See More" functionality
   const [showOptions, setShowOptions] = useState(false); // Controls the visibility of the options dropdown
@@ -111,7 +110,7 @@ const BPost = React.memo(({post}: {post: PostData}) => {
   );
   const unlikeReactions = useSelector(
     (state: RootState) => state.home.unlikeReactions[post.post_id],
-  ); 
+  );
 
   /* Initial love and unlike update */
   useEffect(() => {
@@ -172,49 +171,54 @@ const BPost = React.memo(({post}: {post: PostData}) => {
     }
   };
 
-
-
   // Animated styles for scaling
   const loveAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: loveScale.value }],
+    transform: [{scale: loveScale.value}],
   }));
 
   const unlikeAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: unlikeScale.value }],
+    transform: [{scale: unlikeScale.value}],
   }));
 
   // Handle scaling animation for love button
   const loveEffect = () => {
-    loveScale.value = withTiming(1.6, { duration: 200 }, () => {
-      loveScale.value = withTiming(1, { duration: 200 });
+    loveScale.value = withTiming(1.6, {duration: 200}, () => {
+      loveScale.value = withTiming(1, {duration: 200});
     });
   };
 
   // Handle scaling animation for unlike button
   const unLikeEffect = () => {
-    unlikeScale.value = withTiming(1.6, { duration: 200 }, () => {
-      unlikeScale.value = withTiming(1, { duration: 200 });
+    unlikeScale.value = withTiming(1.6, {duration: 200}, () => {
+      unlikeScale.value = withTiming(1, {duration: 200});
     });
-
   };
 
   return (
     <View style={styles.container}>
       {/* Post Header */}
       <View style={styles.header}>
-        <View style={styles.leftHeader}>
- <TouchableOpacity onPress={()=>navigation.navigate('profile',{ authorId:post.author.user_id})}>
+        
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('profile', {authorId: post.author.user_id})
+            }>
             <Image source={{uri: profilePic}} style={styles.profilePic} />
           </TouchableOpacity>
           <View style={styles.userInfo}>
-             <TouchableOpacity onPress={()=>navigation.navigate('profile',{ authorId:post.author.user_id})}>
-                         <Text style={styles.userName} numberOfLines={1}>
-                           {post.author.user_fname} {post.author.user_lname}
-                         </Text>
-                       </TouchableOpacity>
-            <Text  numberOfLines={1} style={styles.identifier}>{post.author.identifier}</Text>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('profile', {authorId: post.author.user_id})
+              }>
+              <Text style={styles.userName} numberOfLines={1}>
+                {post.author.user_fname} {post.author.user_lname}
+              </Text>
+            </TouchableOpacity>
+            <Text numberOfLines={1} style={styles.identifier}>
+              {post.author.identifier}
+            </Text>
           </View>
-        </View>
+      
         <PostTime createdAt={post.created_at} />
       </View>
 
@@ -239,29 +243,33 @@ const BPost = React.memo(({post}: {post: PostData}) => {
 
       {/* Reactions Section */}
       <View style={styles.reactions}>
-         {/* Love Reaction Button */}
-      <TouchableOpacity style={styles.reactionButton} onPress={handleLoveClick}>
-        <Animated.View style={loveAnimatedStyle}>
-          <MaterialIcons
-            name="favorite"
-            size={20}
-            color={loveReactions ? '#FF6F61' : '#6C757D'}
-          />
-        </Animated.View>
-        <FormateLargeNumber number={totalLove} />
-      </TouchableOpacity>
+        {/* Love Reaction Button */}
+        <TouchableOpacity
+          style={styles.reactionButton}
+          onPress={handleLoveClick}>
+          <Animated.View style={loveAnimatedStyle}>
+            <MaterialIcons
+              name="favorite"
+              size={20}
+              color={loveReactions ? '#FF6F61' : '#6C757D'}
+            />
+          </Animated.View>
+          <FormateLargeNumber number={totalLove} />
+        </TouchableOpacity>
 
-      {/* Unlike Reaction Button */}
-      <TouchableOpacity style={styles.reactionButton} onPress={handleUnlikeClick}>
-        <Animated.View style={unlikeAnimatedStyle}>
-          <MaterialIcons
-            name="thumb-down"
-            size={20}
-            color={unlikeReactions ? '#000000' : '#6C757D'}
-          />
-        </Animated.View>
-        <FormateLargeNumber number={totalUnLike} />
-      </TouchableOpacity>
+        {/* Unlike Reaction Button */}
+        <TouchableOpacity
+          style={styles.reactionButton}
+          onPress={handleUnlikeClick}>
+          <Animated.View style={unlikeAnimatedStyle}>
+            <MaterialIcons
+              name="thumb-down"
+              size={20}
+              color={unlikeReactions ? '#000000' : '#6C757D'}
+            />
+          </Animated.View>
+          <FormateLargeNumber number={totalUnLike} />
+        </TouchableOpacity>
         <TouchableOpacity style={styles.reactionButton}>
           <MaterialIcons name="comment" size={20} color="#007BFF" />
           <Text style={styles.reactionText}> 15</Text>
@@ -300,7 +308,6 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: 10,
   },
   leftHeader: {
@@ -317,7 +324,7 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'center',
-    maxWidth:'70%',
+    flex:1
   },
   userName: {
     fontWeight: 'bold',

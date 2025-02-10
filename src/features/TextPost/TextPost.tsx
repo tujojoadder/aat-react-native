@@ -194,7 +194,7 @@ const TextPost = React.memo(({post}: {post: PostData}) => {
     <View style={styles.container}>
       {/* Post Header */}
       <View style={styles.header}>
-        <View style={styles.leftHeader}>
+        
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('profile', {authorId: post.author.user_id})
@@ -213,7 +213,7 @@ const TextPost = React.memo(({post}: {post: PostData}) => {
             <Text numberOfLines={1} style={styles.identifier}>
               {post.author.identifier}
             </Text>
-          </View>
+       
         </View>
         <PostTime createdAt={post.created_at} />
       </View>
@@ -296,7 +296,6 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: 10,
   },
   leftHeader: {
@@ -313,7 +312,8 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     justifyContent: 'center',
-    maxWidth: '70%',
+
+    flex:1
   },
   userName: {
     fontWeight: 'bold',
