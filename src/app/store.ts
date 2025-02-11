@@ -47,7 +47,8 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // Disables warnings for non-serializable values
+      immutableCheck: false, // Disable ImmutableStateInvariantMiddleware
+      serializableCheck: false, // (Optional) Disable SerializableStateInvariantMiddleware if needed
     }).concat(
       profileApi.middleware,
       groupsApi.middleware,

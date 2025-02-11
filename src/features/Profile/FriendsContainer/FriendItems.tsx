@@ -15,10 +15,10 @@ type Friend = {
 };
 
 type FriendItemsProps = NativeStackNavigationProp<RootParamList>;
-export default function FriendItems({item}: {item: Friend}) {
-  if (item) {
+const FriendItems=({item}: {item: Friend})=> {
+  /* if (item) {
     console.log(item);
-  }
+  } */
   const navigation = useNavigation<FriendItemsProps>();
   const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${item.profile_picture}`;
 
@@ -95,3 +95,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
 });
+
+export default React.memo(FriendItems);
