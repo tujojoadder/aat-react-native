@@ -203,7 +203,7 @@ export const {
   useGetSpecificUserFollowerQuery,
   useGetSpecificUserPhotoQuery,
   useGetSpecificUserPostQuery,
-  useLazyGetSpecificUserFriendQuery,
+  useGetSpecificUserFriendQuery,
   useGetAuthUserPostQuery,
   useGetAuthUserPhotoQuery,
   useGetAuthUserFollowerQuery,

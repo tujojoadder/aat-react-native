@@ -17,7 +17,7 @@ import AnimationInterponate from './src/features/Test/AnimationInterponate';
 import Transform from './src/features/Test/Transform';
 import ImageFlip from './src/features/Test/ImageFlip';
 import GestureAnimation from './src/features/Test/GestureAnimation';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import LoveAnimation from './src/features/Test/LoveAnimation';
 
 import Home from './src/features/Home/Home';
@@ -46,34 +46,36 @@ configureReanimatedLogger({
 
 export default function App() {
   return (
-    <GestureHandlerRootView >
-    <PaperProvider theme={theme}>
-      <ReduxProvider store={store}>
-        <PersistGate
-          loading={
-            <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <ActivityIndicator size="large" color="red" />
-            </View>
-          }
-          persistor={persistor}>
-            
-           {/*  <Animation/> */}
+    <GestureHandlerRootView>
+      <PaperProvider theme={theme}>
+        <ReduxProvider store={store}>
+          <PersistGate
+            loading={
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <ActivityIndicator size="large" color="red" />
+              </View>
+            }
+            persistor={persistor}>
+            {/*  <Animation/> */}
             {/* <AnimationStyle/> */}
-           {/*  <AnimationImage/> */}
+            {/*  <AnimationImage/> */}
             {/*  <ShopCard/> */}
-          {/* <AnimationInterponate/> */}
-         {/*  <Transform /> */}
-          {/* <ImageFlip/> */}
-         {/*  <SearchAnimation/> */}
-        {/* <GestureAnimation/> */}
-          {/* <LoveAnimation/> */}
+            {/* <AnimationInterponate/> */}
+            {/*  <Transform /> */}
+            {/* <ImageFlip/> */}
+            {/*  <SearchAnimation/> */}
+            {/* <GestureAnimation/> */}
+            {/* <LoveAnimation/> */}
 
-
-          <RootNavigator />
-        </PersistGate>
-      </ReduxProvider>
-    </PaperProvider>
+            <RootNavigator />
+          </PersistGate>
+        </ReduxProvider>
+      </PaperProvider>
     </GestureHandlerRootView>
   );
 }

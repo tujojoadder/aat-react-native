@@ -14,7 +14,7 @@ import {RootParamList} from '../../../RootNavigator';
 import {ActivityIndicator, Appbar} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProfilePosts from './ProfilePosts';
-import ProfileImages from './ProfileImages';
+import ProfileImages from './ImageContainer/ImageContainer';
 import ProfileAbout from './ProfileAbout';
 import {useGetUserDetailsQuery} from '../../services/friendsApi';
 import FormateLargeNumber from '../utils/FormateLargeNumber/FormateLargeNumber';
@@ -187,7 +187,7 @@ const Profile = ({navigation, route}: ProfileScreenProps) => {
       <Appbar.Header style={styles.appBar}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content
-          title={`${profileData?.data.user_fname} ${profileData?.data.user_lname}`}
+          title={`${profileData?.data.user_fname} ${profileData?.data.user_lname} `}
           titleStyle={{fontSize: 18, color: '#333', opacity: 0.8}}
         />
       </Appbar.Header>

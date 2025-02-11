@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Segmented } from 'react-native-collapsible-segmented-view';
 import { ActivityIndicator, Modal, Portal, Button } from 'react-native-paper';
-import { useGetSpecificUserPhotoQuery } from '../../services/profileApi';
+import { useGetSpecificUserPhotoQuery } from '../../../services/profileApi';
 // Define the props type
 type ProfileImagessProps = {
     userId: string;

@@ -17,7 +17,7 @@ import HadithDayContent from './src/HadithStatus/HadithDayContent';
 import HadithStatusBar from './src/HadithStatus/HadithStatusBar';
 import HadithBox from './src/HadithStatus/HadithBox/HadithBox ';
 import Profile from './src/features/Profile/Profile';
-import FriendContainer from './src/features/Profile/FriendContainer';
+import FriendContainer from './src/features/Profile/FriendsContainer/FriendContainer';
 
 export type RootParamList = {
   main: undefined; // No parameters for the "home" screen
