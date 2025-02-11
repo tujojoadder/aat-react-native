@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import {Segmented} from 'react-native-collapsible-segmented-view';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { NativeStackScreenProps, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import {RootParamList} from '../../../RootNavigator';
 import {ActivityIndicator, Appbar} from 'react-native-paper';
@@ -19,6 +19,7 @@ import ProfileAbout from './ProfileAbout';
 import {useGetUserDetailsQuery} from '../../services/friendsApi';
 import FormateLargeNumber from '../utils/FormateLargeNumber/FormateLargeNumber';
 import ProfileSkeleton from './ProfileSkeleton';
+import { useNavigation } from '@react-navigation/native';
 interface UserDetails {
   cover_photo: string;
   followers_count: number;
@@ -32,9 +33,15 @@ interface UserDetails {
 interface ApiResponse {
   data: UserDetails;
 }
-type ProfileScreenProps = NativeStackScreenProps<RootParamList, 'profile'>;
 
-const Header = ({userData}: {userData?: ApiResponse}) => {
+type ProfileScreenProps = NativeStackScreenProps<RootParamList, 'profile'>;
+type HeaderComponentProps = NativeStackNavigationProp<RootParamList>;
+
+
+
+const Header = ({userData,userId}: {userData?:ApiResponse,userId:string}) => {
+
+  const navigation=useNavigation<HeaderComponentProps>();
   const coverPic = `${process.env.REACT_APP_LARAVEL_URL}/${userData?.data.cover_photo}`;
   const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${userData?.data.profile_picture}`;
   const {width} = Dimensions.get('window');
@@ -98,7 +105,10 @@ const Header = ({userData}: {userData?: ApiResponse}) => {
 
         {/* Follower and Following Section */}
         <View style={styles.numberSection} pointerEvents="box-none">
-          <TouchableOpacity style={styles.numberItem}>
+          <TouchableOpacity
+ onPress={() => navigation.navigate('friendsContainer', { userId })}
+          style={styles.numberItem}
+          >
             <Text style={styles.statNumber}>
               <FormateLargeNumber number={userData?.data.friends_count ?? 0} />
             </Text>
@@ -184,7 +194,7 @@ const Profile = ({navigation, route}: ProfileScreenProps) => {
 
       {/* Segmented View with Collapsible Header */}
       <View style={styles.segmentedContainer}>
-        <Segmented.View header={() => <Header userData={profileData} />}>
+        <Segmented.View header={() => <Header userData={profileData} userId={userId} />}>
           {/* Pass userId to ProfilePosts */}
           <Segmented.Segment
             label="Posts"

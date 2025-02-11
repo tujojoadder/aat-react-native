@@ -17,6 +17,7 @@ import HadithDayContent from './src/HadithStatus/HadithDayContent';
 import HadithStatusBar from './src/HadithStatus/HadithStatusBar';
 import HadithBox from './src/HadithStatus/HadithBox/HadithBox ';
 import Profile from './src/features/Profile/Profile';
+import FriendContainer from './src/features/Profile/FriendContainer';
 
 export type RootParamList = {
   main: undefined; // No parameters for the "home" screen
@@ -28,6 +29,7 @@ export type RootParamList = {
   hadithContent:{serialNumber:number};
   hadithBox:undefined;
   profile: { authorId: string }; 
+  friendsContainer: { userId: string }; 
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -77,6 +79,7 @@ export default function RootNavigator() {
             <Stack.Screen name="hadithContent" component={HadithDayContent} />
             <Stack.Screen name="hadithBox" component={HadithBox} />
             <Stack.Screen name="profile" component={Profile} />
+            <Stack.Screen name="friendsContainer" component={FriendContainer} />
           </>
         ) : (
 
