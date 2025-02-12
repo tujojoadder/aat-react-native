@@ -18,6 +18,8 @@ import HadithStatusBar from './src/HadithStatus/HadithStatusBar';
 import HadithBox from './src/HadithStatus/HadithBox/HadithBox ';
 import Profile from './src/features/Profile/Profile';
 import FriendContainer from './src/features/Profile/FriendsContainer/FriendContainer';
+import FollowingContainer from './src/features/Profile/FollowingContainer/FollowingContainer';
+import FollowersContainer from './src/features/Profile/FollowersContainer/FollowersContainer';
 
 export type RootParamList = {
   main: undefined; // No parameters for the "home" screen
@@ -30,6 +32,8 @@ export type RootParamList = {
   hadithBox:undefined;
   profile: { authorId: string }; 
   friendsContainer: { userId: string }; 
+  followingContainer: { userId: string }; 
+  followersContainer: { userId: string }; 
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -80,6 +84,8 @@ export default function RootNavigator() {
             <Stack.Screen name="hadithBox" component={HadithBox} />
             <Stack.Screen name="profile" component={Profile} />
             <Stack.Screen name="friendsContainer" component={FriendContainer} />
+            <Stack.Screen name="followingContainer" component={FollowingContainer} />
+            <Stack.Screen name="followersContainer" component={FollowersContainer} />
           </>
         ) : (
 

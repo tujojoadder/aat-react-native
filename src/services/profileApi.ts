@@ -1,6 +1,8 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import * as Keychain from 'react-native-keychain';
 
+
+
 // Define a service using a base URL and expected endpoints
 export const profileApi = createApi({
   reducerPath: 'profileApi',
@@ -50,7 +52,7 @@ export const profileApi = createApi({
     }),
 
     /* get all following for specific user on profile*/
-    getSpecificUserFollowing: builder.query({
+    getSpecificUserFollowing: builder.query<any,{followingPage:number,userId:string}>({
       query: ({ followingPage = 1, userId }) =>
         `getspecificuserfollowing?page=${followingPage}&id=${userId}`, // Updated to include id
     }),

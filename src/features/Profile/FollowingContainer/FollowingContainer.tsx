@@ -1,64 +1,65 @@
-import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, FlatList, StyleSheet} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../../../RootNavigator';
-import {useGetSpecificUserFriendQuery} from '../../../services/profileApi';
-import {ActivityIndicator, Appbar} from 'react-native-paper';
-import Activator from '../../Activator/Activator';
-import FriendItems from './FriendItems';
+import {useGetSpecificUserFollowingQuery} from '../../../services/profileApi';
 import Animated from 'react-native-reanimated';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Appbar } from 'react-native-paper';
+import Activator from '../../Activator/Activator';
+import FollowingIteam from './FollowingIteam/FollowingIteam';
 
-type FriendContainerProps = NativeStackScreenProps<
+type FollowingContainerProps = NativeStackScreenProps<
   RootParamList,
-  'friendsContainer'
+  'followingContainer'
 >;
-
-export default function FriendContainer({
-  route,
+export default function FollowingContainer({
   navigation,
-}: FriendContainerProps) {
+  route,
+}: FollowingContainerProps) {
   const {userId} = route.params; // Extract userId from route params
   // State for pagination
-  const [allFriends, setFriends] = useState<any[]>([]);
-  const [friendPage, setFriendPage] = useState(1);
-  const [hasMoreFriends, setHasMoreFriends] = useState(true);
+  const [allFollowing, setFollowing] = useState<any[]>([]);
+  /* followingPage */
+  const [followingPage, setFollowingPage] = useState(1);
+  const [hasMoreFollowing, setHasMoreFollowing] = useState(true);
 
-  // Fetch friends
+  // Fetch follows
   const {
-    data: friendData,
+    data: followingData,
     isFetching,
     isSuccess,
-  } = useGetSpecificUserFriendQuery({friendPage, userId});
- 
+    isError
+  } = useGetSpecificUserFollowingQuery({followingPage, userId});
+
+
   // Update photos when new data is fetched
   useEffect(() => {
-    if (friendData?.data.data) {
-      if (friendData.data.data.length === 0) {
-        setHasMoreFriends(false);
+    if (followingData?.data) {
+      if (followingData.data.length === 0) {
+        setHasMoreFollowing(false);
       } else {
-        const newFriends = friendData.data.data.filter(
-          (newFriend: any) =>
-            !allFriends.some(friend => friend.user_id === newFriend.user_id),
+        const newFollowing = followingData.data.filter(
+          (newFollow: any) =>
+            !allFollowing.some(follow => follow.following_id === newFollow.following_id),
         );
 
-        if (newFriends.length > 0) {
-          setFriends(prev => [...prev, ...newFriends]);
+        if (newFollowing.length > 0) {
+          setFollowing(prev => [...prev, ...newFollowing]);
         }
       }
     }
-  }, [friendData, isSuccess]);
+  }, [followingData, isSuccess]);
 
   // Load more data when reaching the end of the list
   const loadMoreData = useCallback(() => {
-    if (hasMoreFriends && !isFetching) {
-      setFriendPage(prev => prev + 1);
+    if (hasMoreFollowing && !isFetching) {
+      setFollowingPage(prev => prev + 1);
     }
-  }, [hasMoreFriends, isFetching]);
+  }, [hasMoreFollowing, isFetching]);
 
   // Render each image item
   const renderItem = useCallback(({item}: {item: any}) => {
-    return <FriendItems item={item} />;
+    return <FollowingIteam item={item} />;
   }, []);
 
   return (
@@ -70,26 +71,26 @@ export default function FriendContainer({
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           {/* title */}
           <Appbar.Content
-            title="Friends"
-            titleStyle={{fontSize: 20,
-               color: '#333',
-                opacity: 1,
-                fontWeight:'bold'
-              
-              }}
+            title="Foollowing"
+            titleStyle={{
+              fontSize: 20,
+              color: '#333',
+              opacity: 1,
+              fontWeight: 'bold',
+            }}
           />
         </Appbar.Header>
       </Animated.View>
 
       <FlatList
-        data={allFriends}
+        data={allFollowing}
         renderItem={renderItem}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
-        keyExtractor={item => item.user_id.toString()}
+        keyExtractor={item => item.following_id.toString()}
         contentContainerStyle={{paddingTop: 55}}
         ListFooterComponent={
-          hasMoreFriends || isFetching ? <Activator /> : null
+          hasMoreFollowing || isFetching ? <Activator /> : null
         }
       />
     </View>
@@ -99,7 +100,7 @@ export default function FriendContainer({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:'#fff'
+    backgroundColor: '#fff',
   },
   animatedAppBar: {
     position: 'absolute',
