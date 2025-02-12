@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 type DayHadith = {
   day_hadith: {
     isLiked: boolean;
@@ -30,6 +30,11 @@ interface HomeState {
   /* love and unlike */
   loveReactions: Record<string, boolean>; // Object to track love reactions by post ID
   unlikeReactions: Record<string, boolean>; // Object to track unlike reactions by post ID
+  /* Friend request */
+  acceptedRequests: Record<string, boolean>;
+  rejectedRequests: Record<string, boolean>;
+  cancelRequests: Record<string, boolean>;
+  sentRequests: Record<string, boolean>;
 }
 
 const initialState: HomeState = {
@@ -48,6 +53,12 @@ const initialState: HomeState = {
   /* love and unlike  */
   loveReactions: {}, // Initialize as an empty object
   unlikeReactions: {}, // Initialize as an empty object
+
+  /* Frend requests */
+  acceptedRequests: {},
+  rejectedRequests: {},
+  cancelRequests: {},
+  sentRequests: {},
 };
 
 export const homeSlice = createSlice({
@@ -117,6 +128,40 @@ export const homeSlice = createSlice({
         delete state.unlikeReactions[postId]; // Remove unlike reaction if deactivated
       }
     },
+
+
+// Mark request as sent
+setRequestSent: (state, action: PayloadAction<{ userId: string }>) => {
+  const { userId } = action.payload;
+  state.sentRequests[userId] = true;
+  delete state.rejectedRequests[userId];
+  delete state.cancelRequests[userId];
+},
+
+// Mark request as rejected/canceled
+setRequestRejected: (state, action: PayloadAction<{ userId: string }>) => {
+  const { userId } = action.payload;
+  state.rejectedRequests[userId] = true;
+  delete state.sentRequests[userId];
+  delete state.cancelRequests[userId];
+},
+
+// Mark request as canceled
+setRequestCancel: (state, action: PayloadAction<{ userId: string }>) => {
+  const { userId } = action.payload;
+  state.cancelRequests[userId] = true;
+  delete state.sentRequests[userId];
+  delete state.rejectedRequests[userId];
+},
+
+// Mark request as accepted
+setRequestAccepted: (state, action: PayloadAction<{ userId: string }>) => {
+  const { userId } = action.payload;
+  state.acceptedRequests[userId] = true;
+  delete state.sentRequests[userId];
+},
+
+
   },
 });
 
@@ -134,7 +179,11 @@ export const {
   setAllDayHadith,
   setIsLiked,
   setLoveReaction,
-  setUnlikeReactions
+  setUnlikeReactions,
+  setRequestAccepted,
+  setRequestCancel,
+  setRequestRejected,
+  setRequestSent
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

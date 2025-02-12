@@ -18,7 +18,7 @@ export default function FriendContainer({
   route,
   navigation,
 }: FriendContainerProps) {
-  const {userId} = route.params; // ✅ Extract userId from route params
+  const {userId} = route.params; // Extract userId from route params
   // State for pagination
   const [allFriends, setFriends] = useState<any[]>([]);
   const [friendPage, setFriendPage] = useState(1);
