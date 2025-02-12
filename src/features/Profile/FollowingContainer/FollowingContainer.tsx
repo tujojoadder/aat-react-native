@@ -31,7 +31,9 @@ export default function FollowingContainer({
     isError
   } = useGetSpecificUserFollowingQuery({followingPage, userId});
 
-
+if (isSuccess) {
+    console.log(followingData)
+}
   // Update photos when new data is fetched
   useEffect(() => {
     if (followingData?.data) {
@@ -47,6 +49,11 @@ export default function FollowingContainer({
           setFollowing(prev => [...prev, ...newFollowing]);
         }
       }
+
+       // If the fetched data is less than perPage, stop further requests
+       if (followingData.data.length < 15) {
+        setHasMoreFollowing(false);
+      }
     }
   }, [followingData, isSuccess]);
 
@@ -61,6 +68,7 @@ export default function FollowingContainer({
   const renderItem = useCallback(({item}: {item: any}) => {
     return <FollowingIteam item={item} />;
   }, []);
+  
 
   return (
     <View style={styles.container}>
@@ -90,7 +98,7 @@ export default function FollowingContainer({
         keyExtractor={item => item.following_id.toString()}
         contentContainerStyle={{paddingTop: 55}}
         ListFooterComponent={
-          hasMoreFollowing || isFetching ? <Activator /> : null
+          hasMoreFollowing && isFetching ? <Activator /> : null
         }
       />
     </View>

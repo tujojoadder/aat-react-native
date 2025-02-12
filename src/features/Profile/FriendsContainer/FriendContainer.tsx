@@ -24,13 +24,15 @@ export default function FriendContainer({
   const [friendPage, setFriendPage] = useState(1);
   const [hasMoreFriends, setHasMoreFriends] = useState(true);
 
-  // Fetch friends
+  // Fetch photos
   const {
     data: friendData,
     isFetching,
     isSuccess,
   } = useGetSpecificUserFriendQuery({friendPage, userId});
- 
+  if (isSuccess) {
+    console.log(friendData);
+  }
   // Update photos when new data is fetched
   useEffect(() => {
     if (friendData?.data.data) {
@@ -46,6 +48,11 @@ export default function FriendContainer({
           setFriends(prev => [...prev, ...newFriends]);
         }
       }
+
+        // If the fetched data is less than perPage, stop further requests
+        if (friendData.data.length < 15) {
+          setHasMoreFriends(false);
+        }
     }
   }, [friendData, isSuccess]);
 
@@ -89,7 +96,7 @@ export default function FriendContainer({
         keyExtractor={item => item.user_id.toString()}
         contentContainerStyle={{paddingTop: 55}}
         ListFooterComponent={
-          hasMoreFriends || isFetching ? <Activator /> : null
+          hasMoreFriends && isFetching ? <Activator /> : null
         }
       />
     </View>
