@@ -46,7 +46,7 @@ export const profileApi = createApi({
     }),
 
     /* get all followers for specific user on profile*/
-    getSpecificUserFollower: builder.query({
+    getSpecificUserFollower: builder.query<any,{followerPage:number,userId:string}>({
       query: ({ followerPage = 1, userId }) =>
         `getspecificuserfollower?page=${followerPage}&id=${userId}`, // Updated to include id
     }),

@@ -20,6 +20,7 @@ export default function FollowingContainer({
   // State for pagination
   const [allFollowing, setFollowing] = useState<any[]>([]);
   /* followingPage */
+
   const [followingPage, setFollowingPage] = useState(1);
   const [hasMoreFollowing, setHasMoreFollowing] = useState(true);
 
