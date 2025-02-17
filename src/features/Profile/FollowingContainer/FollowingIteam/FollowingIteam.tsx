@@ -9,15 +9,10 @@ type FollowingData = {
   user_id: string;
   user_fname: string;
   user_lname: string;
-
   identifier: string;
   profile_picture: string;
-
-  pivot: {
-    follower_id: string;
-    following_id: string;
-  };
 };
+
 type FollowingItemsNavigationProp = NativeStackNavigationProp<RootParamList>;
 
 const FollowingItem = ({item}: {item: FollowingData}) => {

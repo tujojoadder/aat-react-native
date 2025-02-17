@@ -33,7 +33,7 @@ export default function FollowingContainer({
   } = useGetSpecificUserFollowingQuery({followingPage, userId});
 
 if (isSuccess) {
-    console.log(followingData.data.lenght);
+    console.log(followingData);
 }
   // Update photos when new data is fetched
   useEffect(() => {

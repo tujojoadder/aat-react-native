@@ -2,7 +2,7 @@ import {View, Text, FlatList, StyleSheet} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../../../RootNavigator';
-import {useGetSpecificUserFollowerQuery, useGetSpecificUserFollowingQuery} from '../../../services/profileApi';
+import {useGetSpecificUserFollowerQuery} from '../../../services/profileApi';
 import Animated from 'react-native-reanimated';
 import { Appbar } from 'react-native-paper';
 import Activator from '../../Activator/Activator';
@@ -33,6 +33,7 @@ export default function FollowersContainer({
 
 if (isSuccess) {
     console.log(followerData)
+   
 }
 
 
@@ -44,7 +45,7 @@ if (isSuccess) {
       } else {
         const newFollower = followerData.data.filter(
           (newFollow: any) =>
-            !allFollower.some(follow => follow.follower_id === newFollow.follower_id),
+            !allFollower.some(follow => follow.user_id === newFollow.user_id),
         );
 
         if (newFollower.length > 0) {
@@ -66,13 +67,10 @@ if (isSuccess) {
     }
   }, [hasMoreFollower, isFetching]);
 
-  // Render each image item
+ 
   const renderItem = useCallback(({item}: {item: any}) => {
-    return <View><Text>Hi</Text></View>;
-  }, []);
-  /* const renderItem = useCallback(({item}: {item: any}) => {
     return <FollowerItem item={item} />;
-  }, []); */
+  }, []);
   
 
   return (
@@ -84,7 +82,7 @@ if (isSuccess) {
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           {/* title */}
           <Appbar.Content
-            title="Foollowing"
+            title="Followers"
             titleStyle={{
               fontSize: 20,
               color: '#333',
@@ -100,7 +98,7 @@ if (isSuccess) {
         renderItem={renderItem}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
-        keyExtractor={item => item.follower_id.toString()}
+        keyExtractor={item => item.user_id.toString()}
         contentContainerStyle={{paddingTop: 55}}
         ListFooterComponent={
           hasMoreFollower && isFetching ? <Activator /> : null

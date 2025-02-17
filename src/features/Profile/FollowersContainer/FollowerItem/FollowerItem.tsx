@@ -5,17 +5,12 @@ import {useNavigation} from '@react-navigation/native';
 import { RootParamList } from '../../../../../RootNavigator';
 
 /* getSpecificUserFollowing */
-type Follower = {
+  type FollowingItem = {
+    user_id: string;
+    user_fname: string;
+    user_lname: string;
     identifier: string;
     profile_picture: string;
-    user_fname: string;
-    user_id: string;
-    user_lname: string;
-  };
-  
-  type FollowingItem = {
-    follower: Follower;
-    follower_id: string;
   };
   
 type FollowerItemsNavigationProp = NativeStackNavigationProp<RootParamList>;
@@ -26,13 +21,13 @@ const FollowerItem = ({item}: {item:FollowingItem}) => {
   const navigation = useNavigation<FollowerItemsNavigationProp>();
 
   // Construct the profile picture URL
-  const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${item.follower.profile_picture}`;
+  const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${item.profile_picture}`;
 
   return (
     <View style={styles.friendItemsContainer}>
       {/* Profile Picture */}
       <TouchableOpacity
-        onPress={() => navigation.navigate('profile', {authorId: item.follower.user_id})}>
+        onPress={() => navigation.navigate('profile', {authorId: item.user_id})}>
         <Image source={{uri: profilePic}} style={styles.profilePic} />
       </TouchableOpacity>
 
@@ -40,14 +35,14 @@ const FollowerItem = ({item}: {item:FollowingItem}) => {
       <View style={styles.textContainer}>
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate('profile', {authorId: item.follower.user_id})
+            navigation.navigate('profile', {authorId: item.user_id})
           }>
           <Text numberOfLines={1} style={styles.names}>
-            {item.follower.user_fname} {item.follower.user_lname}
+            {item.user_fname} {item.user_lname}
           </Text>
         </TouchableOpacity>
         <Text numberOfLines={1} style={styles.identifier}>
-          @{item.follower.identifier}
+          @{item.identifier}
         </Text>
       </View>
     </View>
