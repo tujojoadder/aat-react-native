@@ -2,34 +2,37 @@ import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
-import { RootParamList } from '../../../../../RootNavigator';
+import {RootParamList} from '../../../../../RootNavigator';
 
 /* getSpecificUserFollowing */
 type FollowingData = {
+  user_id: string;
+  user_fname: string;
+  user_lname: string;
+
+  identifier: string;
+  profile_picture: string;
+
+  pivot: {
+    follower_id: string;
     following_id: string;
-    following: {
-      identifier: string;
-      profile_picture: string;
-      user_fname: string;
-      user_lname: string;
-      user_id: string;
-    };
   };
+};
 type FollowingItemsNavigationProp = NativeStackNavigationProp<RootParamList>;
 
-const FollowingItem = ({item}: {item:FollowingData}) => {
-
-    
+const FollowingItem = ({item}: {item: FollowingData}) => {
   const navigation = useNavigation<FollowingItemsNavigationProp>();
 
   // Construct the profile picture URL
-  const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${item.following.profile_picture}`;
+  const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${item.profile_picture}`;
 
   return (
     <View style={styles.friendItemsContainer}>
       {/* Profile Picture */}
       <TouchableOpacity
-        onPress={() => navigation.navigate('profile', {authorId: item.following.user_id})}>
+        onPress={() =>
+          navigation.navigate('profile', {authorId: item.user_id})
+        }>
         <Image source={{uri: profilePic}} style={styles.profilePic} />
       </TouchableOpacity>
 
@@ -37,14 +40,14 @@ const FollowingItem = ({item}: {item:FollowingData}) => {
       <View style={styles.textContainer}>
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate('profile', {authorId: item.following.user_id})
+            navigation.navigate('profile', {authorId: item.user_id})
           }>
           <Text numberOfLines={1} style={styles.names}>
-            {item.following.user_fname} {item.following.user_lname}
+            {item.user_fname} {item.user_lname}
           </Text>
         </TouchableOpacity>
         <Text numberOfLines={1} style={styles.identifier}>
-          @{item.following.identifier}
+          @{item.identifier}
         </Text>
       </View>
     </View>

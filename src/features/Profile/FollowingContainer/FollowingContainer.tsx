@@ -33,7 +33,7 @@ export default function FollowingContainer({
   } = useGetSpecificUserFollowingQuery({followingPage, userId});
 
 if (isSuccess) {
-    console.log(followingData)
+    console.log(followingData.data.lenght);
 }
   // Update photos when new data is fetched
   useEffect(() => {
@@ -43,7 +43,7 @@ if (isSuccess) {
       } else {
         const newFollowing = followingData.data.filter(
           (newFollow: any) =>
-            !allFollowing.some(follow => follow.following_id === newFollow.following_id),
+            !allFollowing.some(follow => follow.user_id === newFollow.user_id),
         );
 
         if (newFollowing.length > 0) {
@@ -96,7 +96,7 @@ if (isSuccess) {
         renderItem={renderItem}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
-        keyExtractor={item => item.following_id.toString()}
+        keyExtractor={item => item.user_id.toString()}
         contentContainerStyle={{paddingTop: 55}}
         ListFooterComponent={
           hasMoreFollowing && isFetching ? <Activator /> : null

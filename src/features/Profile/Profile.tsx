@@ -188,10 +188,10 @@ const Profile = ({navigation, route}: ProfileScreenProps) => {
     error
   } = useGetUserDetailsQuery(userId);
 
-  if (isSuccess) {
+ /*  if (isSuccess) {
     console.log(profileData.data)
     
-  }
+  } */
   if (isError) {
     console.log(error)
   }
