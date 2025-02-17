@@ -185,8 +185,16 @@ const Profile = ({navigation, route}: ProfileScreenProps) => {
     isFetching,
     isError,
     isSuccess,
+    error
   } = useGetUserDetailsQuery(userId);
 
+  if (isSuccess) {
+    console.log(profileData.data)
+    
+  }
+  if (isError) {
+    console.log(error)
+  }
   if (isFetching) {
     return <ProfileSkeleton />;
   }

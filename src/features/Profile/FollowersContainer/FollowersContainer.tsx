@@ -31,9 +31,11 @@ export default function FollowersContainer({
     isError
   } = useGetSpecificUserFollowerQuery({followerPage, userId});
 
-/* if (isSuccess) {
+if (isSuccess) {
     console.log(followerData)
-} */
+}
+
+
   // Update photos when new data is fetched
   useEffect(() => {
     if (followerData?.data) {
@@ -66,8 +68,11 @@ export default function FollowersContainer({
 
   // Render each image item
   const renderItem = useCallback(({item}: {item: any}) => {
-    return <FollowerItem item={item} />;
+    return <View><Text>Hi</Text></View>;
   }, []);
+  /* const renderItem = useCallback(({item}: {item: any}) => {
+    return <FollowerItem item={item} />;
+  }, []); */
   
 
   return (
