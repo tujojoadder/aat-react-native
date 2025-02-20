@@ -35,6 +35,7 @@ interface HomeState {
   rejectedRequests: Record<string, boolean>;
   cancelRequests: Record<string, boolean>;
   sentRequests: Record<string, boolean>;
+  isFollowing: Record<string, boolean>;
 }
 
 const initialState: HomeState = {
@@ -59,6 +60,9 @@ const initialState: HomeState = {
   rejectedRequests: {},
   cancelRequests: {},
   sentRequests: {},
+
+  /* follow */
+  isFollowing:{}
 };
 
 export const homeSlice = createSlice({
@@ -161,6 +165,18 @@ setRequestAccepted: (state, action: PayloadAction<{ userId: string }>) => {
   delete state.sentRequests[userId];
 },
 
+/* isFollowing */
+setFollowing: (state, action: PayloadAction<{ userId: string }>) => {
+  const { userId } = action.payload;
+  state.isFollowing[userId] = true;
+},
+
+setUnFollowing: (state, action: PayloadAction<{ userId: string }>) => {
+  const { userId } = action.payload;
+  state.isFollowing[userId] = false;
+},
+
+
 
   },
 });
@@ -183,7 +199,9 @@ export const {
   setRequestAccepted,
   setRequestCancel,
   setRequestRejected,
-  setRequestSent
+  setRequestSent,
+  setFollowing,
+  setUnFollowing
 } = homeSlice.actions;
 
 export default homeSlice.reducer;

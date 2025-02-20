@@ -32,7 +32,7 @@ export default function FollowersContainer({
   } = useGetSpecificUserFollowerQuery({followerPage, userId});
 
 if (isSuccess) {
-    console.log(followerData)
+    console.log(followerData.data)
    
 }
 

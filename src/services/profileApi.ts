@@ -23,7 +23,7 @@ export const profileApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["CreatePost"],
+  tagTypes: ["CreatePost","Following"],
   endpoints: (builder) => ({
     /* <----  Other's User ---> */
 
@@ -49,6 +49,8 @@ export const profileApi = createApi({
     getSpecificUserFollower: builder.query<any,{followerPage:number,userId:string}>({
       query: ({ followerPage = 1, userId }) =>
         `getspecificuserfollower?page=${followerPage}&id=${userId}`, // Updated to include id
+
+      providesTags:['Following']
     }),
 
     /* get all following for specific user on profile*/
@@ -183,6 +185,16 @@ export const profileApi = createApi({
         body: { image_id },
       }),
     }),
+
+    toggoleUserFollow:builder.mutation<any,{userId:string}>({
+      query:(body)=>({
+      url:'toggoleuserfollow',
+      method:'POST',
+      body:body
+      }),
+      invalidatesTags:["Following"]
+     }),
+
   }),
 });
 
@@ -211,4 +223,5 @@ export const {
   useGetAuthUserFollowerQuery,
   useGetAuthUserFollowingQuery,
   useGetAuthUserFriendQuery,
+  useToggoleUserFollowMutation
 } = profileApi;

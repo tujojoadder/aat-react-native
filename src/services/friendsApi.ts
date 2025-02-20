@@ -11,6 +11,7 @@ interface UserDetails {
   profile_picture: string;
   user_fname: string;
   user_lname: string;
+  is_following: boolean;
 }
 interface ApiResponse {
   data: UserDetails;

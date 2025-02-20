@@ -12,7 +12,7 @@ import {
   NativeStackScreenProps,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import React from 'react';
+import React, {useState} from 'react';
 import {RootParamList} from '../../../RootNavigator';
 import {ActivityIndicator, Appbar} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -23,6 +23,10 @@ import {useGetUserDetailsQuery} from '../../services/friendsApi';
 import FormateLargeNumber from '../utils/FormateLargeNumber/FormateLargeNumber';
 import ProfileSkeleton from './ProfileSkeleton';
 import {useNavigation} from '@react-navigation/native';
+import {useToggoleUserFollowMutation} from '../../services/profileApi';
+import {RootState} from '../../app/store';
+import {useSelector, useDispatch} from 'react-redux';
+import {setFollowing, setUnFollowing} from '../Home/HomeSlice';
 interface UserDetails {
   cover_photo: string;
   followers_count: number;
@@ -32,6 +36,7 @@ interface UserDetails {
   profile_picture: string;
   user_fname: string;
   user_lname: string;
+  is_following: boolean;
 }
 interface ApiResponse {
   data: UserDetails;
@@ -47,6 +52,10 @@ const Header = ({
   userData?: ApiResponse;
   userId: string;
 }) => {
+  const dispatch = useDispatch();
+  const [toggleFollow, {isLoading, isError, error}] =
+    useToggoleUserFollowMutation();
+
   const navigation = useNavigation<HeaderComponentProps>();
   const coverPic = `${process.env.REACT_APP_LARAVEL_URL}/${userData?.data.cover_photo}`;
   const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${userData?.data.profile_picture}`;
@@ -54,6 +63,20 @@ const Header = ({
 
   const coverPhotoHeight = width * 0.55;
   const profilePhotoSize = width * 0.35;
+
+  const handleToggleFollow = async () => {
+    try {
+      const res = await toggleFollow({userId}).unwrap();
+
+      if (res.message === 'follow') {
+        dispatch(setFollowing({userId: userId}));
+      } else {
+        dispatch(setUnFollowing({userId: userId}));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <View pointerEvents="box-none">
@@ -104,9 +127,12 @@ const Header = ({
             )}
           </View>
           {/* 40% width (90px button width) */}
-          <TouchableOpacity style={styles.followButton}>
-            <Text style={styles.followButtonText}>Follow</Text>
-          </TouchableOpacity>
+          <FollowButton
+            handleToggleFollow={handleToggleFollow}
+            userId={userId}
+            is_following={userData?.data.is_following}
+            isLoading={isLoading}
+          />
         </View>
 
         {/* Follower and Following Section */}
@@ -175,6 +201,70 @@ const Header = ({
   );
 };
 
+interface FollowButtonProps {
+  handleToggleFollow: () => void;
+  userId: string;
+  isLoading: boolean;
+  is_following: boolean | undefined;
+}
+function FollowButton({
+  handleToggleFollow,
+  userId,
+  isLoading,
+  is_following,
+}: FollowButtonProps) {
+  const [isSet, setIsSet] = useState(null);
+  const isFollowing = useSelector(
+    (state: RootState) => state.home.isFollowing[userId],
+  );
+
+  return (
+    <>
+      {isFollowing === true ? (
+        <TouchableOpacity
+          style={styles.unFollowButton}
+          onPress={handleToggleFollow}>
+          {isLoading ? (
+            <ActivityIndicator />
+          ) : (
+            <Text style={styles.unFollowButtonText}>Unfollow</Text>
+          )}
+        </TouchableOpacity>
+      ) : isFollowing === false ? (
+        <TouchableOpacity
+          style={styles.followButton}
+          onPress={handleToggleFollow}>
+          {isLoading ? (
+            <ActivityIndicator color='white' />
+          ) : (
+            <Text style={styles.followButtonText}>Follow</Text>
+          )}
+        </TouchableOpacity>
+      ) : is_following === true ? (
+        <TouchableOpacity
+          style={styles.unFollowButton}
+          onPress={handleToggleFollow}>
+          {isLoading ? (
+            <ActivityIndicator />
+          ) : (
+            <Text style={styles.unFollowButtonText}>Unfollow</Text>
+          )}
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={styles.followButton}
+          onPress={handleToggleFollow}>
+          {isLoading ? (
+            <ActivityIndicator color='white' />
+          ) : (
+            <Text style={styles.followButtonText}>Follow</Text>
+          )}
+        </TouchableOpacity>
+      )}
+    </>
+  );
+}
+
 const Profile = ({navigation, route}: ProfileScreenProps) => {
   /* get the user id from route */
   const userId = route.params.authorId;
@@ -185,16 +275,15 @@ const Profile = ({navigation, route}: ProfileScreenProps) => {
     isFetching,
     isError,
     isSuccess,
-    error
+    error,
   } = useGetUserDetailsQuery(userId);
-
- /*  if (isSuccess) {
-    console.log(profileData.data)
-    
-  } */
-  if (isError) {
-    console.log(error)
+  /* 
+    if (isSuccess) {
+    console.log(profileData.data);
   }
+  if (isError) {
+    console.log(error);
+  } */
   if (isFetching) {
     return <ProfileSkeleton />;
   }
@@ -212,7 +301,11 @@ const Profile = ({navigation, route}: ProfileScreenProps) => {
       {/* Segmented View with Collapsible Header */}
       <View style={styles.segmentedContainer}>
         <Segmented.View
-          header={() => <Header userData={profileData} userId={userId} />}>
+          header={() => (
+            /* Header */
+
+            <Header userData={profileData} userId={userId} />
+          )}>
           {/* Pass userId to ProfilePosts */}
           <Segmented.Segment
             label="Posts"
@@ -312,7 +405,7 @@ const styles = StyleSheet.create({
   },
   followButton: {
     backgroundColor: 'black', // Blue button color
-    paddingVertical: 5,
+    paddingVertical: 6,
     paddingHorizontal: 20,
 
     borderRadius: 30,
@@ -320,10 +413,27 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    width: 90,
+    minWidth:90
+  },
+  unFollowButton: {
+    backgroundColor: '#e8dddc', // Blue button color
+    paddingVertical: 6,
+    paddingHorizontal: 20,
+
+    borderRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    minWidth:90
   },
   followButtonText: {
     color: '#fff',
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  unFollowButtonText: {
+    color: 'black',
     fontSize: 15,
     fontWeight: 'bold',
   },
