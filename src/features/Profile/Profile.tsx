@@ -14,7 +14,7 @@ import {
 } from '@react-navigation/native-stack';
 import React, {useState} from 'react';
 import {RootParamList} from '../../../RootNavigator';
-import {ActivityIndicator, Appbar} from 'react-native-paper';
+import {ActivityIndicator, Appbar, Button} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProfilePosts from './ProfilePosts';
 import ProfileImages from './ImageContainer/ImageContainer';
@@ -27,6 +27,7 @@ import {useToggoleUserFollowMutation} from '../../services/profileApi';
 import {RootState} from '../../app/store';
 import {useSelector, useDispatch} from 'react-redux';
 import {setFollowing, setUnFollowing} from '../Home/HomeSlice';
+import ProfileAddFriendButton from './ProfileAddFriendButton';
 interface UserDetails {
   cover_photo: string;
   followers_count: number;
@@ -37,6 +38,7 @@ interface UserDetails {
   user_fname: string;
   user_lname: string;
   is_following: boolean;
+  friend_state: string;
 }
 interface ApiResponse {
   data: UserDetails;
@@ -55,7 +57,7 @@ const Header = ({
   const dispatch = useDispatch();
   const [toggleFollow, {isLoading, isError, error}] =
     useToggoleUserFollowMutation();
-
+  console.log(userData?.data.friend_state);
   const navigation = useNavigation<HeaderComponentProps>();
   const coverPic = `${process.env.REACT_APP_LARAVEL_URL}/${userData?.data.cover_photo}`;
   const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${userData?.data.profile_picture}`;
@@ -177,24 +179,19 @@ const Header = ({
 
         {/* Button Group */}
         <View style={styles.buttonGroup}>
-          <TouchableOpacity style={styles.addFriendButton}>
-            <MaterialIcons
-              name="person-add"
-              size={24}
-              color="#fff"
-              style={{marginRight: 8}}
-            />
-            <Text style={styles.addFriendText}>Add Friend</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton}>
-            <MaterialIcons
-              name="message"
-              size={23}
-              color="#fff"
-              style={{marginRight: 8}}
-            />
-            <Text style={styles.messageText}>Message</Text>
-          </TouchableOpacity>
+          <ProfileAddFriendButton
+            id={userId}
+            type={userData?.data.friend_state}
+          />
+
+          <Button
+            mode="contained"
+            style={{backgroundColor: 'black'}}
+            icon={() => (
+              <MaterialIcons name="message" size={20} color="white" />
+            )}>
+            Message
+          </Button>
         </View>
       </View>
     </View>
@@ -235,7 +232,7 @@ function FollowButton({
           style={styles.followButton}
           onPress={handleToggleFollow}>
           {isLoading ? (
-            <ActivityIndicator color='white' />
+            <ActivityIndicator color="white" />
           ) : (
             <Text style={styles.followButtonText}>Follow</Text>
           )}
@@ -255,7 +252,7 @@ function FollowButton({
           style={styles.followButton}
           onPress={handleToggleFollow}>
           {isLoading ? (
-            <ActivityIndicator color='white' />
+            <ActivityIndicator color="white" />
           ) : (
             <Text style={styles.followButtonText}>Follow</Text>
           )}
@@ -413,7 +410,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    minWidth:90
+    minWidth: 90,
   },
   unFollowButton: {
     backgroundColor: '#e8dddc', // Blue button color
@@ -425,7 +422,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    minWidth:90
+    minWidth: 90,
   },
   followButtonText: {
     color: '#fff',
@@ -473,7 +470,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
     justifyContent: 'center',
-    gap: 15,
+    gap: 10,
   },
   addFriendButton: {
     flexDirection: 'row',

@@ -12,6 +12,7 @@ interface UserDetails {
   user_fname: string;
   user_lname: string;
   is_following: boolean;
+  friend_state: string;
 }
 interface ApiResponse {
   data: UserDetails;

@@ -22,13 +22,18 @@ import LoveAnimation from './src/features/Test/LoveAnimation';
 
 import Home from './src/features/Home/Home';
 import SearchAnimation from './src/features/Test/SearchAnimation';
+
+/* 
+blue---> #1682e8
+disable color -->  #e8dddc
+*/
 const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    onPrimary: 'yellow',
-    primary: '#1d1e30',
-    onSurface: 'black',
+    onPrimary: 'white',
+    primary: 'green',
+    
     onBackground: 'darkgray',
   },
 };
