@@ -195,6 +195,13 @@ export const profileApi = createApi({
       invalidatesTags:["Following"]
      }),
 
+    /* Get user data only react native */
+    getAuthUserDetails: builder.query<any,void>({
+      query: () => `get-auth-user-deatils`, // API endpoint for fetching user about data
+    }),
+
+
+
   }),
 });
 
@@ -223,5 +230,6 @@ export const {
   useGetAuthUserFollowerQuery,
   useGetAuthUserFollowingQuery,
   useGetAuthUserFriendQuery,
-  useToggoleUserFollowMutation
+  useToggoleUserFollowMutation,
+  useGetAuthUserDetailsQuery
 } = profileApi;

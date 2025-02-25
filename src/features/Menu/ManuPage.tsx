@@ -20,9 +20,15 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useLogOutUserMutation } from '../../services/userAuthApi';
 import { setAuthenticated } from '../Home/HomeSlice';
 import { useDispatch } from 'react-redux';
+import { useGetAuthUserDetailsQuery } from '../../services/profileApi';
 
 const MenuPage = ({navigation}: any) => {
 
+  const {data,isSuccess:useGetAuthUserDetailsIsSucess}=useGetAuthUserDetailsQuery();
+
+  const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${data?.profile_picture}`;
+
+  console.log(data);
   const dispatch = useDispatch();
   const layoutRef = useRef({width: 0, height: 0});
 
@@ -127,13 +133,13 @@ const MenuPage = ({navigation}: any) => {
               <Avatar.Image
                 size={54}
                 source={{
-                  uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTM1Q4yaQHkUCvG4FrN3eUPkDqXvbAZDpCeA&s',
+                  uri: profilePic,
                 }}
               />
             </View>
             <View style={styles.userInfo}>
-              <Text style={styles.userName}>{user.name}</Text>
-              <Text style={styles.userEmail}>{user.email}</Text>
+              <Text style={styles.userName}>{data?.user_fname} {data?.user_lname}</Text>
+              <Text style={styles.userEmail}>{data?.email}</Text>
             </View>
           </View>
           {/* Right Side: "hi" Text */}
@@ -363,14 +369,16 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   userName: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '600',
     color: 'white',
+
   },
   userEmail: {
     fontSize: 14,
     color: 'white',
     marginTop: 2,
+  
   },
   menuContainer: {
     flex: 1,
