@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,26 +7,21 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import {
-  TextInput,
-  Button,
-  Text,
-  Title,
-  HelperText,
-} from 'react-native-paper';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {TextInput, Button, Text, Title, HelperText} from 'react-native-paper';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import * as Keychain from 'react-native-keychain';
-import { useLoginMutation } from '../../../services/userLoginApi';
-import { RootParamList } from '../../../../RootNavigator';
+import {useLoginMutation} from '../../../services/userLoginApi';
+import {RootParamList} from '../../../../RootNavigator';
 import GoogleSignInButton from './../GoogleButton/GoogleSignInButton';
-import { setAuthenticated } from '../../Home/HomeSlice';
-import { useDispatch } from 'react-redux';
-import { getErrorMessage } from '../../../utils/errorUtils';
+import {setAuthenticated} from '../../Home/HomeSlice';
+import {useDispatch} from 'react-redux';
+import {getErrorMessage} from '../../../utils/errorUtils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LoginProps = NativeStackScreenProps<RootParamList, 'login'>;
 
-export default function Login({ navigation }: LoginProps) {
+export default function Login({navigation}: LoginProps) {
   const dispatch = useDispatch();
   useEffect(() => {
     GoogleSignin.configure({
@@ -37,19 +32,21 @@ export default function Login({ navigation }: LoginProps) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({ email: '', password: '' });
+  const [errors, setErrors] = useState({email: '', password: ''});
   const [token, setToken] = useState<string | null>(null);
 
-  const [login, { isLoading, isError, error }] = useLoginMutation();
+  const [login, {isLoading, isError, error}] = useLoginMutation();
 
   // Normal login logic
   const handleLogin = async () => {
     if (validateForm()) {
       try {
-        const result = await login({ email, password }).unwrap();
+        const result = await login({email, password}).unwrap();
         if (result.message === 'sucessful') {
           Alert.alert('Success', 'Login successful!');
           await Keychain.setGenericPassword('token', result.token);
+          /* store loginMethod */
+          await AsyncStorage.setItem('loginMethod', 'email');
           dispatch(setAuthenticated(true));
           setToken(result.token);
         } else {
@@ -58,10 +55,13 @@ export default function Login({ navigation }: LoginProps) {
       } catch (err: any) {
         if (err.data) {
           // Server-side error (err.data exists)
-          Alert.alert('Login failed', err.data.message); 
+          Alert.alert('Login failed', err.data.message);
         } else {
           // Client-side error (e.g., Network error)
-          Alert.alert('Login failed', err.message || 'An unexpected error occurred.');
+          Alert.alert(
+            'Login failed',
+            err.message || 'An unexpected error occurred.',
+          );
         }
       }
     }
@@ -83,7 +83,7 @@ export default function Login({ navigation }: LoginProps) {
     fetchToken();
   }, []);
 
- // Sign out logic
+  // Sign out logic
   const handleSignOut = async () => {
     try {
       await GoogleSignin.signOut();
@@ -98,7 +98,7 @@ export default function Login({ navigation }: LoginProps) {
   // Form validation
   const validateForm = () => {
     let valid = true;
-    let newErrors = { email: '', password: '' };
+    let newErrors = {email: '', password: ''};
 
     // Validate email
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -131,7 +131,7 @@ export default function Login({ navigation }: LoginProps) {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Title style={styles.title}>Welcome Back</Title>
         <Text style={styles.subtitle}>Login to your account</Text>
-        
+
         <TextInput
           label="Email"
           value={email}
@@ -158,13 +158,7 @@ export default function Login({ navigation }: LoginProps) {
         </HelperText>
 
         <TouchableOpacity
-          onPress={() =>
-            
-            
-            
-            navigation.navigate('forgotpassword')
-
-          } // Placeholder navigation
+          onPress={() => navigation.navigate('forgotpassword')} // Placeholder navigation
           style={styles.forgotPasswordContainer}>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
@@ -183,8 +177,6 @@ export default function Login({ navigation }: LoginProps) {
         )}
 
         <GoogleSignInButton />
-
-        
       </ScrollView>
     </SafeAreaView>
   );

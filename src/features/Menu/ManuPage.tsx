@@ -14,17 +14,28 @@ import {
   Pressable,
 } from 'react-native';
 import * as Keychain from 'react-native-keychain';
-import {Text, Avatar, Badge, List, Appbar, Button, Portal, Dialog, Paragraph} from 'react-native-paper';
+import {
+  Text,
+  Avatar,
+  Badge,
+  List,
+  Appbar,
+  Button,
+  Portal,
+  Dialog,
+  Paragraph,
+} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { useLogOutUserMutation } from '../../services/userAuthApi';
-import { setAuthenticated } from '../Home/HomeSlice';
-import { useDispatch } from 'react-redux';
-import { useGetAuthUserDetailsQuery } from '../../services/profileApi';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {useLogOutUserMutation} from '../../services/userAuthApi';
+import {setAuthenticated} from '../Home/HomeSlice';
+import {useDispatch} from 'react-redux';
+import {useGetAuthUserDetailsQuery} from '../../services/profileApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MenuPage = ({navigation}: any) => {
-
-  const {data,isSuccess:useGetAuthUserDetailsIsSucess}=useGetAuthUserDetailsQuery();
+  const {data, isSuccess: useGetAuthUserDetailsIsSucess} =
+    useGetAuthUserDetailsQuery();
 
   const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${data?.profile_picture}`;
 
@@ -43,10 +54,7 @@ const MenuPage = ({navigation}: any) => {
     photo: 'https://via.placeholder.com/150', // Replace with actual user image
   };
 
-
-
-
-/*   Logout */
+  /*   Logout */
 
   const [logOutUser, {isLoading, isSuccess, isError, error}] =
     useLogOutUserMutation();
@@ -67,7 +75,12 @@ const MenuPage = ({navigation}: any) => {
 
   const handlePostLogoutActions = async () => {
     try {
-      await GoogleSignin.signOut();
+      /* get loginMethod from asyncStorage */
+      const loginMethod = await AsyncStorage.getItem('loginMethod');
+      if (loginMethod === 'gmail') {
+        await GoogleSignin.signOut();
+      }
+
       const success = await Keychain.resetGenericPassword();
       if (success) {
         dispatch(setAuthenticated(false));
@@ -85,21 +98,11 @@ const MenuPage = ({navigation}: any) => {
     }
   }, [isSuccess]);
 
-
-
-
-
-
-
-
-
   /* make status bar right */
   useFocusEffect(() => {
     StatusBar.setBarStyle('light-content');
     StatusBar.setBackgroundColor('#007BFF');
   });
-
-
 
   return (
     <SafeAreaView style={[styles.container]}>
@@ -138,7 +141,9 @@ const MenuPage = ({navigation}: any) => {
               />
             </View>
             <View style={styles.userInfo}>
-              <Text style={styles.userName}>{data?.user_fname} {data?.user_lname}</Text>
+              <Text style={styles.userName}>
+                {data?.user_fname} {data?.user_lname}
+              </Text>
               <Text style={styles.userEmail}>{data?.email}</Text>
             </View>
           </View>
@@ -239,75 +244,12 @@ const MenuPage = ({navigation}: any) => {
               />
               <Text style={styles.menuText}>Groups</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.menuItem2]}>
-              <MaterialCommunityIcons
-                name="account-group-outline"
-                size={30}
-                color="#4A4A4A"
-              />
-              <Text style={styles.menuText}>Groups</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.menuItem2]}>
-              <MaterialCommunityIcons
-                name="account-group-outline"
-                size={30}
-                color="#4A4A4A"
-              />
-              <Text style={styles.menuText}>Groups</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.menuItem2]}>
-              <MaterialCommunityIcons
-                name="account-group-outline"
-                size={30}
-                color="#4A4A4A"
-              />
-              <Text style={styles.menuText}>Groups</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.menuItem2]}>
-              <MaterialCommunityIcons
-                name="account-group-outline"
-                size={30}
-                color="#4A4A4A"
-              />
-              <Text style={styles.menuText}>Groups</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.menuItem2]}>
-              <MaterialCommunityIcons
-                name="account-group-outline"
-                size={30}
-                color="#4A4A4A"
-              />
-              <Text style={styles.menuText}>Groups</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.menuItem2]}>
-              <MaterialCommunityIcons
-                name="account-group-outline"
-                size={30}
-                color="#4A4A4A"
-              />
-              <Text style={styles.menuText}>Groups</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.menuItem2]}>
-              <MaterialCommunityIcons
-                name="account-group-outline"
-                size={30}
-                color="#4A4A4A"
-              />
-              <Text style={styles.menuText}>Groups</Text>
-            </TouchableOpacity>
           </View>
 
           {/* Logout */}
 
-   
-
-
-
-
-
-
-
-          <TouchableOpacity  style={[
+          <TouchableOpacity
+            style={[
               styles.menuItem2,
               {
                 width: 'auto',
@@ -316,9 +258,10 @@ const MenuPage = ({navigation}: any) => {
                 elevation: 0,
                 marginTop: 15,
               },
-            ]} onPress={showDialog}>
-                <MaterialCommunityIcons name="logout" size={30} color="#4A4A4A" />
-                <Text style={styles.menuText}>Logout</Text>
+            ]}
+            onPress={showDialog}>
+            <MaterialCommunityIcons name="logout" size={30} color="#4A4A4A" />
+            <Text style={styles.menuText}>Logout</Text>
           </TouchableOpacity>
 
           <Portal>
@@ -372,13 +315,11 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '600',
     color: 'white',
-
   },
   userEmail: {
     fontSize: 14,
     color: 'white',
     marginTop: 2,
-  
   },
   menuContainer: {
     flex: 1,

@@ -12,6 +12,7 @@ import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootParamList} from '../../../../RootNavigator';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationProp = NativeStackNavigationProp<RootParamList, 'signupAddInfo'>; // Type for navigating to 'signupAddInfo'
 
@@ -42,6 +43,9 @@ export default function GoogleSignInButton() {
       if (res?.data?.message == 'have account') {
         // Store the token securely in Keychain
         await Keychain.setGenericPassword('authToken', res.data.token);
+
+        /* store loginMethod */
+           await AsyncStorage.setItem('loginMethod', 'gmail');
         dispatch(setAuthenticated(true));
       } else if (res?.data?.message == 'no account') {
         navigation.navigate('signupAddInfo', {email: res.data.email});
