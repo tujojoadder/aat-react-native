@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import {Segmented} from 'react-native-collapsible-segmented-view';
 import {
@@ -28,6 +29,7 @@ import {RootState} from '../../app/store';
 import {useSelector, useDispatch} from 'react-redux';
 import {setFollowing, setUnFollowing} from '../Home/HomeSlice';
 import ProfileAddFriendButton from './ProfileAddFriendButton';
+import ProfileLock from './ProfileLock/ProfileLock';
 interface UserDetails {
   cover_photo: string;
   followers_count: number;
@@ -39,6 +41,7 @@ interface UserDetails {
   user_lname: string;
   is_following: boolean;
   friend_state: string;
+  privacy_setting: string;
 }
 interface ApiResponse {
   data: UserDetails;
@@ -81,7 +84,7 @@ const Header = ({
   };
 
   return (
-    <View pointerEvents="box-none">
+    <View pointerEvents="box-none" style={{backgroundColor: 'white'}}>
       {/* Cover Photo Section */}
       <View
         style={[
@@ -129,56 +132,81 @@ const Header = ({
             )}
           </View>
           {/* 40% width (90px button width) */}
-          <FollowButton
-            handleToggleFollow={handleToggleFollow}
-            userId={userId}
-            is_following={userData?.data.is_following}
-            isLoading={isLoading}
-          />
+
+          {/* follow button only if user is not locked his profile */}
+          {userData?.data?.privacy_setting !== 'locked' ? (
+            <FollowButton
+              handleToggleFollow={handleToggleFollow}
+              userId={userId}
+              is_following={userData?.data.is_following}
+              isLoading={isLoading}
+            />
+          ) : null}
         </View>
 
         {/* Follower and Following Section */}
-        <View style={styles.numberSection} pointerEvents="box-none">
-          <TouchableOpacity
-            onPress={() => navigation.navigate('friendsContainer', {userId})}
-            style={styles.numberItem}>
-            <Text style={styles.statNumber}>
-              <FormateLargeNumber number={userData?.data.friends_count ?? 0} />
-            </Text>
-            <Text style={styles.statLabel}>Friends</Text>
-          </TouchableOpacity>
 
-          {/* Vertical Divider */}
-          <View style={styles.verticalLine} />
+        {userData?.data?.friend_state !== 'friend' &&
+        userData?.data?.privacy_setting === 'locked' ? null : (
+          <View style={styles.numberSection} pointerEvents="box-none">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('friendsContainer', {userId})}
+              style={styles.numberItem}>
+              <Text style={styles.statNumber}>
+                <FormateLargeNumber
+                  number={userData?.data.friends_count ?? 0}
+                />
+              </Text>
+              <Text style={styles.statLabel}>Friends</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.numberItem}
-            onPress={() => navigation.navigate('followingContainer', {userId})}>
-            <Text style={styles.statNumber}>
-              <FormateLargeNumber
-                number={userData?.data.followings_count ?? 0}
-              />
-            </Text>
-            <Text style={styles.statLabel}>Following</Text>
-          </TouchableOpacity>
+            {/* Vertical Divider */}
+            <View style={styles.verticalLine} />
 
-          {/* Vertical Divider */}
-          <View style={styles.verticalLine} />
+            <TouchableOpacity
+              style={styles.numberItem}
+              onPress={() =>
+                navigation.navigate('followingContainer', {userId})
+              }>
+              <Text style={styles.statNumber}>
+                <FormateLargeNumber
+                  number={userData?.data.followings_count ?? 0}
+                />
+              </Text>
+              <Text style={styles.statLabel}>Following</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => navigation.navigate('followersContainer', {userId})}
-            style={styles.numberItem}>
-            <Text style={styles.statNumber}>
-              <FormateLargeNumber
-                number={userData?.data.followers_count ?? 0}
-              />
-            </Text>
-            <Text style={styles.statLabel}>Followers</Text>
-          </TouchableOpacity>
-        </View>
+            {/* Vertical Divider */}
+            <View style={styles.verticalLine} />
+
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('followersContainer', {userId})
+              }
+              style={styles.numberItem}>
+              <Text style={styles.statNumber}>
+                <FormateLargeNumber
+                  number={userData?.data.followers_count ?? 0}
+                />
+              </Text>
+              <Text style={styles.statLabel}>Followers</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Button Group */}
-        <View style={styles.buttonGroup}>
+
+        {userData?.data?.friend_state !== 'friend' &&
+        userData?.data?.privacy_setting === 'locked' ? (
+          <View style={styles.lockButtonGroup}>
+          <ProfileAddFriendButton
+            id={userId}
+            type={userData?.data.friend_state}
+          />
+
+        </View>
+        ) : (
+          <View style={styles.buttonGroup}>
           <ProfileAddFriendButton
             id={userId}
             type={userData?.data.friend_state}
@@ -193,6 +221,9 @@ const Header = ({
             Message
           </Button>
         </View>
+        )}
+
+        
       </View>
     </View>
   );
@@ -210,7 +241,6 @@ function FollowButton({
   isLoading,
   is_following,
 }: FollowButtonProps) {
-  const [isSet, setIsSet] = useState(null);
   const isFollowing = useSelector(
     (state: RootState) => state.home.isFollowing[userId],
   );
@@ -284,6 +314,7 @@ const Profile = ({navigation, route}: ProfileScreenProps) => {
   if (isFetching) {
     return <ProfileSkeleton />;
   }
+
   return (
     <View style={styles.container}>
       {/* Fixed Appbar */}
@@ -295,33 +326,47 @@ const Profile = ({navigation, route}: ProfileScreenProps) => {
         />
       </Appbar.Header>
 
-      {/* Segmented View with Collapsible Header */}
-      <View style={styles.segmentedContainer}>
-        <Segmented.View
-          header={() => (
-            /* Header */
+      {/*  */}
 
-            <Header userData={profileData} userId={userId} />
-          )}>
-          {/* Pass userId to ProfilePosts */}
-          <Segmented.Segment
-            label="Posts"
-            component={() => <ProfilePosts userId={userId} />}
-          />
+      {profileData?.data?.friend_state !== 'friend' &&
+      profileData?.data?.privacy_setting === 'locked' ? (
+        <View style={styles.lockContainer}>
+          <ScrollView 
+            showsVerticalScrollIndicator={false} // Hide vertical scrollbar
+            showsHorizontalScrollIndicator={false} // Hide horizontal scrollbar
+          >
+          <Header userData={profileData} userId={userId} />
+          <ProfileLock />
+          </ScrollView>
+        </View>
+      ) : (
+        <View style={styles.segmentedContainer}>
+          <Segmented.View
+            header={() => (
+              /* Header */
 
-          {/* Pass userId to ProfileImages */}
-          <Segmented.Segment
-            label="Photos"
-            component={() => <ProfileImages userId={userId} />}
-          />
+              <Header userData={profileData} userId={userId} />
+            )}>
+            {/* Pass userId to ProfilePosts */}
+            <Segmented.Segment
+              label="Posts"
+              component={() => <ProfilePosts userId={userId} />}
+            />
 
-          {/* Pass userId to ProfileAbout */}
-          <Segmented.Segment
-            label="About"
-            component={() => <ProfileAbout userId={userId} />}
-          />
-        </Segmented.View>
-      </View>
+            {/* Pass userId to ProfileImages */}
+            <Segmented.Segment
+              label="Photos"
+              component={() => <ProfileImages userId={userId} />}
+            />
+
+            {/* Pass userId to ProfileAbout */}
+            <Segmented.Segment
+              label="About"
+              component={() => <ProfileAbout userId={userId} />}
+            />
+          </Segmented.View>
+        </View>
+      )}
     </View>
   );
 };
@@ -343,6 +388,10 @@ const styles = StyleSheet.create({
   segmentedContainer: {
     flex: 1,
     marginTop: 50, // Adjust this to match the AppBar height
+  },
+  lockContainer: {
+    marginTop: 50,
+    flex: 1,
   },
   box: {
     justifyContent: 'center',
@@ -471,6 +520,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     justifyContent: 'center',
     gap: 10,
+  },
+  lockButtonGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    justifyContent:'flex-start',
+    gap: 10,
+    marginLeft:20
   },
   addFriendButton: {
     flexDirection: 'row',
