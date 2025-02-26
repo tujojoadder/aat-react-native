@@ -142,7 +142,7 @@ const FriendItems = ({item}: {item: Friend}) => {
             navigation.navigate('profile', {authorId: item.user_id})
           }>
           <Text numberOfLines={1} style={styles.names}>
-            {item.user_fname} {item.user_lname}
+            {item.user_fname} {item.user_lname} 
           </Text>
         </TouchableOpacity>
         <Text numberOfLines={1} style={styles.identifier}>

@@ -87,8 +87,8 @@ export const friendsApi = createApi({
       invalidatesTags: ["RequestOrCancel"],
     }),
 
-    /* get specific usrer friend list */
-    getAuthUserfriendRequest: builder.query({
+    /* get auth usrer friend list */
+    getAuthUserfriendRequest: builder.query<any,{friendRequestPage:number}>({
       query: ({ friendRequestPage = 1 }) =>
         `auth-friend-requests?page=${friendRequestPage}`,
       providesTags:['Unfriend','AcceptFriendRequest']

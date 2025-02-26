@@ -5,7 +5,7 @@ import {ActivityIndicator} from 'react-native-paper';
 const Activator = () => {
   return (
     <View style={{paddingVertical:8}}>
-      <ActivityIndicator></ActivityIndicator>
+      <ActivityIndicator color='blue'></ActivityIndicator>
     </View>
   );
 };

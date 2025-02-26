@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import AuthFriendsContainer from './AuthFriendsContainer/AuthFriendsContainer';
 
 // Define the parameter list for the top tabs
 export type FriendTopTabsParamList = {
@@ -58,11 +59,11 @@ const FriendTopTabs = () => {
       }}
       style={{ paddingTop: 55 }}
     >
-      <TopTab.Screen name="Tab1" component={Tab1} options={{ title: 'Friends' }} />
-      <TopTab.Screen name="Tab2" component={Tab2} options={{ title: 'Friend Requests' }} />
-      <TopTab.Screen name="Tab3" component={Tab3} options={{ title: 'Suggestions' }} />
-      <TopTab.Screen name="Tab4" component={Tab4} options={{ title: 'Blocked Users' }} />
-      <TopTab.Screen name="Tab5" component={Tab5} options={{ title: 'Following' }} />
+      <TopTab.Screen name="Tab1" component={AuthFriendsContainer} options={{ title: 'Friend Requests' }} />
+      <TopTab.Screen name="Tab2" component={Tab2} options={{ title: 'Suggestions' }} />
+      <TopTab.Screen name="Tab3" component={Tab3} options={{ title: 'All friends' }} />
+      <TopTab.Screen name="Tab4" component={Tab4} options={{ title: 'Sent requests' }} />
+
     </TopTab.Navigator>
   );
 };

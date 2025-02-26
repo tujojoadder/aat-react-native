@@ -1,3 +1,4 @@
+
 import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -5,23 +6,16 @@ import {RootParamList} from '../../../../RootNavigator';
 import {useGetSpecificUserFriendQuery} from '../../../services/profileApi';
 import {ActivityIndicator, Appbar} from 'react-native-paper';
 import Activator from '../../Activator/Activator';
-import FriendItems from './FriendItems';
+import FriendItems from '../../Profile/FriendsContainer/FriendItems';
 import Animated from 'react-native-reanimated';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useGetAuthUserfriendRequestQuery } from '../../../services/friendsApi';
+import FriendRequestItem from '../FriendRequestItem/FriendRequestItem';
 
-type FriendContainerProps = NativeStackScreenProps<
-  RootParamList,
-  'friendsContainer'
->;
-
-export default function FriendContainer({
-  route,
-  navigation,
-}: FriendContainerProps) {
-  const {userId} = route.params; // Extract userId from route params
+export default function AuthFriendsContainer() {
   // State for pagination
   const [allFriends, setFriends] = useState<any[]>([]);
-  const [friendPage, setFriendPage] = useState(1);
+  const [friendRequestPage, setFriendRequestPage] = useState(1);
   const [hasMoreFriends, setHasMoreFriends] = useState(true);
 
   // Fetch photos
@@ -29,19 +23,19 @@ export default function FriendContainer({
     data: friendData,
     isFetching,
     isSuccess,
-  } = useGetSpecificUserFriendQuery({friendPage, userId});
+  } = useGetAuthUserfriendRequestQuery({friendRequestPage});
   if (isSuccess) {
     console.log(friendData);
   }
   // Update photos when new data is fetched
   useEffect(() => {
-    if (friendData?.data.data) {
-      if (friendData.data.data.length === 0) {
+    if (friendData?.data) {
+      if (friendData.data.length === 0) {
         setHasMoreFriends(false);
       } else {
-        const newFriends = friendData.data.data.filter(
+        const newFriends = friendData.data.filter(
           (newFriend: any) =>
-            !allFriends.some(friend => friend.user_id === newFriend.user_id),
+            !allFriends.some(friend => friend.friend_request_id === newFriend.friend_request_id),
         );
 
         if (newFriends.length > 0) {
@@ -50,7 +44,7 @@ export default function FriendContainer({
       }
 
         // If the fetched data is less than perPage, stop further requests
-        if (friendData.data.data.length < 15) {
+        if (friendData.data.length < 15) {
           setHasMoreFriends(false);
         }
     }
@@ -59,46 +53,35 @@ export default function FriendContainer({
   // Load more data when reaching the end of the list
   const loadMoreData = useCallback(() => {
     if (hasMoreFriends && !isFetching) {
-      setFriendPage(prev => prev + 1);
+      setFriendRequestPage(prev => prev + 1);
     }
   }, [hasMoreFriends, isFetching]);
 
   // Render each image item
   const renderItem = useCallback(({item}: {item: any}) => {
-    return <FriendItems item={item} />;
+    return <Text>hi</Text> ;
   }, []);
 
   return (
     <View style={styles.container}>
-      {/* Fixed Appbar */}
-      <Animated.View style={[styles.animatedAppBar]}>
-        <Appbar.Header style={styles.appBar}>
-          {/* back button */}
-          <Appbar.BackAction onPress={() => navigation.goBack()} />
-          {/* title */}
-          <Appbar.Content
-            title="Friends"
-            titleStyle={{fontSize: 20,
-               color: '#333',
-                opacity: 1,
-                fontWeight:'bold'
-              
-              }}
-          />
-        </Appbar.Header>
-      </Animated.View>
-
-      <FlatList
+   
+      {/* <FlatList
         data={allFriends}
         renderItem={renderItem}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
-        keyExtractor={item => item.user_id.toString()}
-        contentContainerStyle={{paddingTop: 55}}
+        keyExtractor={item => item.friend_request_id.toString()}
+    
         ListFooterComponent={
           hasMoreFriends && isFetching ? <Activator /> : null
         }
-      />
+      /> */}
+<FriendRequestItem />
+<FriendRequestItem />
+<FriendRequestItem />
+<FriendRequestItem />
+<FriendRequestItem />
+
     </View>
   );
 }
