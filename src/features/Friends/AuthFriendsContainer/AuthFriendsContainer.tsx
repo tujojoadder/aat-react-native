@@ -25,7 +25,7 @@ export default function AuthFriendsContainer() {
     isSuccess,
   } = useGetAuthUserfriendRequestQuery({friendRequestPage});
   if (isSuccess) {
-    console.log(friendData);
+    console.log(friendData.total);
   }
   // Update photos when new data is fetched
   useEffect(() => {
@@ -59,13 +59,16 @@ export default function AuthFriendsContainer() {
 
   // Render each image item
   const renderItem = useCallback(({item}: {item: any}) => {
-    return <Text>hi</Text> ;
+    return <FriendRequestItem item={item} /> ;
   }, []);
 
+
+  
   return (
     <View style={styles.container}>
    
-      {/* <FlatList
+   {/* <Text>{friendData.total}</Text> */}
+      <FlatList
         data={allFriends}
         renderItem={renderItem}
         onEndReached={loadMoreData}
@@ -75,12 +78,8 @@ export default function AuthFriendsContainer() {
         ListFooterComponent={
           hasMoreFriends && isFetching ? <Activator /> : null
         }
-      /> */}
-<FriendRequestItem />
-<FriendRequestItem />
-<FriendRequestItem />
-<FriendRequestItem />
-<FriendRequestItem />
+      />
+
 
     </View>
   );

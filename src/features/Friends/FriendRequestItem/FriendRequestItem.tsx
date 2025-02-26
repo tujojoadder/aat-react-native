@@ -2,21 +2,30 @@ import {View, Text, StyleSheet, Image} from 'react-native';
 import React from 'react';
 import {Button} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+interface FriendRequest {
+  friend_request_id: string;
+  identifier: string;
+  profile_picture: string;
+  user_fname: string;
+  user_id: string;
+  user_lname: string;
+}
+export default function FriendRequestItem({item}:{item:FriendRequest}) {
+  const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${item.profile_picture}`;
 
-export default function FriendRequestItem() {
   return (
     <View style={styles.card}>
       {/* Profile Picture and Names */}
       <View style={styles.topSection}>
         <Image
           source={{
-            uri: 'https://imageio.forbes.com/blogs-images/alfredkonuwa/files/2018/01/ROME2-1200x800.jpg?height=474&width=711&fit=bounds',
+            uri: profilePic,
           }}
           style={styles.profilePic}
         />
         <View style={styles.userNames}>
-          <Text style={styles.userNameText} numberOfLines={1}>FriendRequestItem</Text>
-          <Text style={styles.userIdentifireText} numberOfLines={1}>@demo132</Text>
+          <Text style={styles.userNameText} numberOfLines={1}>{item.user_fname} {item.user_lname}</Text>
+          <Text style={styles.userIdentifireText} numberOfLines={1}>@{item.identifier}</Text>
         </View>
       </View>
 
@@ -50,9 +59,11 @@ export default function FriendRequestItem() {
 
 const styles = StyleSheet.create({
   card: {
-    padding: 10,
+   
     backgroundColor: '#fff',
     borderRadius: 10,
+    paddingBottom:10,
+    paddingHorizontal:10
   
   },
   topSection: {
@@ -80,7 +91,9 @@ const styles = StyleSheet.create({
   buttonCollection: {
     flexDirection: 'row',
    justifyContent:'flex-end',
-  gap:15
+
+  gap:25,
+  paddingTop:5
   },
   
 });
