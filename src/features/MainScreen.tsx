@@ -7,7 +7,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 
 import Home from './Home/Home';
-import MenuPage from './Menu/ManuPage';
+import MenuPage from './Menu/MenuPage';
 import HadithDayContent from '../HadithStatus/HadithDayContent';
 import HadithBox from '../HadithStatus/HadithBox/HadithBox ';
 

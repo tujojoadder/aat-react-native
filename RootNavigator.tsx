@@ -12,7 +12,7 @@ import {setAuthenticated} from './src/features/Home/HomeSlice';
 import SignupAddInfo from './src/features/Signup/SignupAddInfo';
 import Forgotpassword from './src/features/Signup/Forgotpassword/Forgotpassword';
 import MainScreen from './src/features/MainScreen';
-import MenuPage from './src/features/Menu/ManuPage';
+import MenuPage from './src/features/Menu/MenuPage';
 import HadithDayContent from './src/HadithStatus/HadithDayContent';
 import HadithStatusBar from './src/HadithStatus/HadithStatusBar';
 import HadithBox from './src/HadithStatus/HadithBox/HadithBox ';
@@ -20,6 +20,7 @@ import Profile from './src/features/Profile/Profile';
 import FriendContainer from './src/features/Profile/FriendsContainer/FriendContainer';
 import FollowingContainer from './src/features/Profile/FollowingContainer/FollowingContainer';
 import FollowersContainer from './src/features/Profile/FollowersContainer/FollowersContainer';
+import FriendHome from './src/features/Friends/FriendHome';
 
 export type RootParamList = {
   main: undefined; // No parameters for the "home" screen
@@ -34,6 +35,7 @@ export type RootParamList = {
   friendsContainer: { userId: string }; 
   followingContainer: { userId: string }; 
   followersContainer: { userId: string }; 
+  friendHome: undefined; 
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -86,6 +88,9 @@ export default function RootNavigator() {
             <Stack.Screen name="friendsContainer" component={FriendContainer} />
             <Stack.Screen name="followingContainer" component={FollowingContainer} />
             <Stack.Screen name="followersContainer" component={FollowersContainer} />
+
+            {/* Friends */}
+            <Stack.Screen name="friendHome" component={FriendHome} />
           </>
         ) : (
 

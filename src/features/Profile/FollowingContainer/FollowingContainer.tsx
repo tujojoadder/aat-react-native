@@ -7,6 +7,8 @@ import Animated from 'react-native-reanimated';
 import { Appbar } from 'react-native-paper';
 import Activator from '../../Activator/Activator';
 import FollowingIteam from './FollowingIteam/FollowingIteam';
+import { AppbarStyleSheet } from '../../StyleSheet/AppbarStyleSheet/AppbarStyleSheet';
+import { ContainerStyleSheet } from '../../StyleSheet/ContainerStyleSheet/ContainerStyleSheet';
 
 type FollowingContainerProps = NativeStackScreenProps<
   RootParamList,
@@ -72,21 +74,16 @@ if (isSuccess) {
   
 
   return (
-    <View style={styles.container}>
+    <View style={ContainerStyleSheet.container}>
       {/* Fixed Appbar */}
-      <Animated.View style={[styles.animatedAppBar]}>
-        <Appbar.Header style={styles.appBar}>
+      <Animated.View style={[AppbarStyleSheet.animatedAppBar]}>
+        <Appbar.Header style={AppbarStyleSheet.appBar}>
           {/* back button */}
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           {/* title */}
           <Appbar.Content
             title="Foollowing"
-            titleStyle={{
-              fontSize: 20,
-              color: '#333',
-              opacity: 1,
-              fontWeight: 'bold',
-            }}
+            titleStyle={AppbarStyleSheet.title}
           />
         </Appbar.Header>
       </Animated.View>
@@ -103,32 +100,9 @@ if (isSuccess) {
         }
       />
     </View>
+
+    
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  animatedAppBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff', // Ensure background color for shadow effect
-    zIndex: 1,
-  },
-  appBar: {
-    backgroundColor: '#fff',
-    elevation: 3,
-    height: 55,
-  },
 
-  title: {
-    flex: 1,
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#007BFF',
-  },
-});

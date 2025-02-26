@@ -32,7 +32,7 @@ const theme = {
   colors: {
     ...DefaultTheme.colors,
     onPrimary: 'white',
-    primary: 'green',
+    primary: 'white',
     
     onBackground: 'darkgray',
   },

@@ -1,4 +1,4 @@
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import React, {useEffect, useRef, useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -25,6 +25,8 @@ import {
   Dialog,
   Paragraph,
 } from 'react-native-paper';
+type ManuPAgeNavigationProps = NativeStackNavigationProp<RootParamList, 'menu'>;
+
 import Animated from 'react-native-reanimated';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useLogOutUserMutation} from '../../services/userAuthApi';
@@ -32,8 +34,11 @@ import {setAuthenticated} from '../Home/HomeSlice';
 import {useDispatch} from 'react-redux';
 import {useGetAuthUserDetailsQuery} from '../../services/profileApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootParamList} from '../../../RootNavigator';
 
-const MenuPage = ({navigation}: any) => {
+const MenuPage = () => {
+  const navigation = useNavigation<ManuPAgeNavigationProps>();
   const {data, isSuccess: useGetAuthUserDetailsIsSucess} =
     useGetAuthUserDetailsQuery();
 
@@ -41,18 +46,6 @@ const MenuPage = ({navigation}: any) => {
 
   console.log(data);
   const dispatch = useDispatch();
-  const layoutRef = useRef({width: 0, height: 0});
-
-  const handleLayout = (event: any) => {
-    const {width, height} = event.nativeEvent.layout;
-    layoutRef.current = {width, height}; // Update the ref value
-    console.log('Layout updated:', layoutRef.current); // Log the current layout
-  };
-  const user = {
-    name: 'John Doe',
-    email: 'johndoe@example.com',
-    photo: 'https://via.placeholder.com/150', // Replace with actual user image
-  };
 
   /*   Logout */
 
@@ -127,19 +120,13 @@ const MenuPage = ({navigation}: any) => {
         <View style={styles.header}>
           {/* Left Side: Avatar and User Info */}
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View
-              style={{
-                borderWidth: 1,
-                borderRadius: 54 / 2,
-                backgroundColor: 'white', // Optional for consistent look
-              }}>
-              <Avatar.Image
-                size={54}
-                source={{
-                  uri: profilePic,
-                }}
-              />
-            </View>
+            <Avatar.Image
+              size={55}
+              source={{
+                uri: profilePic,
+              }}
+            />
+
             <View style={styles.userInfo}>
               <Text style={styles.userName}>
                 {data?.user_fname} {data?.user_lname}
@@ -181,36 +168,21 @@ const MenuPage = ({navigation}: any) => {
             <View style={styles.menuGrid}>
               <TouchableOpacity
                 style={styles.menuItem}
-                onPress={() => navigation.navigate('Home')}
+                onPress={() => navigation.navigate('friendHome')}
                 activeOpacity={0.8}>
                 <View style={styles.iconWrapper}>
                   <MaterialCommunityIcons
-                    name="home-outline"
+                    name="account-multiple-outline"
                     size={30}
                     color="#4A4A4A"
                   />
                 </View>
-                <Text style={styles.menuText}>Home</Text>
+                <Text style={styles.menuText}>Friends</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.menuItem}
-                onPress={() => navigation.navigate('Pages')}
-                activeOpacity={0.8}>
-                <View style={styles.iconWrapper}>
-                  <MaterialCommunityIcons
-                    name="file-document-outline"
-                    size={30}
-                    color="#4A4A4A"
-                  />
-                  <Badge style={styles.badge}>3</Badge>
-                </View>
-                <Text style={styles.menuText}>Pages</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={() => navigation.navigate('Groups')}
+                /*   onPress={() => navigation.navigate('Groups')} */
                 activeOpacity={0.8}>
                 <View style={styles.iconWrapper}>
                   <MaterialCommunityIcons
@@ -221,6 +193,21 @@ const MenuPage = ({navigation}: any) => {
                   <Badge style={styles.badge}>5</Badge>
                 </View>
                 <Text style={styles.menuText}>Groups</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.menuItem}
+                /*         onPress={() => navigation.navigate('Pages')} */
+                activeOpacity={0.8}>
+                <View style={styles.iconWrapper}>
+                  <MaterialCommunityIcons
+                    name="file-document-outline"
+                    size={30}
+                    color="#4A4A4A"
+                  />
+                  <Badge style={styles.badge}>3</Badge>
+                </View>
+                <Text style={styles.menuText}>Pages</Text>
               </TouchableOpacity>
             </View>
           </View>
