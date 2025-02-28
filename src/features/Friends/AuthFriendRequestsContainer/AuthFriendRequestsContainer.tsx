@@ -1,18 +1,13 @@
 
 import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootParamList} from '../../../../RootNavigator';
-import {useGetSpecificUserFriendQuery} from '../../../services/profileApi';
-import {ActivityIndicator, Appbar} from 'react-native-paper';
 import Activator from '../../Activator/Activator';
-import FriendItems from '../../Profile/FriendsContainer/FriendItems';
-import Animated from 'react-native-reanimated';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useGetAuthUserfriendRequestQuery } from '../../../services/friendsApi';
 import FriendRequestItem from '../FriendRequestItem/FriendRequestItem';
+import ProfileSkeleton from '../../Profile/ProfileSkeleton';
+import FriendSkeleton from '../FriendSkeleton/FriendSkeleton';
 
-export default function AuthFriendsContainer() {
+export default function AuthFriendRequestsContainer() {
   // State for pagination
   const [allFriends, setFriends] = useState<any[]>([]);
   const [friendRequestPage, setFriendRequestPage] = useState(1);
@@ -23,10 +18,12 @@ export default function AuthFriendsContainer() {
     data: friendData,
     isFetching,
     isSuccess,
+    isLoading
   } = useGetAuthUserfriendRequestQuery({friendRequestPage});
   if (isSuccess) {
-    console.log(friendData.total);
+    console.log(friendData);
   }
+
   // Update photos when new data is fetched
   useEffect(() => {
     if (friendData?.data) {
@@ -57,32 +54,35 @@ export default function AuthFriendsContainer() {
     }
   }, [hasMoreFriends, isFetching]);
 
+
   // Render each image item
   const renderItem = useCallback(({item}: {item: any}) => {
     return <FriendRequestItem item={item} /> ;
   }, []);
 
-
+  if (isLoading) {
+    return <FriendSkeleton/>
+  }
   
   return (
-    <View style={styles.container}>
-   
-   {/* <Text>{friendData.total}</Text> */}
+  <View style={styles.container}>
+    <Text style={{fontSize:18,paddingVertical:15,paddingHorizontal:10}}>{`Friend requests (${friendData?.total})`}</Text>
+
+    {isLoading ? (
+      <FriendSkeleton /> // Show the skeleton while loading
+    ) : (
       <FlatList
         data={allFriends}
         renderItem={renderItem}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
         keyExtractor={item => item.friend_request_id.toString()}
-    
-        ListFooterComponent={
-          hasMoreFriends && isFetching ? <Activator /> : null
-        }
+        ListFooterComponent={hasMoreFriends && isFetching ? <Activator /> : null}
       />
+    )}
+  </View>
+);
 
-
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({
