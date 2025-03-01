@@ -105,7 +105,7 @@ export const friendsApi = createApi({
 
     /* friend request --->>>home  */
 
-    getFriendSuggestion: builder.query({
+    getFriendSuggestion: builder.query<any,{friendSuggestionPage:number}>({
       query: ({ friendSuggestionPage = 1 }) =>
         `getsuggestionfriends?page=${friendSuggestionPage}`,
       providesTags: ["RequestOrCancel",'Unfriend'],

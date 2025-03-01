@@ -1,5 +1,5 @@
 import {View, Text, StyleSheet, Image} from 'react-native';
-import React from 'react';
+import React, { memo } from 'react';
 import {Button} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 interface FriendRequest {
@@ -10,7 +10,9 @@ interface FriendRequest {
   user_id: string;
   user_lname: string;
 }
-export default function FriendRequestItem({item}:{item:FriendRequest}) {
+
+
+  const FriendRequestItem=({item}:{item:FriendRequest})=>{
   const profilePic = `${process.env.REACT_APP_LARAVEL_URL}/${item.profile_picture}`;
 
   return (
@@ -56,6 +58,9 @@ export default function FriendRequestItem({item}:{item:FriendRequest}) {
     </View>
   );
 }
+
+
+export default memo(FriendRequestItem);
 
 const styles = StyleSheet.create({
   card: {
