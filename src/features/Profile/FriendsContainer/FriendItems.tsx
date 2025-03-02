@@ -24,6 +24,7 @@ type Friend = {
 
 type FriendItemsProps = NativeStackNavigationProp<RootParamList>;
 const FriendItems = ({item}: {item: Friend}) => {
+ 
   const dispatch = useDispatch();
 
   const [sendFriendRequest, {isLoading: sendingRequest}] =
@@ -50,6 +51,7 @@ const FriendItems = ({item}: {item: Friend}) => {
     try {
       console.log(item.user_id);
       const res = await sendFriendRequest({receiver_id: item.user_id});
+      console.log(res);
       if (res.data) {
         dispatch(setRequestSent({userId: item.user_id}));
         setIsFriendRequestSent(true); // Update local state

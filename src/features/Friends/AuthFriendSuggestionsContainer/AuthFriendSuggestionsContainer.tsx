@@ -23,10 +23,10 @@ export default function AuthFriendSuggestionsContainer() {
     isSuccess,
     isLoading,
   } = useGetFriendSuggestionQuery({friendSuggestionPage});
-  if (isSuccess) {
+/*   if (isSuccess) {
     console.log(friendData);
   }
-
+ */
   // Update photos when new data is fetched
   useEffect(() => {
     if (friendData?.data) {

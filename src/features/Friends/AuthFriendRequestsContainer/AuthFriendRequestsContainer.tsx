@@ -19,9 +19,7 @@ export default function AuthFriendRequestsContainer() {
     isSuccess,
     isLoading,
   } = useGetAuthUserfriendRequestQuery({friendRequestPage});
-  if (isSuccess) {
-    console.log(friendData);
-  }
+
 
   // Update photos when new data is fetched
   useEffect(() => {
