@@ -9,7 +9,7 @@ import {
   useCancelFriendRequestMutation,
   useSendFriendRequestMutation,
 } from '../../../services/friendsApi';
-import {setRequestRejected, setRequestSent} from '../../Home/HomeSlice';
+import {setRequestCancel, setRequestRejected, setRequestSent} from '../../Home/HomeSlice';
 import {ActivityIndicator} from 'react-native-paper';
 
 type Friend = {
@@ -67,7 +67,7 @@ const FriendItems = ({item}: {item: Friend}) => {
     try {
       const res = await cancelFriendRequest({receiver_id: item.user_id});
       if (res.data) {
-        dispatch(setRequestRejected({userId: item.user_id}));
+        dispatch(setRequestCancel({userId: item.user_id}));
         setIsFriendRequestSent(false); // Update local state
       } else if (res.error) {
         console.log(res.error, dispatch);
