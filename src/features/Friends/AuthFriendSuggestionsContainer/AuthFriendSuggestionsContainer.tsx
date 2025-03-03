@@ -23,10 +23,10 @@ export default function AuthFriendSuggestionsContainer() {
     isSuccess,
     isLoading,
   } = useGetFriendSuggestionQuery({friendSuggestionPage});
-/*   if (isSuccess) {
+  if (isSuccess) {
     console.log(friendData);
   }
- */
+
   // Update photos when new data is fetched
   useEffect(() => {
     if (friendData?.data) {
@@ -59,7 +59,7 @@ export default function AuthFriendSuggestionsContainer() {
 
   // Render each image item
   const renderItem = useCallback(({item}: {item: any}) => {
-    return <FriendRequestItem item={item} />;
+    return <FriendSuggestionItem item={item} />;
   }, []);
 
   if (isLoading) {
@@ -79,7 +79,7 @@ export default function AuthFriendSuggestionsContainer() {
 
   return (
     <View style={styles.container}>
-      {/* {isLoading ? (
+      {isLoading ? (
         <FriendSkeleton /> // Show the skeleton while loading
       ) : (
         <FlatList
@@ -93,16 +93,9 @@ export default function AuthFriendSuggestionsContainer() {
           }
           ListHeaderComponent={Header}
         />
-      )} */}
+      )}
 
-      <FriendSuggestionItem/>
-      <FriendSuggestionItem/>
-      <FriendSuggestionItem/>
-      <FriendSuggestionItem/>
-      <FriendSuggestionItem/>
-      <FriendSuggestionItem/>
-      <FriendSuggestionItem/>
-      <FriendSuggestionItem/>
+
     </View>
   );
 }
