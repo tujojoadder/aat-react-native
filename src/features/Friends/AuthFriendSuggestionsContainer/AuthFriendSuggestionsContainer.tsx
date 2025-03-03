@@ -5,8 +5,7 @@ import {
   useGetAuthUserfriendRequestQuery,
   useGetFriendSuggestionQuery,
 } from '../../../services/friendsApi';
-import FriendRequestItem from '../FriendRequestItem/FriendRequestItem';
-import ProfileSkeleton from '../../Profile/ProfileSkeleton';
+
 import FriendSkeleton from '../FriendSkeleton/FriendSkeleton';
 import FriendSuggestionItem from '../FriendSuggestionItem/FriendSuggestionItem';
 
@@ -72,7 +71,7 @@ export default function AuthFriendSuggestionsContainer() {
         fontSize: 18,
         paddingVertical: 15,
         paddingHorizontal: 10,
-      }}>{`Friend Suggestions (${friendData?.total})`}</Text>
+      }}>{`Friend Suggestions`}</Text>
   );
 
   return (

@@ -69,7 +69,7 @@ export default function AuthFriendAllFriendContainer() {
         fontSize: 18,
         paddingVertical: 15,
         paddingHorizontal: 10,
-      }}>{`Friend Suggestions (${friendData?.total})`}</Text>
+      }}>{`All friends (${friendData?.total})`}</Text>
   );
 
   return (
