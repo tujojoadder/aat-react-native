@@ -95,7 +95,7 @@ export const friendsApi = createApi({
     }),
 
     /* get all sented request auuth user did pendding*/
-    getAuthUserSentRequest: builder.query({
+    getAuthUserSentRequest: builder.query<any,{friendRequestPage:number}>({
       query: ({ friendRequestPage = 1 }) =>
         `sentfriendrequest?page=${friendRequestPage}`,
       providesTags: ["RequestOrCancel"],

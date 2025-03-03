@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import AuthFriendRequestsContainer from './AuthFriendRequestsContainer/AuthFriendRequestsContainer';
 import AuthFriendSuggestionsContainer from './AuthFriendSuggestionsContainer/AuthFriendSuggestionsContainer';
 import AuthFriendAllFriendContainer from './AuthFriendAllFriendContainer/AuthFriendAllFriendContainer';
+import AuthSendRequestContainer from './AuthSendRequestContainer/AuthSendRequestContainer';
 
 // Define the parameter list for the top tabs
 export type FriendTopTabsParamList = {
@@ -17,36 +18,6 @@ export type FriendTopTabsParamList = {
 // Create the top tab navigator
 const TopTab = createMaterialTopTabNavigator<FriendTopTabsParamList>();
 
-// Define the components for each tab
-const Tab1 = () => (
-  <View style={styles.tabContainer}>
-    <Text style={styles.tabText}>This is Friends</Text>
-  </View>
-);
-
-const Tab2 = () => (
-  <View style={styles.tabContainer}>
-    <Text style={styles.tabText}>This is Friend Requests</Text>
-  </View>
-);
-
-const Tab3 = () => (
-  <View style={styles.tabContainer}>
-    <Text style={styles.tabText}>This is Suggestions</Text>
-  </View>
-);
-
-const Tab4 = () => (
-  <View style={styles.tabContainer}>
-    <Text style={styles.tabText}>This is Blocked Users</Text>
-  </View>
-);
-
-const Tab5 = () => (
-  <View style={styles.tabContainer}>
-    <Text style={styles.tabText}>This is Following</Text>
-  </View>
-);
 
 // Define the FriendTopTabs component
 const FriendTopTabs = () => {
@@ -58,13 +29,14 @@ const FriendTopTabs = () => {
         tabBarActiveTintColor: '#6200ee',
         tabBarInactiveTintColor: '#555',
         tabBarScrollEnabled: true, // Enables horizontal scrolling
+        lazy: true, // 🚀 Only loads the active tab
       }}
       style={{ paddingTop: 55 }}
     >
       <TopTab.Screen name="Tab1" component={AuthFriendRequestsContainer} options={{ title: 'Friend Requests' }} />
       <TopTab.Screen name="Tab2" component={AuthFriendSuggestionsContainer} options={{ title: 'Suggestions' }} />
       <TopTab.Screen name="Tab3" component={AuthFriendAllFriendContainer} options={{ title: 'All friends' }} />
-      <TopTab.Screen name="Tab4" component={Tab4} options={{ title: 'Sent requests' }} />
+      <TopTab.Screen name="Tab4" component={AuthSendRequestContainer} options={{ title: 'Sent requests' }} />
 
     </TopTab.Navigator>
   );

@@ -81,6 +81,7 @@ export default function AuthFriendRequestsContainer() {
           data={allFriends}
           renderItem={renderItem}
           onEndReached={loadMoreData}
+          showsVerticalScrollIndicator={false}
           onEndReachedThreshold={0.5}
           keyExtractor={item => item.friend_request_id.toString()}
           ListFooterComponent={

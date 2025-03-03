@@ -82,6 +82,7 @@ export default function AuthFriendAllFriendContainer() {
           renderItem={renderItem}
           onEndReached={loadMoreData}
           onEndReachedThreshold={0.5}
+          showsVerticalScrollIndicator={false}
           keyExtractor={item => item.user_id.toString()}
           ListFooterComponent={
             hasMoreFriends && isFetching ? <Activator /> : null

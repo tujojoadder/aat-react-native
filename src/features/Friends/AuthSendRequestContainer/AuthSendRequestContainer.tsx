@@ -1,19 +1,15 @@
+
 import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import Activator from '../../Activator/Activator';
-import {
-  useGetAuthUserfriendRequestQuery,
-  useGetFriendSuggestionQuery,
-} from '../../../services/friendsApi';
-import FriendRequestItem from '../FriendRequestItem/FriendRequestItem';
-import ProfileSkeleton from '../../Profile/ProfileSkeleton';
+import {useGetAuthUserSentRequestQuery} from '../../../services/friendsApi';
 import FriendSkeleton from '../FriendSkeleton/FriendSkeleton';
-import FriendSuggestionItem from '../FriendSuggestionItem/FriendSuggestionItem';
+import SentRequestItem from '../SentRequestItem/SentRequestItem';
 
-export default function AuthFriendSuggestionsContainer() {
+export default function AuthSendRequestContainer() {
   // State for pagination
   const [allFriends, setFriends] = useState<any[]>([]);
-  const [friendSuggestionPage, setFriendSuggestionPage] = useState(1);
+  const [friendRequestPage, setFriendRequestPage] = useState(1);
   const [hasMoreFriends, setHasMoreFriends] = useState(true);
 
   // Fetch photos
@@ -22,8 +18,10 @@ export default function AuthFriendSuggestionsContainer() {
     isFetching,
     isSuccess,
     isLoading,
-  } = useGetFriendSuggestionQuery({friendSuggestionPage});
-
+  } = useGetAuthUserSentRequestQuery({friendRequestPage});
+  if (isSuccess) {
+    console.log(friendData);
+  }
 
   // Update photos when new data is fetched
   useEffect(() => {
@@ -51,13 +49,13 @@ export default function AuthFriendSuggestionsContainer() {
   // Load more data when reaching the end of the list
   const loadMoreData = useCallback(() => {
     if (hasMoreFriends && !isFetching) {
-      setFriendSuggestionPage(prev => prev + 1);
+      setFriendRequestPage(prev => prev + 1);
     }
   }, [hasMoreFriends, isFetching]);
 
   // Render each image item
   const renderItem = useCallback(({item}: {item: any}) => {
-    return <FriendSuggestionItem item={item} />;
+    return <SentRequestItem item={item} />;
   }, []);
 
   if (isLoading) {
@@ -72,7 +70,7 @@ export default function AuthFriendSuggestionsContainer() {
         fontSize: 18,
         paddingVertical: 15,
         paddingHorizontal: 10,
-      }}>{`Friend Suggestions (${friendData?.total})`}</Text>
+      }}>{`Sent requests (${friendData?.total})`}</Text>
   );
 
   return (
@@ -84,8 +82,8 @@ export default function AuthFriendSuggestionsContainer() {
           data={allFriends}
           renderItem={renderItem}
           onEndReached={loadMoreData}
-          onEndReachedThreshold={0.5}
           showsVerticalScrollIndicator={false}
+          onEndReachedThreshold={0.5}
           keyExtractor={item => item.user_id.toString()}
           ListFooterComponent={
             hasMoreFriends && isFetching ? <Activator /> : null
@@ -93,8 +91,6 @@ export default function AuthFriendSuggestionsContainer() {
           ListHeaderComponent={Header}
         />
       )}
-
-
     </View>
   );
 }
