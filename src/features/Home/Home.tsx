@@ -146,7 +146,7 @@ export default function Home() {
                 color="black"
               />
             )}
-            onPress={() => {}}
+            onPress={() => {navigation.navigate('createPost')}}
           />
 
           <Appbar.Action icon="magnify" color="black" onPress={() => {}} />

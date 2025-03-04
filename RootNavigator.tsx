@@ -21,6 +21,7 @@ import FriendContainer from './src/features/Profile/FriendsContainer/FriendConta
 import FollowingContainer from './src/features/Profile/FollowingContainer/FollowingContainer';
 import FollowersContainer from './src/features/Profile/FollowersContainer/FollowersContainer';
 import FriendHome from './src/features/Friends/FriendHome';
+import CreatePost from './src/features/Post/CreatePost';
 
 export type RootParamList = {
   main: undefined; // No parameters for the "home" screen
@@ -36,6 +37,8 @@ export type RootParamList = {
   followingContainer: { userId: string }; 
   followersContainer: { userId: string }; 
   friendHome: undefined; 
+  createPost: undefined; 
+
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -88,6 +91,7 @@ export default function RootNavigator() {
             <Stack.Screen name="friendsContainer" component={FriendContainer} />
             <Stack.Screen name="followingContainer" component={FollowingContainer} />
             <Stack.Screen name="followersContainer" component={FollowersContainer} />
+            <Stack.Screen name="createPost" component={CreatePost} />
 
             {/* Friends */}
             <Stack.Screen name="friendHome" component={FriendHome} />
