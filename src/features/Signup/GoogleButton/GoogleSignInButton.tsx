@@ -24,8 +24,7 @@ export default function GoogleSignInButton() {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId:
-        '212461889410-pt3bcbmi4j56lgvvrc7vp21kc8805td2.apps.googleusercontent.com',
+      webClientId:process.env.GOOGLE_WEB_CLIENT_ID,
     });
   }, []);
   const signIn = async () => {

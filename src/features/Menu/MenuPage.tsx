@@ -56,7 +56,14 @@ const MenuPage = () => {
 
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
+  useEffect(() => {
+    const fetchLoginMethod = async () => {
+      const method = await AsyncStorage.getItem('loginMethod');
+      console.log(method);
+    };
 
+    fetchLoginMethod();
+  }, []);
   const handleLogout = async () => {
     try {
       const data = await logOutUser().unwrap();
@@ -68,6 +75,11 @@ const MenuPage = () => {
 
   const handlePostLogoutActions = async () => {
     try {
+
+       // Configure GoogleSignin before signing out
+       GoogleSignin.configure({
+      webClientId:process.env.GOOGLE_WEB_CLIENT_ID,
+    });
       /* get loginMethod from asyncStorage */
       const loginMethod = await AsyncStorage.getItem('loginMethod');
       if (loginMethod === 'gmail') {
